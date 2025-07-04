@@ -50,3 +50,6 @@ rsconnect/
 
 # Local stuff
 _targets/
+classification/.env
+classification/*.xlsx
+
