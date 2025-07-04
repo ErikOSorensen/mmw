@@ -1115,7 +1115,7 @@ sm <- c("share_to_winner"="Share to winner",
         "college"="College",
         "female" = "Female",
         "above_median_age"="Above median age")
-ta5 <- list(s1,s2,s3,s4,s5,s6,s7,s8,s9) |>
+ta6 <- list(s1,s2,s3,s4,s5,s6,s7,s8,s9) |>
     modelsummary(coef_map=sm,
                stars = c('*' = .1, '**' = .05, '***'=.01),
                                    gof_map = c("nobs", "r.squared"),
@@ -1123,8 +1123,8 @@ ta5 <- list(s1,s2,s3,s4,s5,s6,s7,s8,s9) |>
   tab_spanner(label="Gold medalist", columns=2:4) |>
   tab_spanner(label="Superstar", columns=5:7) |>
   tab_spanner(label="Decrease tax on top 1\\%", columns=8:10)
-ta5
-ta5 |> gtsave(here::here("tables","RN2018_attitudes_share.tex"))
+ta6
+ta6 |> gtsave(here::here("tables","RN2018_attitudes_share.tex"))
 
 ```
 
