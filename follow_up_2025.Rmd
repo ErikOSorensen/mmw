@@ -1,0 +1,334 @@
+---
+title: "Follow-up study 2025"
+author: "Erik Ø. Sørensen"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(targets)
+library(stringr)
+library(tidyverse)
+library(gt)
+library(modelsummary)
+library(fixest)
+library(marginaleffects)
+library(patchwork)
+```
+
+
+# The winning margin
+
+The reference case we used for power calculations was columns 1 and 4 of
+Table~3. 
+
+We can try to calculate something similar using the follow-up data,
+and see if there are any treatment differences.
+
+```{r}
+tar_load(mmw2025)
+tabledf <- mmw2025 |>
+  mutate(all_to_winner = as.numeric(y2==e2),
+         share_to_winner = y2/(y1+y2),
+         winning_margin = x2-x1,
+         republican = as.numeric(pol2==1),
+         college = as.numeric(education>4),
+         female = as.numeric(sex==2),
+         above_median_age = as.numeric(age > median(age)),
+         regionf = factor(region),
+         treatmentf = relevel(factor(treatment), ref = "baseline"))
+```
+
+
+```{r message=FALSE, warning=FALSE, include=FALSE}
+c1 <- tabledf |> lm(all_to_winner ~ winning_margin, data=_)
+c2 <- tabledf |> lm(all_to_winner ~ winning_margin + treatmentf*winning_margin , data=_)
+c3 <- tabledf |> lm(all_to_winner ~ winning_margin + treatmentf*winning_margin + republican + college + female + above_median_age + regionf , data=_)
+c4 <- tabledf |> lm(all_to_winner ~ winning_margin + treatmentf*winning_margin + x2 + republican + college + female + above_median_age + regionf , data=_)
+
+me_c2 <- slopes(c2, variables = "winning_margin", by = "treatmentf")
+me_c3 <- slopes(c3, variables = "winning_margin", by = "treatmentf")
+me_c4 <- slopes(c4, variables = "winning_margin", by = "treatmentf")
+
+
+d1 <- tabledf |> lm(share_to_winner ~ winning_margin, data=_)
+d2 <- tabledf |> lm(share_to_winner ~ winning_margin + treatmentf*winning_margin , data=_)
+d3 <- tabledf |> lm(share_to_winner ~ winning_margin + treatmentf*winning_margin + republican + college + female + above_median_age + regionf , data=_)
+d4 <- tabledf |> lm(share_to_winner ~ winning_margin + treatmentf*winning_margin + x2 + republican + college + female + above_median_age + regionf , data=_)
+me_d2 <- slopes(d2, variables = "winning_margin", by = "treatmentf")
+me_d3 <- slopes(d3, variables = "winning_margin", by = "treatmentf")
+me_d4 <- slopes(d4, variables = "winning_margin", by = "treatmentf")
+
+extra_rows <- tibble(
+  row_names = c("M.E. W.M. attention", "", "M.E. W.M. show distribution", ""),
+  
+  c1 = rep(NA, 4),
+  c2 = c(
+    sprintf("%.3f", tidy(me_c2)$estimate[2]),
+    sprintf("(%.3f)", tidy(me_c2)$std.error[2]),
+    sprintf("%.3f", tidy(me_c2)$estimate[3]),
+    sprintf("(%.3f)", tidy(me_c2)$std.error[3])
+  ),
+  c3 = c(
+    sprintf("%.3f", tidy(me_c3)$estimate[2]),
+    sprintf("(%.3f)", tidy(me_c3)$std.error[2]),
+    sprintf("%.3f", tidy(me_c3)$estimate[3]),
+    sprintf("(%.3f)", tidy(me_c3)$std.error[3])
+  ),
+  c4 = c(
+    sprintf("%.3f", tidy(me_c4)$estimate[2]),
+    sprintf("(%.3f)", tidy(me_c4)$std.error[2]),
+    sprintf("%.3f", tidy(me_c4)$estimate[3]),
+    sprintf("(%.3f)", tidy(me_c4)$std.error[3])
+  ),
+  d1 = rep(NA, 4),
+  d2 = c(
+    sprintf("%.3f", tidy(me_d2)$estimate[2]),
+    sprintf("(%.3f)", tidy(me_d2)$std.error[2]),
+    sprintf("%.3f", tidy(me_d2)$estimate[3]),
+    sprintf("(%.3f)", tidy(me_d2)$std.error[3])
+  ),
+  d3 = c(
+    sprintf("%.3f", tidy(me_d3)$estimate[2]),
+    sprintf("(%.3f)", tidy(me_d3)$std.error[2]),
+    sprintf("%.3f", tidy(me_d3)$estimate[3]),
+    sprintf("(%.3f)", tidy(me_d3)$std.error[3])
+  ),
+  d4 = c(
+    sprintf("%.3f", tidy(me_d4)$estimate[2]),
+    sprintf("(%.3f)", tidy(me_d4)$std.error[2]),
+    sprintf("%.3f", tidy(me_d4)$estimate[3]),
+    sprintf("(%.3f)", tidy(me_d4)$std.error[3])
+  )
+)
+
+# Replace all NAs with "" (empty string)
+extra_rows[is.na(extra_rows)] <- ""
+
+cm <- c("winning_margin" = "Winning Margin",
+        "winning_margin:treatmentfattention" = "W.M. X Attention",
+        "winning_margin:treatmentfshow_distribution" = "W.M. X Show dist.",
+        "treatmentfattention"="Attention treatment",
+        "treatmentfshow_distribution" = "Show dist. treatment",
+        "x2" = "Performance Winner",
+        "(Intercept)"="Constant"
+        )
+tab3 <- list(c1,c2,c3,c4,d1,d2,d3,d4) |>
+  modelsummary(coef_map=cm,
+               stars = c('*' = .1, '**' = .05, '***'=.01),
+                                   gof_map = c("nobs", "r.squared"),
+                                   output = "gt",
+               add_rows = extra_rows) |>
+  tab_spanner(label="All to Winner", columns=2:5) |>
+  tab_spanner(label="Share to Winner", columns=6:9)
+tab3
+tab3 |> gtsave(here::here("tables","winning_margin_2025.tex"))
+```
+
+In columns 3,4 and 7,8, there are also other controls (same as those used
+in the paper).
+
+
+- We see that the size of the coefficient on winning margin is a bit larger than in the 2018 experiment (in which it was 0.006).
+- In the "attention" treatment, the coefficient is $0.013-0.007 = 0.006$, exactly that of the 2018 experiment (if anything,
+the winning margin is *less* important in the attention check treatment). 
+- There are no significant treatment differences, and the treatment differences are small.
+- The levels (constant terms in columns 1 and 5) are not far from those in the paper based on the 2018 numbers.
+
+
+Are there differences within the "show distribution" treatment depending on where the
+total production falls? I split the performance by median. Now there are three natural
+groups: 1) Both winner and loser are below median, 2) Winner is above median, loser belows, 3) Both winner and loser are below 
+median.
+```{r}
+prods <- c(tabledf$x1, tabledf$x2)
+md <- median(prods)
+tabledfd <- tabledf |> filter(treatment=="show_distribution")
+k1 <- tabledfd |> filter(x2<md) |> feols(all_to_winner ~ winning_margin, data=_)
+k2 <- tabledfd |> filter(x2<md) |> feols(all_to_winner ~ winning_margin + republican + college + female + above_median_age + regionf, data=_)
+k3 <- tabledfd |> filter(x2<md) |> feols(share_to_winner ~ winning_margin, data=_)
+k4 <- tabledfd |> filter(x2<md) |> feols(share_to_winner ~ winning_margin + republican + college + female + above_median_age + regionf, data=_)
+
+k5 <- tabledfd |> filter(x2>=md, x1<md) |> feols(all_to_winner ~ winning_margin, data=_)
+k6 <- tabledfd |> filter(x2>=md, x1<md) |> feols(all_to_winner ~ winning_margin + republican + college + female + above_median_age + regionf, data=_)
+k7 <- tabledfd |> filter(x2>=md, x1<md) |> feols(share_to_winner ~ winning_margin, data=_)
+k8 <- tabledfd |> filter(x2>=md, x1<md) |> feols(share_to_winner ~ winning_margin + republican + college + female + above_median_age + regionf, data=_)
+
+k9  <- tabledfd |> filter(x1>=md) |> feols(all_to_winner ~ winning_margin, data=_)
+k10 <- tabledfd |> filter(x1>=md) |> feols(all_to_winner ~ winning_margin + republican + college + female + above_median_age + regionf, data=_)
+k11 <- tabledfd |> filter(x1>=md) |> feols(share_to_winner ~ winning_margin, data=_)
+k12 <- tabledfd |> filter(x1>=md) |> feols(share_to_winner ~ winning_margin + republican + college + female + above_median_age + regionf, data=_)
+
+fm <- c("winning_margin" = "Winning Margin",
+        "republican" = "Republican",
+        "college" ="College",
+        "female" = "Female",
+        "above_median_age"="Above median age",
+        "(Intercept)"="Constant"
+        )
+ntab <- list(k1,k2,k3,k4,k5,k6,k7,k8,k9,k10,k11,k12) |>
+  modelsummary(coef_map=fm,
+               stars = c('*' = .1, '**' = .05, '***'=.01),
+                                   gof_map = c("nobs", "r.squared"),
+                                   output = "gt") |>
+  tab_spanner(label="All to winner", columns=2:3, id=1) |>
+  tab_spanner(label="Share to winner", columns=4:5, id=2) |>
+  tab_spanner(label="All to winner", columns=6:7, id=3) |>
+  tab_spanner(label="Share to winner", columns=8:9, id=4) |>
+  tab_spanner(label="All to winner", columns=10:11, id=5) |>
+  tab_spanner(label="Share to winner", columns=12:13, id=6) |>
+  tab_spanner(label="Both below median", columns=2:5) |>
+  tab_spanner(label="Winner at or above median", columns=6:9) |>
+  tab_spanner(label="Both at or above median", columns=10:13) 
+ntab 
+ntab |> gtsave(here::here("tables","ntab_2025.tex"))
+```
+
+# Distribution of worker performance and winner margin
+
+```{r echo=FALSE}
+all_x <- c(tabledf$x1, tabledf$x2)
+distdfs1 <- tibble(all_x=all_x)
+winning_margin <- tabledf$x2 - tabledf$x1
+distdfs2 <- tibble(winning_margin=winning_margin)
+
+wm_2025 <- distdfs2 |>
+  ggplot(aes(x=winning_margin)) +
+  geom_histogram( aes(y = after_stat(density)),
+    binwidth = 1, 
+    boundary = -0.5,  
+  ) +
+  scale_x_continuous(breaks = c(0,5,10,15,20), limits = c(0.5, 21.5)) +
+  labs(
+    x = "Winning margin",
+    y = "Fraction",
+  ) +
+  theme_minimal()
+
+h_workers_2025 <- distdfs1 |> 
+  ggplot(aes(x=all_x)) +
+  geom_histogram(aes(y = after_stat(density)),
+    binwidth = 1, 
+    boundary = -0.5,  
+  ) +
+  scale_x_continuous(breaks = c(0,5,10,15,20,25), limits = c(-0.5, 24.5)) +
+  labs(
+    x = "Performance of worker",
+    y = "Fraction",
+  ) +
+  theme_minimal()
+distributions_2025 <- h_workers_2025 + wm_2025 + plot_annotation(tag_levels = 'a')
+distributions_2025
+ggsave(here::here("graphs","distributions_2025.pdf"), width=16, height = 10, units="cm")
+```
+
+
+# Attention check
+
+We asked for four numbers in the attention check: For both in a worker pair,
+what was the number of problems solved, and what was pre-distribution earnings. 
+Participants had to put in *some* numbers for the rest of the screen to appear,
+but there was no testing that the numbers they entered were correct.
+
+How accurate are the answers? 
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+mmw2025 |> filter(treatment=="attention") |>
+  mutate(x1_correct = x1==ax1,
+         x2_correct = x2==ax2,
+         e1_correct = abs(e1-ae1)<0.0001,
+         e2_correct = abs(e2-ae2)<0.0001) |>
+  summarize(mean_x1_correct = mean(x1_correct),
+            mean_x2_correct = mean(x2_correct),
+            mean_e1_correct = mean(e1_correct),
+            mean_e2_correct = mean(e2_correct)) |>
+  gt() |> fmt_number(decimals=3)
+```
+- I think we can conclude that participants mostly *did* manage to enter
+the correct number; participants did pay attention. 
+
+
+
+# Correlation Between Giving All to the Winner and General Attitudes
+
+Note that "Gold Medalist" and "Superstar" have been reverse coded.
+```{r}
+t4_c1 <- tabledf |> fixest::feols(scale(8-att3) ~ all_to_winner, data=_)
+t4_c2 <- tabledf |> fixest::feols(scale(8-att3) ~ republican + college + female + above_median_age | regionf, data=_)
+t4_c3 <- tabledf |> fixest::feols(scale(8-att3) ~ all_to_winner + republican + college + female + above_median_age | regionf, data=_)
+
+t4_c4 <- tabledf |> fixest::feols(scale(8-att4) ~ all_to_winner, data=_)
+t4_c5 <- tabledf |> fixest::feols(scale(8-att4) ~ republican + college + female + above_median_age | regionf, data=_)
+t4_c6 <- tabledf |> fixest::feols(scale(8-att4) ~ all_to_winner + republican + college + female + above_median_age | regionf, data=_)
+
+t4_c7 <- tabledf |> fixest::feols(scale(att2) ~ all_to_winner, data=_)
+t4_c8 <- tabledf |> fixest::feols(scale(att2) ~ republican + college + female + above_median_age | regionf, data=_)
+t4_c9 <- tabledf |> fixest::feols(scale(att2) ~ all_to_winner + republican + college + female + above_median_age | regionf, data=_)
+
+em <- c("all_to_winner" = "All to winner",
+        "republican" = "Republican",
+        "college" ="College",
+        "female" = "Female",
+        "above_median_age"="Above median age",
+        "(Intercept)"="Constant"
+)
+
+t4_2025 <- list(t4_c1,t4_c2,t4_c3,t4_c4,t4_c5,t4_c6,t4_c7,t4_c8,t4_c9) |>
+   modelsummary(coef_map=em,
+               stars = c('*' = .1, '**' = .05, '***'=.01),
+                                   gof_map = c("nobs", "r.squared"),
+                                   output = "gt" ) |>
+  tab_spanner(label="Gold medalist", columns=2:4) |>
+  tab_spanner(label="Superstar", columns=5:7) |>
+  tab_spanner(label="Decrease tax on top 1\\%", columns=8:10)
+t4_2025
+t4_2025 |> gtsave(here::here("tables","attitudes_2025.tex"))
+```
+
+
+# Using the data on classification
+
+
+```{r Shares of classifications, echo=FALSE}
+tar_load(classified_motivations)
+
+tdf <-classified_motivations |>
+  group_by(predicted_label) |>
+  summarize(count = n()) |>
+  mutate(
+    label = ifelse(count < 50, "Other", str_to_title(predicted_label))
+  ) %>%
+  group_by(label) %>%
+  summarise(fraction= sum(count)/nrow(classified_motivations), .groups = "drop") |>
+  mutate(labelf = factor(label, levels=rev(c("Meritocrat - Margin Does Not Matter", 
+                                          "Meritocrat - Margin Matters",
+                                          "Libertarian", 
+                                          "Egalitarian",
+                                          "Fairness",
+                                          "Other",
+                                          "No Reason"))))
+tdf |>
+  ggplot(aes(x=labelf, y=fraction)) +
+  geom_bar(stat = "identity") +
+  coord_flip() +
+  labs(x = "Classification (GPT)",
+       y = "Fraction") +
+  theme_minimal()
+ggsave("graphs/classifications.pdf", width=16, height = 10, units = "cm")
+tdf |> dplyr::select(c("labelf","fraction")) |> arrange(-fraction) |> gt() |> fmt_number(decimals = 3)
+```
+
+Is it the case that the classifications are informative about distribution?
+
+```{r Classifications and decisions, echo=FALSE}
+tar_load(mmw2025)
+cdta <- mmw2025 |> left_join(classified_motivations) |>
+  mutate( all_to_winner = as.numeric(y2==e2),
+          almost_equality = as.numeric(abs(y2 - e2/2)<0.1),
+          lib_nomargin = as.numeric( predicted_label %in% c("libertarian","meritocrat - margin does not matter")),
+          margin_matters = as.numeric(predicted_label %in% c("meritocrat - margin matters"))) 
+cdta |> lm(all_to_winner ~ lib_nomargin, data=_) |> summary()
+cdta |> lm(almost_equality ~ margin_matters, data=_) |> summary()
+
+```
+

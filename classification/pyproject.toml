@@ -1,0 +1,7 @@
+[project]
+name = "classification"
+version = "0.1.0"
+description = "Classifying free-form motivations from mmwinner follow-up 2025."
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies =    ["openai>=1.0.0", "pandas", "python-dotenv", "requests", "tqdm"]

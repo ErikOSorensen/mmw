@@ -1,0 +1,120 @@
+---
+title: "Summarizing classifications"
+author: "Erik Ø. Sørensen"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(gt)
+```
+
+# What are the proportions in the classified date?
+
+```{r echo=FALSE}
+cmdf <- read_csv("classified_motivations.csv")
+cmdf |> group_by(predicted_label) |>
+  summarise(
+    count = n(),
+    fraction = n() / nrow(cmdf)
+) |> arrange(-fraction) |>
+  gt() |>
+  fmt_number(decimals=3, columns="fraction")
+```
+
+# Mention of stake-size
+
+We first tried a very broad search for mention of stake size, 
+
+```
+You are a careful assistant. Your task is to determine whether a short motivation text 
+mentions the *size* of the financial stakes or amounts involved in a decision.
+
+If the motivation contains any mention of money amounts, the size of bonuses, 
+large or small rewards, financial impact, or comparable language — respond with "yes".
+
+Otherwise, respond with "no".
+
+Answer with only one word: "yes" or "no".
+``` 
+
+```{r echo=FALSE}
+stake_mentions <- read_csv("stake_mentions.csv") 
+stake_mentions |> group_by(mentions_stake_size) |>
+  summarise(
+    count = n(),
+    fraction = n() / nrow(stake_mentions)
+  ) |> arrange(-fraction) |>
+  gt() |>
+  fmt_number(decimals=3, columns="fraction")
+```
+
+
+We tried another test for if they mention stakes being small:
+
+```
+You are a careful assistant. Your task is to determine whether a short 
+motivation text in any way indicates that the monetary stakes are small. Note
+that the numbers themselves are not directly meaningful, but we are looking for 
+whether people mention small stake sizes as a reason for them making the 
+redistributive decision - that is, implicitly, they would have done differently 
+with a large stake size. Or saying that small stake size makes this an 
+irrelevant or uninteresting choice.
+
+If so, respond "yes". Otherwise, respond with "no".
+
+Answer with only one word: "yes" or "no".
+```
+
+```{r echo=FALSE}
+small_stake_mentions <- read_csv("stake_small.csv") 
+small_stake_mentions |> group_by(mentions_small_stakes) |>
+  summarise(
+    count = n(),
+    fraction = n() / nrow(small_stake_mentions)
+  ) |> arrange(-fraction) |>
+  gt() |>
+  fmt_number(decimals=3, columns="fraction")
+```
+
+
+# How well does coding work on overlaps?
+
+Each of the two manual classifiers classified 100 motivations. 
+There is a shared set of 20 motivations classified by both
+manual classifiers. We can also compare this to what the gpt 
+did on the 180 observations where the gpt predicted
+on the observations used for training.
+
+The manual classifiers are "B1" and "B2", "predicted_label" is the gpt.
+
+
+```{r echo=FALSE}
+dfs <- read_csv("classifications_defs.csv")
+B1 <- read_csv2("B1.csv") |> left_join(dfs) |> rename(B1 = classification) |> dplyr::select(id, B1)
+B2 <- read_csv2("B2.csv") |> left_join(dfs) |> rename(B2 = classification) |> dplyr::select(id, B2)
+Bs <- B1 |> full_join(B2)
+all_overlap <- cmdf |> right_join(Bs) |> 
+  dplyr::select(c(id, B1, B2, predicted_label, motivation))
+all_overlap |> gt() |> 
+  fmt_missing(
+    columns = everything(), 
+    missing_text = "" 
+  )
+```
+
+The manual classifiers disagreed on 5/20 observations:
+
+
+```{r echo=FALSE}
+all_overlap |> 
+  filter(!is.na(B1), !is.na(B2)) |>
+  filter(B1!=B2) |>
+  gt() |> 
+  fmt_missing(
+    columns = everything(), 
+    missing_text = "" 
+  )
+```
+
