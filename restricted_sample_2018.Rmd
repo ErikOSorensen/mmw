@@ -1,0 +1,127 @@
+---
+title: "Analysis on 2018, restricted sample"
+author: "Erik Ø. Sørensen"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(targets)
+library(tidyverse)
+library(gt)
+library(modelsummary)
+library(scales)
+library(patchwork)
+library(fixest)
+```
+
+
+These results are for appendix B, results on the restricted sample in which $y_1 \leq y_2$: 
+The "loser" is not given strictly more than the "winner."
+
+# Replication of main results: restricted sample
+
+```{r main_restricted, echo=FALSE}
+tar_load(restricted_main)
+cm <- c("treatmentWTA: No Choice" = "WTA-No Choice",
+        "treatmentWTA: No Exp" = "WTA-No Exp.",
+        "competition" = "WTA Competition",
+        "winning_margin" = "Winning margin",
+        "(Intercept)"="Constant"
+)
+tb1 <- restricted_main |> modelsummary(coef_map=cm,
+                                stars = c('*' = .1, '**' = .05, '***'=.01),
+                                gof_map = c("nobs", "r.squared"),
+                                output = "gt") |>
+  tab_spanner(label="All to Winner", columns=2:4) |>
+  tab_spanner(label="Share to Winner", columns=5:7)
+tb1
+tb1 |> gtsave("tables/RN2018_main_restricted.tex")
+```
+
+# Heterogeneous treatment effects on all to winner: Restricted sample
+
+```{r heterogeneous merit all restricted, echo=FALSE}
+tar_load(heterogeneous_treatment_effects_all)
+qm <- c("competition"="WTA Competition",
+        "competition:republican" = "WTA Competition $\\times$ Republican",
+        "competition:college" = "WTA Competition $\\times$ College",
+        "competition:female" = "WTA Competition $\\times$ Female",
+        "competition:above_median_age"= "WTA Competition $\\times$ Above median age")
+ta3 <- heterogeneous_treatment_effects_all$regressions |>
+  modelsummary(coef_map=qm,
+               stars = c('*' = .1, '**' = .05, '***'=.01),
+                                   gof_map = c("nobs", "r.squared"),
+                                   output = "gt",
+               add_rows = heterogeneous_treatment_effects_all$extra_rows) |>
+  tab_spanner(label="Full sample", columns=2:5) |>
+  tab_spanner(label="Smallest winning margin", columns=6:9)
+ta3
+ta3 |> gtsave(here::here("tables","RN2018_hetmerit_all_restricted.tex"))
+```
+
+# Heterogeneous treatment effects on share to winner: Restricted sample
+
+
+```{r heterogeneous merit share restricted, echo=FALSE}
+tar_load(heterogeneous_treatment_effects_share_restricted)
+qm <- c("competition"="WTA Competition",
+        "competition:republican" = "WTA Competition $\\times$ Republican",
+        "competition:college" = "WTA Competition $\\times$ College",
+        "competition:female" = "WTA Competition $\\times$ Female",
+        "competition:above_median_age"= "WTA Competition $\\times$ Above median age")
+ta4 <- heterogeneous_treatment_effects_share_restricted$regressions |>
+  modelsummary(coef_map=qm,
+               stars = c('*' = .1, '**' = .05, '***'=.01),
+                                   gof_map = c("nobs", "r.squared"),
+                                   output = "gt",
+               add_rows = heterogeneous_treatment_effects_share_restricted$extra_rows) |>
+  tab_spanner(label="Full sample", columns=2:5) |>
+  tab_spanner(label="Smallest winning margin", columns=6:9)
+ta4
+ta4 |> gtsave(here::here("tables","RN2018_hetmerit_share_restricted.tex"))
+```
+
+# Heterogeneous treatment effects of the role of the winning margin: Restricted sample
+
+```{r general attitudes share restricted, echo=FALSE}
+tar_load(heterogeneous_treatment_effects_wm_restricted)
+qm <- c("winning_margin"="Winning margin",
+        "winning_margin:republican" = "Winning margin $\\times$ Republican",
+        "winning_margin:college" = "Winning margin $\\times$ College",
+        "winning_margin:female" = "Winning margin $\\times$ Female",
+        "winning_margin:above_median_age"= "Winning margin $\\times$ Above median age")
+gt_table <-  modelsummary(heterogeneous_treatment_effects_wm_restricted$regressions, 
+                     coef_map=qm,
+                     stars = c('*' = .1, '**' = .05, '***'=.01),
+                     gof_map = c("nobs", "r.squared"),
+                     output = "gt",
+                     add_rows = heterogeneous_treatment_effects_wm_restricted$extra_rows)
+ta5 <- (
+  gt_table %>%
+    tab_spanner(label="All to winner", columns=2:5) %>%
+    tab_spanner(label="Share to winner", columns=6:9)
+)
+ta5
+gtsave(ta5,"tables/RN2018_hetmerit_margin_restricted.tex")
+```
+
+
+# Association between redistribution decisions and general attitudes: Restricted sample
+
+```{r general attitudes restricted, echo=FALSE}
+tar_load("general_attitudes_restricted")
+names <- c("all_to_winner" = "All to winner",
+           "share_to_winner"="Share to winner")
+tb5 <- general_attitudes_restricted |>
+  modelsummary(coef_map=names,
+               stars = c('*' = .1, '**' = .05, '***'=.01),
+                                   gof_map = c("nobs", "r.squared"),
+                                   output = "gt") |>
+  tab_spanner(label="Gold medalist", columns=2:3) |>
+  tab_spanner(label="Superstar", columns=4:5) |>
+  tab_spanner(label="Decrease tax on top 1\\%", columns=6:7) 
+tb5  
+tb5 |> gtsave(here::here("tables", "RN2018_attitudes_restricted.tex"))
+```
+

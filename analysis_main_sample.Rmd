@@ -19,72 +19,16 @@ library(fixest)
 # Share of earnings given to winner
 
 ```{r Share of earnings given to winner, echo=FALSE}
-tar_load(mmw2018)
-mmw2018 |> 
-  filter(treatment!="Base") |>
-  mutate(share_to_winner = y2/e2) |>
-  ggplot(aes(x = share_to_winner)) +
-  geom_histogram(aes(x = share_to_winner, y = (..count..)/tapply(..count..,..PANEL..,sum)[..PANEL..]),
-                 binwidth = 0.05,
-                 boundary=0) +
-  theme_minimal() +
-  labs(x = "Share given to winner",
-       y = "Fraction") +
-  scale_x_continuous(breaks = c(0, 0.5, 1)) +
-  facet_wrap(~treatment)
+tar_load(share_of_earnings_to_winner)
+share_of_earnings_to_winner
 ggsave("graphs/RN2018_hist_shareY_wta.pdf",width=16, height = 10, units = "cm")
 ```
 
 # Winner-take-all vs. Luck
 
 ```{r Winner-take-all vs luck, echo=FALSE}
-t1 <- mmw2018 |> 
-  mutate(share_to_winner = floor( (y2/e2) / 0.05) * 0.05) 
-t1_all_wta <-  t1 |> filter(treatment!="Base")
-all_wta <- t1_all_wta |> filter(treatment!="Base")|>
-  group_by(share_to_winner) |> 
-  summarize(fraction_wta = n()/nrow(t1_all_wta))
-t1_all_luck <-  t1 |> filter(treatment=="Base")
-all_luck <- t1_all_luck |> filter(treatment=="Base")|>
-  group_by(share_to_winner) |> 
-  summarize(fraction_luck = n()/nrow(t1_all_luck))
-left <- all_wta |> left_join(all_luck) |>
-  mutate(diff_fraction = fraction_wta - fraction_luck ) |>
-  ggplot(aes(x=share_to_winner, y = diff_fraction)) +
-  geom_col() +
-  scale_y_continuous(
-    limits = c(-0.35, 0.35),
-    breaks = seq(-0.3, 0.3, by = 0.1),
-    labels = number_format(accuracy = 0.1, decimal.mark = ".")
-  ) +
-  theme_minimal() +
-  labs(x = "Share given to winner", 
-       y = "Fraction: WTA - Luck",
-       title = "Full sample",
-       subtitle="All winning margins")
-
-
-t2 <- t1 |> filter( x2-x1 == 1)
-t2_all_wta <-  t2 |> filter(treatment!="Base")
-all_wta <- t2_all_wta |> filter(treatment!="Base")|>
-  group_by(share_to_winner) |> 
-  summarize(fraction_wta = n()/nrow(t2_all_wta))
-right <- all_wta |> left_join(all_luck) |>
-  mutate(diff_fraction = fraction_wta - fraction_luck ) |>
-  ggplot(aes(x=share_to_winner, y = diff_fraction)) +
-  geom_col() +
-  scale_y_continuous(
-    limits = c(-0.35, 0.35),
-    breaks = seq(-0.3, 0.3, by = 0.1),
-    labels = number_format(accuracy = 0.1, decimal.mark = ".")
-  ) +
-  theme_minimal() +
-  labs(x = "Share given to winner", 
-       y = "Fraction: WTA - Luck",
-       title = "Subsample",
-       subtitle="Smallest winning margin") 
-
-left + right + plot_annotation(tag_levels = "a")
+tar_load(winner_take_all_vs_luck)
+winner_take_all_vs_luck$left + winner_take_all_vs_luck$right + plot_annotation(tag_levels = "a")
 ggsave("graphs/RN2018_wta_luck.pdf", width=16, height = 10, units="cm")
 ```
 
@@ -92,528 +36,69 @@ ggsave("graphs/RN2018_wta_luck.pdf", width=16, height = 10, units="cm")
 # Role of winning margin
 
 ```{r Role of winning margin, echo=FALSE}
-top <- mmw2018 |> mutate(all_to_winner = as.numeric(y2==e2),
-                  winning_margin = x2-x1,
-                  winning_margin = if_else(winning_margin >=15, 15, winning_margin)) |>
-  filter(treatment!="Base") |>
-  group_by(winning_margin) |>
-  summarize(mean_winner = mean(all_to_winner),
-            se_winner = sd(all_to_winner)/sqrt(n())) |>
-  ggplot(aes(x = winning_margin, y = mean_winner, ymin = mean_winner-se_winner, ymax=mean_winner+se_winner)) +
-  geom_point() +
-  geom_errorbar(width=0.4) +
-  geom_line() +
-  theme_minimal() +
-  scale_x_continuous(
-    breaks = 0:15,
-    labels = function(x) ifelse(x == 15, "≥15", x)
-  ) +
-  scale_y_continuous(limits = c(0, 1)) +
-  labs(x="Winning margin", y = "Proportion giving all to winner", title="All to winner")
-bottom <-  mmw2018 |> mutate(share_to_winner = y2/e2,
-                  winning_margin = x2-x1,
-                  winning_margin = if_else(winning_margin >=15, 15, winning_margin)) |>
-  filter(treatment!="Base") |>
-  group_by(winning_margin) |>
-  summarize(mean_winner = mean(share_to_winner),
-            se_winner = sd(share_to_winner)/sqrt(n())) |>
-  ggplot(aes(x = winning_margin, y = mean_winner, 
-             ymin = mean_winner-se_winner, ymax=mean_winner+se_winner)) +
-  geom_point() +
-  geom_errorbar(width=0.4) +
-  geom_line() +
-  theme_minimal() +
-  scale_x_continuous(
-    breaks = 0:15,
-    labels = function(x) ifelse(x == 15, "≥15", x)
-  ) +
-  scale_y_continuous(limits = c(0.5, 1)) +
-  labs(x="Winning margin", y = "Share given to winner", title="Share to winner")
-top / bottom + plot_annotation(tag_levels = "a")
+tar_load(role_of_winning_margin_graph)
+role_of_winning_margin_graph$top / role_of_winning_margin_graph$bottom + plot_annotation(tag_levels = "a")
 ggsave("graphs/RN2018_flatness1_version2.pdf", width=16, height = 12, units="cm", device=cairo_pdf)
 ```
 
 
 # Heterogeneity Analysis: All to winner
 
-First, the proportions of the data.
-```{r , echo=FALSE}
-f4df1 <- mmw2018 |>
-  mutate(
-    republican = ifelse(pol2==1,"Republican","Nonrepublican"),
-    college = ifelse(education>4, "College", "Noncollege"),
-    male = ifelse(sex==1, "Male", "Female"),
-    above_median_age = ifelse(age>=median(age), "Old", "Young"),
-    all_to_winner = as.numeric(y2==e2),
-    share_to_winner = y2/e2
-  ) |> filter(treatment!="Base")
-lvls <- rev(c("Republican","Nonrepublican","College", "Noncollege","Male","Female","Young","Old"))
-r1 <- f4df1 |> group_by(republican) |> summarize(maw = mean(all_to_winner)) |> rename(group=republican)
-r2 <- f4df1 |> group_by(college) |> summarize(maw = mean(all_to_winner)) |> rename(group=college)
-r3 <- f4df1 |> group_by(male) |> summarize(maw = mean(all_to_winner)) |> rename(group = male)
-r4 <- f4df1 |> group_by(above_median_age) |> summarize(maw = mean(all_to_winner)) |> rename(group = above_median_age)
-g11df <- list(r1,r2,r3,r4) |> bind_rows() |> mutate(groupf = factor(group, levels=lvls))
-g11 <- g11df |> ggplot(aes(x=groupf, y = maw)) + 
-  geom_col() + 
-  theme_minimal() + 
-  coord_flip() + 
-  labs(y="Proportion of spectators", 
-       x=element_blank(),
-       title="Give all to winner") +
-    theme(plot.title.position = "plot")
-g11
-rs1 <- f4df1 |> group_by(republican) |> summarize(maw = mean(share_to_winner)) |> rename(group=republican)
-rs2 <- f4df1 |> group_by(college) |> summarize(maw = mean(share_to_winner)) |> rename(group=college)
-rs3 <- f4df1 |> group_by(male) |> summarize(maw = mean(share_to_winner)) |> rename(group = male)
-rs4 <- f4df1 |> group_by(above_median_age) |> summarize(maw = mean(share_to_winner)) |> rename(group = above_median_age)
-h11df <- list(rs1,rs2,rs3,rs4) |> bind_rows() |> mutate(groupf = factor(group, levels=lvls))
-h11 <- h11df |> ggplot(aes(x=groupf, y = maw)) + 
-  geom_col() + 
-  theme_minimal() + 
-  coord_flip() + 
-  labs(y="Share to winner", 
-       x=element_blank(),
-       title="Share given to winner") +
-    theme(plot.title.position = "plot")
-h11
-```
-
-
-The effect of being assigned to WTA treatment, relative to luck.
-```{r}
-f4df2 <- mmw2018 |> mutate(wta = as.numeric(treatment!="Base")) |>
-    mutate(
-    republican = ifelse(pol2==1,"Republican","Nonrepublican"),
-    college = ifelse(education>4, "College", "Noncollege"),
-    male = ifelse(sex==1, "Male", "Female"),
-    above_median_age = ifelse(age>=median(age), "Old", "Young"),
-    all_to_winner = as.numeric(y2==e2),
-    share_to_winner = y2/e2,
-    margin = x2-x1
-  ) 
-k1 <- f4df2 |> filter(republican=="Republican") |> lm(all_to_winner ~ wta, data=_) |> broom::tidy() |> mutate(group="Republican")
-k2 <- f4df2 |> filter(republican=="Nonrepublican") |> lm(all_to_winner ~ wta, data=_) |> broom::tidy() |> mutate(group="Nonrepublican")
-k3 <- f4df2 |> filter(college=="College") |> lm(all_to_winner ~ wta, data=_) |> broom::tidy() |> mutate(group="College")
-k4 <- f4df2 |> filter(college=="Noncollege") |> lm(all_to_winner ~ wta, data=_) |> broom::tidy() |> mutate(group="Noncollege")
-k5 <- f4df2 |> filter(male=="Male") |> lm(all_to_winner ~ wta, data=_) |> broom::tidy() |> mutate(group="Male")
-k6 <- f4df2 |> filter(male=="Female") |> lm(all_to_winner ~ wta, data=_) |> broom::tidy() |> mutate(group="Female")
-k7 <- f4df2 |> filter(above_median_age=="Young") |> lm(all_to_winner ~ wta, data=_) |> broom::tidy() |> mutate(group="Young")
-k8 <- f4df2 |> filter(above_median_age=="Old") |> lm(all_to_winner ~ wta, data=_) |> broom::tidy() |> mutate(group="Old")
-g12df <- list(k1,k2,k3,k4,k5,k6,k7,k8) |> bind_rows() |> mutate(groupf = factor(group, levels=lvls)) |>
-  filter(term=="wta") 
-g12 <- g12df |> ggplot(aes(x=groupf, y = estimate, ymin=estimate - std.error, ymax=estimate+std.error)) +
-  geom_point() +
-  geom_errorbar(width=0.4) +
-  geom_hline(yintercept = 0) +
-  scale_y_continuous(limits = c(-0.1, 0.3)) +
-  coord_flip() +
-  theme_minimal() +
-  labs(title="WTA effect: All winning margins",
-       y = "Estimate \u00B1 SE",
-       x = element_blank()) +
-    theme(plot.title.position = "plot")
-g12
-
-ks1 <- f4df2 |> filter(republican=="Republican") |> lm(share_to_winner ~ wta, data=_) |> broom::tidy() |> mutate(group="Republican")
-ks2 <- f4df2 |> filter(republican=="Nonrepublican") |> lm(share_to_winner ~ wta, data=_) |> broom::tidy() |> mutate(group="Nonrepublican")
-ks3 <- f4df2 |> filter(college=="College") |> lm(share_to_winner ~ wta, data=_) |> broom::tidy() |> mutate(group="College")
-ks4 <- f4df2 |> filter(college=="Noncollege") |> lm(share_to_winner ~ wta, data=_) |> broom::tidy() |> mutate(group="Noncollege")
-ks5 <- f4df2 |> filter(male=="Male") |> lm(share_to_winner ~ wta, data=_) |> broom::tidy() |> mutate(group="Male")
-ks6 <- f4df2 |> filter(male=="Female") |> lm(share_to_winner ~ wta, data=_) |> broom::tidy() |> mutate(group="Female")
-ks7 <- f4df2 |> filter(above_median_age=="Young") |> lm(share_to_winner ~ wta, data=_) |> broom::tidy() |> mutate(group="Young")
-ks8 <- f4df2 |> filter(above_median_age=="Old") |> lm(share_to_winner ~ wta, data=_) |> broom::tidy() |> mutate(group="Old")
-h12df <- list(ks1,ks2,ks3,ks4,ks5,ks6,ks7,ks8) |> bind_rows() |> mutate(groupf = factor(group, levels=lvls)) |>
-  filter(term=="wta") 
-h12 <- h12df |> ggplot(aes(x=groupf, y = estimate, ymin=estimate - std.error, ymax=estimate+std.error)) +
-  geom_point() +
-  geom_errorbar(width=0.4) +
-  geom_hline(yintercept = 0) +
-  scale_y_continuous(limits = c(-0.1, 0.3)) +
-  coord_flip() +
-  theme_minimal() +
-  labs(title="WTA effect: All winning margins",
-       y = "Estimate \u00B1 SE",
-       x = element_blank()) +
-    theme(plot.title.position = "plot")
-h12
-
-
-```
-
-The effect of being assigned to WTA treatment, relative to luck.
-
-
-```{r}
-f4df3 <- mmw2018 |> mutate(wta = as.numeric(treatment!="Base")) |>
-    mutate(
-    republican = ifelse(pol2==1,"Republican","Nonrepublican"),
-    college = ifelse(education>4, "College", "Noncollege"),
-    male = ifelse(sex==1, "Male", "Female"),
-    above_median_age = ifelse(age>=median(age), "Old", "Young"),
-    all_to_winner = as.numeric(y2==e2),
-    share_to_winner = y2/e2
-  ) |> filter(x2-x1 ==1 | is.na(x2))
-l1 <- f4df3 |> filter(republican=="Republican") |> lm(all_to_winner ~ wta, data=_) |> broom::tidy() |> mutate(group="Republican")
-l2 <- f4df3 |> filter(republican=="Nonrepublican") |> lm(all_to_winner ~ wta, data=_) |> broom::tidy() |> mutate(group="Nonrepublican")
-l3 <- f4df3 |> filter(college=="College") |> lm(all_to_winner ~ wta, data=_) |> broom::tidy() |> mutate(group="College")
-l4 <- f4df3 |> filter(college=="Noncollege") |> lm(all_to_winner ~ wta, data=_) |> broom::tidy() |> mutate(group="Noncollege")
-l5 <- f4df3 |> filter(male=="Male") |> lm(all_to_winner ~ wta, data=_) |> broom::tidy() |> mutate(group="Male")
-l6 <- f4df3 |> filter(male=="Female") |> lm(all_to_winner ~ wta, data=_) |> broom::tidy() |> mutate(group="Female")
-l7 <- f4df3 |> filter(above_median_age=="Young") |> lm(all_to_winner ~ wta, data=_) |> broom::tidy() |> mutate(group="Young")
-l8 <- f4df3 |> filter(above_median_age=="Old") |> lm(all_to_winner ~ wta, data=_) |> broom::tidy() |> mutate(group="Old")
-g21df <- list(l1,l2,l3,l4,l5,l6,l7,l8) |> bind_rows() |> mutate(groupf = factor(group, levels=lvls)) |>
-  filter(term=="wta") 
-g21 <- g21df |> ggplot(aes(x=groupf, y = estimate, ymin=estimate - std.error, ymax=estimate+std.error)) +
-  geom_point() +
-  geom_errorbar(width=0.4) +
-  geom_hline(yintercept = 0) +
-  scale_y_continuous(limits = c(-0.1, 0.3)) +
-  coord_flip() +
-  theme_minimal() +
-  labs(title="WTA effect: Smallest winning margin",
-       y = "Estimate \u00B1 SE",
-       x = element_blank()) +
-  theme(plot.title.position = "plot")
-g21
-
-ls1 <- f4df3 |> filter(republican=="Republican") |> lm(share_to_winner ~ wta, data=_) |> broom::tidy() |> mutate(group="Republican")
-ls2 <- f4df3 |> filter(republican=="Nonrepublican") |> lm(share_to_winner ~ wta, data=_) |> broom::tidy() |> mutate(group="Nonrepublican")
-ls3 <- f4df3 |> filter(college=="College") |> lm(share_to_winner ~ wta, data=_) |> broom::tidy() |> mutate(group="College")
-ls4 <- f4df3 |> filter(college=="Noncollege") |> lm(share_to_winner ~ wta, data=_) |> broom::tidy() |> mutate(group="Noncollege")
-ls5 <- f4df3 |> filter(male=="Male") |> lm(share_to_winner ~ wta, data=_) |> broom::tidy() |> mutate(group="Male")
-ls6 <- f4df3 |> filter(male=="Female") |> lm(share_to_winner ~ wta, data=_) |> broom::tidy() |> mutate(group="Female")
-ls7 <- f4df3 |> filter(above_median_age=="Young") |> lm(share_to_winner ~ wta, data=_) |> broom::tidy() |> mutate(group="Young")
-ls8 <- f4df3 |> filter(above_median_age=="Old") |> lm(share_to_winner ~ wta, data=_) |> broom::tidy() |> mutate(group="Old")
-h21df <- list(ls1,ls2,ls3,ls4,ls5,ls6,ls7,ls8) |> bind_rows() |> mutate(groupf = factor(group, levels=lvls)) |>
-  filter(term=="wta") 
-h21 <- h21df |> ggplot(aes(x=groupf, y = estimate, ymin=estimate - std.error, ymax=estimate+std.error)) +
-  geom_point() +
-  geom_errorbar(width=0.4) +
-  geom_hline(yintercept = 0) +
-  scale_y_continuous(limits = c(-0.1, 0.3)) +
-  coord_flip() +
-  theme_minimal() +
-  labs(title="WTA effect: Smallest winning margin",
-       y = "Estimate \u00B1 SE",
-       x = element_blank()) +
-  theme(plot.title.position = "plot")
-h21
-
-```
-
-Increasing the margin in the winner-take-all treatment by one problem.
-
-```{r}
-m1 <- f4df2 |> filter(republican=="Republican") |> lm(all_to_winner ~ margin, data=_) |> broom::tidy() |> mutate(group="Republican")
-m2 <- f4df2 |> filter(republican=="Nonrepublican") |> lm(all_to_winner ~ margin, data=_) |> broom::tidy() |> mutate(group="Nonrepublican")
-m3 <- f4df2 |> filter(college=="College") |> lm(all_to_winner ~ margin, data=_) |> broom::tidy() |> mutate(group="College")
-m4 <- f4df2 |> filter(college=="Noncollege") |> lm(all_to_winner ~ margin, data=_) |> broom::tidy() |> mutate(group="Noncollege")
-m5 <- f4df2 |> filter(male=="Male") |> lm(all_to_winner ~ margin, data=_) |> broom::tidy() |> mutate(group="Male")
-m6 <- f4df2 |> filter(male=="Female") |> lm(all_to_winner ~ margin, data=_) |> broom::tidy() |> mutate(group="Female")
-m7 <- f4df2 |> filter(above_median_age=="Young") |> lm(all_to_winner ~ margin, data=_) |> broom::tidy() |> mutate(group="Young")
-m8 <- f4df2 |> filter(above_median_age=="Old") |> lm(all_to_winner ~ margin, data=_) |> broom::tidy() |> mutate(group="Old")
-g22df <- list(m1,m2,m3,m4,m5,m6,m7,m8) |> bind_rows() |> mutate(groupf = factor(group, levels=lvls)) |>
-  filter(term=="margin") 
-g22 <- g22df |> ggplot(aes(x=groupf, y = estimate, ymin=estimate - std.error, ymax=estimate+std.error)) +
-  geom_point() +
-  geom_errorbar(width=0.4) +
-  geom_hline(yintercept = 0) +
-  scale_y_continuous(limits = c(-0.01, 0.03)) +
-  coord_flip() +
-  theme_minimal() +
-  labs(title="Effect of increasing winning margin",
-       y = "Estimate \u00B1 SE",
-       x = element_blank()) +
-    theme(plot.title.position = "plot")
-
-g22  
-
-ms1 <- f4df2 |> filter(republican=="Republican") |> lm(share_to_winner ~ margin, data=_) |> broom::tidy() |> mutate(group="Republican")
-ms2 <- f4df2 |> filter(republican=="Nonrepublican") |> lm(share_to_winner ~ margin, data=_) |> broom::tidy() |> mutate(group="Nonrepublican")
-ms3 <- f4df2 |> filter(college=="College") |> lm(share_to_winner ~ margin, data=_) |> broom::tidy() |> mutate(group="College")
-ms4 <- f4df2 |> filter(college=="Noncollege") |> lm(share_to_winner ~ margin, data=_) |> broom::tidy() |> mutate(group="Noncollege")
-ms5 <- f4df2 |> filter(male=="Male") |> lm(share_to_winner ~ margin, data=_) |> broom::tidy() |> mutate(group="Male")
-ms6 <- f4df2 |> filter(male=="Female") |> lm(share_to_winner ~ margin, data=_) |> broom::tidy() |> mutate(group="Female")
-ms7 <- f4df2 |> filter(above_median_age=="Young") |> lm(share_to_winner ~ margin, data=_) |> broom::tidy() |> mutate(group="Young")
-ms8 <- f4df2 |> filter(above_median_age=="Old") |> lm(share_to_winner ~ margin, data=_) |> broom::tidy() |> mutate(group="Old")
-h22df <- list(ms1,ms2,ms3,ms4,ms5,ms6,ms7,ms8) |> bind_rows() |> mutate(groupf = factor(group, levels=lvls)) |>
-  filter(term=="margin") 
-h22 <- h22df |> ggplot(aes(x=groupf, y = estimate, ymin=estimate - std.error, ymax=estimate+std.error)) +
-  geom_point() +
-  geom_errorbar(width=0.4) +
-  geom_hline(yintercept = 0) +
-  scale_y_continuous(limits = c(-0.01, 0.03)) +
-  coord_flip() +
-  theme_minimal() +
-  labs(title="Effect of increasing winning margin",
-       y = "Estimate \u00B1 SE",
-       x = element_blank()) +
-    theme(plot.title.position = "plot")
-h22
-
-```
 
 Putting these together:
 ```{r heterogeneity analysis I, echo=FALSE}
-g11 + g12 + g21 + g22 + plot_annotation(tag_level="a")
-ggsave("graphs/hetero_coefplot.pdf", width=16, height=12, units="cm")
-h11 + h12 + h21 + h22 + plot_annotation(tag_level="a")
-ggsave("graphs/hetero_coefplot_s.pdf", width=16, height=12, units="cm")
+tar_load(heterogeneity_figure_all_to_winner)
+g <- heterogeneity_figure_all_to_winner
+g$g11 + g$g12 + g$g21 + g$g22 + plot_annotation(tag_level="a")
+ggsave("graphs/RN2018_hetero_coefplot.pdf", width=16, height=12, units="cm")
 ```
+
+```{r heterogeneity analysis II, echo=FALSE}
+tar_load(heterogeneity_figure_share)
+h <- heterogeneity_figure_share
+h$g11 + h$g12 + h$g21 + h$g22 + plot_annotation(tag_level="a")
+ggsave("graphs/RN2018_hetero_coefplot_s.pdf", width=16, height=12, units="cm")
+```
+
 
 # Questionnaire responses
 
-```{r}
-n1 <- mmw2018 |> 
-  mutate(att3r = 8-att3) |>
-  group_by(att3r = factor(att3r)) |>
-  summarize(fraction = n()/nrow(mmw2018)) |>
-  ggplot(aes(x=att3r, y = fraction)) +
-  geom_col() + 
-  theme_minimal() +
-  labs(x = element_blank(),
-       y = "Fraction",
-       title="Gold medalist's earnings") +
-  theme(plot.title.position = "plot",
-       axis.text.x = element_text(angle = 45, hjust = 1),
-       plot.title = element_text(size = 8)) +
-  scale_x_discrete( labels = c("Entirely unfair", "", "", "", "", "", "Entirely fair"))
-n1
-```
-
-```{r}
-n2 <- mmw2018 |> 
-  mutate(att4r = 8-att4) |>
-  group_by(att4r = factor(att4r)) |>
-  summarize(fraction = n()/nrow(mmw2018)) |>
-  ggplot(aes(x=att4r, y = fraction)) +
-  geom_col() + 
-  theme_minimal() +
-  labs(x = element_blank(),
-       y = "Fraction",
-       title="Earnings of superstars acceptable") +
-  theme(plot.title.position = "plot",
-       axis.text.x = element_text(angle = 45, hjust = 1),
-       plot.title = element_text(size = 8))   +
-  scale_x_discrete( labels = c("Fully disagree", "", "", "", "", "", "Fully agree"))
-n2
-```
-
-```{r}
-n3 <- mmw2018 |> 
-  group_by(att2 = factor(att2)) |>
-  summarize(fraction = n()/nrow(mmw2018)) |>
-  ggplot(aes(x=att2, y = fraction)) +
-  geom_col() + 
-  theme_minimal() +
-  labs(x = element_blank(),
-       y = "Fraction",
-       title="Taxes on top 1% should") +
-  theme(plot.title.position = "plot",
-       axis.text.x = element_text(angle = 45, hjust = 1),
-       plot.title = element_text(size = 8))  +
-  scale_x_discrete( labels = c("Increase","Stay the same","Decrease"))
-n3
-```
-
-Putting them together:
-
 ```{r wuestionnaire responses, echo=FALSE}
-n1 + n2 + n3 + plot_annotation(tag_levels = "a")
-ggsave("graphs/attitudes_hist.pdf", width=16, height = 10, units="cm", device = cairo_pdf)
+tar_load(question_responses)
+n <- question_responses
+n$a + n$b + n$c + plot_annotation(tag_levels = "a")
+ggsave("graphs/RN2018_attitudes_hist.pdf", width=16, height = 10, units="cm", device = cairo_pdf)
 
 ```
 
 # Performance of workers by treatment
 
-```{r distributions, echo=FALSE}
-tdf <- mmw2018 |> filter(treatment!="Base")
-all_x <- c(mmw2018$x1, mmw2018$x2)
-treatment <- c(mmw2018$treatment, mmw2018$treatment)
-distdfs1 <- tibble(all_x=all_x,
-                   treatment = treatment)
-winning_margin <- mmw2018$x2 - mmw2018$x1
-distdfs2 <- tibble(winning_margin=winning_margin,
-                   treatment = mmw2018$treatment)
-
-
-l11 <- distdfs1 |> 
-  ggplot(aes(x=all_x)) +
-  geom_histogram(aes(y = after_stat(density)),
-    binwidth = 1, 
-    boundary = -0.5,  
-  ) +
-  scale_x_continuous(breaks = c(0,5,10,15,20,25), limits = c(-0.5, 24.5)) +
-  labs(
-    x = "Performance of worker",
-    y = "Fraction",
-    title = "All WTA treatments"
-  ) +
-  theme_minimal() +
-  theme(plot.title.position = "plot")
-l12 <- distdfs1 |> filter(treatment=="WTA") |>
-  ggplot(aes(x=all_x)) +
-  geom_histogram(aes(y = after_stat(density)),
-    binwidth = 1, 
-    boundary = -0.5,  
-  ) +
-  scale_x_continuous(breaks = c(0,5,10,15,20,25), limits = c(-0.5, 24.5)) +
-  labs(
-    x = "Performance of worker",
-    y = "Fraction",
-    title = "WTA",
-  ) +
-  theme_minimal() +
-  theme(plot.title.position = "plot")
-l21 <- distdfs1 |> filter(treatment=="WTA: No Choice") |>
-  ggplot(aes(x=all_x)) +
-  geom_histogram(aes(y = after_stat(density)),
-    binwidth = 1, 
-    boundary = -0.5,  
-  ) +
-  scale_x_continuous(breaks = c(0,5,10,15,20,25), limits = c(-0.5, 24.5)) +
-  labs(
-    x = "Performance of worker",
-    y = "Fraction",
-    title = "WTA-No Choice",
-  ) +
-  theme_minimal() +
-  theme(plot.title.position = "plot")
-l22 <- distdfs1 |> filter(treatment=="WTA: No Exp") |>
-  ggplot(aes(x=all_x)) +
-  geom_histogram(aes(y = after_stat(density)),
-    binwidth = 1, 
-    boundary = -0.5,  
-  ) +
-  scale_x_continuous(breaks = c(0,5,10,15,20,25), limits = c(-0.5, 24.5)) +
-  labs(
-    x = "Performance of worker",
-    y = "Fraction",
-    title = "WTA-No Exp.",
-  ) +
-  theme_minimal() +
-  theme(plot.title.position = "plot")
-levels <- l11 + l12 + l21 + l22 + plot_annotation(tag_levels = "a")
-
-
-m11 <- distdfs2 |> 
-  ggplot(aes(x=winning_margin)) +
-  geom_histogram(aes(y = after_stat(density)),
-    binwidth = 1, 
-    boundary = -0.5,  
-  ) +
-  scale_x_continuous(breaks = c(0,5,10,15,20), limits = c(-0.5, 21.5)) +
-  labs(
-    x = "Winning margin",
-    y = "Fraction",
-    title = "All WTA treatments"
-  ) +
-  theme_minimal() +
-  theme(plot.title.position = "plot")
-m12 <- distdfs2 |> filter(treatment=="WTA") |>
-  ggplot(aes(x=winning_margin)) +
-  geom_histogram(aes(y = after_stat(density)),
-    binwidth = 1, 
-    boundary = -0.5,  
-  ) +
-  scale_x_continuous(breaks = c(0,5,10,15,20), limits = c(-0.5, 21.5)) +
-  labs(
-    x = "Winning margin",
-    y = "Fraction",
-    title = "WTA"
-  ) +
-  theme_minimal() +
-  theme(plot.title.position = "plot")
-m21 <- distdfs2 |> filter(treatment=="WTA: No Choice") |>
-  ggplot(aes(x=winning_margin)) +
-  geom_histogram(aes(y = after_stat(density)),
-    binwidth = 1, 
-    boundary = -0.5,  
-  ) +
-  scale_x_continuous(breaks = c(0,5,10,15,20), limits = c(-0.5, 21.5)) +
-  labs(
-    x = "Winning margin",
-    y = "Fraction",
-    title = "WTA-No Choice"
-  ) +
-  theme_minimal() +
-  theme(plot.title.position = "plot")
-m22 <- distdfs2 |> filter(treatment=="WTA: No Exp") |>
-  ggplot(aes(x=winning_margin)) +
-  geom_histogram(aes(y = after_stat(density)),
-    binwidth = 1, 
-    boundary = -0.5,  
-  ) +
-  scale_x_continuous(breaks = c(0,5,10,15,20), limits = c(-0.5, 21.5)) +
-  labs(
-    x = "Winning margin",
-    y = "Fraction",
-    title = "WTA-No Exp."
-  ) +
-  theme_minimal() +
-  theme(plot.title.position = "plot")
-margins <- m11 + m12 + m21 + m22 + plot_annotation(tag_levels = "a")
-dist2018 <- list(levels=levels, margins=margins)
-
-dist2018$levels
+```{r distributions I, echo=FALSE}
+tar_load("distribution_of_performance_by_treatment")
+X <- distribution_of_performance_by_treatment
+X$a + X$b + X$c + X$d + plot_annotation(tag_levels = "a")
 ggsave("graphs/RN2018_distribution_levels.pdf", width=16, height=10, units="cm", device=cairo_pdf)
-dist2018$margins
+```
+
+```{r distributions II, echo=FALSE}
+tar_load("distribution_of_winning_margin_by_treatment")
+Y <- distribution_of_winning_margin_by_treatment
+Y$a + Y$b + Y$c + Y$d + plot_annotation(tag_levels="a")
 ggsave("graphs/RN2018_distribution_margins.pdf", width=16, height=10, units="cm", device=cairo_pdf)
-
-
 ```
 
 
 # Role of winning margin by treatment
 
 ```{r role of winning margin take-all, echo=FALSE}
-all_to_winner <- mmw2018 |> 
-  mutate(all_to_winner = as.numeric(y2==e2),
-                  winning_margin = x2-x1,
-                  winning_margin = if_else(winning_margin >=15, 15, winning_margin)) |>
-  filter(treatment!="Base") |>
-  group_by(treatment, winning_margin) |>
-  summarize(mean_winner = mean(all_to_winner),
-            se_winner = sd(all_to_winner)/sqrt(n())) |>
-  ggplot(aes(x = winning_margin, y = mean_winner, ymin = mean_winner-se_winner, ymax=mean_winner+se_winner)) +
-  geom_point() +
-  geom_errorbar(width=0.4) +
-  geom_line() +
-  theme_minimal() +
-  scale_x_continuous(
-    breaks = 0:15,
-    labels = function(x) ifelse(x == 15, "≥15", x)
-  ) +
-  scale_y_continuous(limits = c(0, 1)) +
-  labs(x="Winning margin", y = "Proportion giving all to winner \u00B1 SE") +
-  facet_wrap(.~treatment, ncol=1)
-all_to_winner
+tar_load("flatness_all_to_winner")
+flatness_all_to_winner
 ggsave("graphs/RN2018_flatness_all_byT.pdf", width=16, height = 14, units="cm", device=cairo_pdf)
 ```
 
 ```{r role of winning margin share, echo=FALSE}
-share_to_winner <- mmw2018 |> 
-  mutate(share_to_winner = y2/e2,
-                  winning_margin = x2-x1,
-                  winning_margin = if_else(winning_margin >=15, 15, winning_margin)) |>
-  filter(treatment!="Base") |>
-  group_by(treatment, winning_margin) |>
-  summarize(mean_winner = mean(share_to_winner),
-            se_winner = sd(share_to_winner)/sqrt(n())) |>
-  ggplot(aes(x = winning_margin, y = mean_winner, 
-             ymin = mean_winner-se_winner, ymax=mean_winner+se_winner)) +
-  geom_point() +
-  geom_errorbar(width=0.4) +
-  geom_line() +
-  theme_minimal() +
-  scale_x_continuous(
-    breaks = 0:15,
-    labels = function(x) ifelse(x == 15, "≥15", x)
-  ) +
-  scale_y_continuous(limits = c(0.45, 1)) +
-  labs(x="Winning margin", y = "Share given to winner \u00B1 SE") +
-  facet_wrap(.~treatment, ncol=1)
-share_to_winner
+tar_load("flatness_share_to_winner")
+flatness_share_to_winner
 ggsave("graphs/RN2018_flatness_share_byT.pdf", width=16, height=14, units="cm", device=cairo_pdf)
 ```
 
@@ -623,29 +108,7 @@ ggsave("graphs/RN2018_flatness_share_byT.pdf", width=16, height=14, units="cm", 
 # Regression analysis: The role of merit for inequality acceptance
 
 ```{r role of merit for inqeuality acceptance, echo=FALSE}
-tar_load(mmw2018)
-tabledf <- mmw2018 |>
-  mutate(all_to_winner = as.numeric(y2==e2),
-         share_to_winner = y2/(y1+y2),
-         winning_margin = x2-x1,
-         republican = as.numeric(pol2==1),
-         college = as.numeric(education>4),
-         female = as.numeric(sex==2),
-         above_median_age = as.numeric(age > median(age)),
-         regionf = factor(area),
-         treatmentf = relevel(factor(treatment), ref = "Base"),
-         competition = as.numeric(treatment!="Base"))
-
-c1 <- tabledf |> feols(all_to_winner ~ competition, data=_, vcov="hetero")
-c2 <- tabledf |> feols(all_to_winner ~ competition + republican + college + female + above_median_age | regionf, data=_, vcov="hetero")
-c3 <- tabledf |> filter(treatment %in% c("Base","WTA")) |> feols(all_to_winner ~ competition + republican + college + female + above_median_age | regionf, data=_, vcov="hetero")
-c4 <- tabledf |> filter(winning_margin==1 | treatment=="Base") |> feols(all_to_winner ~ competition + republican + college + female + above_median_age | regionf, data=_, vcov="hetero")
-c5 <- tabledf |> feols(share_to_winner ~ competition, data=_, vcov="hetero")
-c6 <- tabledf |> feols(share_to_winner ~ competition + republican + college + female + above_median_age | regionf, data=_, vcov="hetero")
-c7 <- tabledf |> filter(treatment %in% c("Base","WTA")) |> feols(share_to_winner ~ competition + republican + college + female + above_median_age | regionf, data=_, vcov="hetero")
-c8 <- tabledf |> filter(winning_margin==1 | treatment=="Base") |> feols(share_to_winner ~ competition + republican + college + female + above_median_age | regionf, data=_, vcov="hetero")
-role_of_merit <- list(c1,c2,c3,c4,c5,c6,c7,c8)
-
+tar_load(role_of_merit_table)
 
 cm <- c("competition" = "WTA Competition",
         "republican" = "Republican",
@@ -654,7 +117,7 @@ cm <- c("competition" = "WTA Competition",
         "above_median_age" = "Above median age",
         "(Intercept)"="Constant"
         )
-tab2 <- role_of_merit |>
+tab2 <- role_of_merit_table |>
   modelsummary(coef_map=cm,
                stars = c('*' = .1, '**' = .05, '***'=.01),
                                    gof_map = c("nobs", "r.squared"),
@@ -668,28 +131,7 @@ tab2 |> gtsave(here::here("tables","RN2018_role_of_merit.tex"))
 # Regression Analysis: The Role of the Winning Margin for Inequality Acceptance
 
 ```{r role of margin for inqeuality acceptance, echo=FALSE}
-tar_load(mmw2018)
-tabledf <- mmw2018 |>
-  filter(treatment!="Base") |>
-  mutate(all_to_winner = as.numeric(y2==e2),
-         share_to_winner = y2/(y1+y2),
-         winning_margin = x2-x1,
-         republican = as.numeric(pol2==1),
-         college = as.numeric(education>4),
-         female = as.numeric(sex==2),
-         above_median_age = as.numeric(age > median(age)),
-         regionf = factor(area),
-         performance_winner = x2)
-
-d1 <- tabledf |> feols(all_to_winner ~ winning_margin, data=_, vcov="hetero")
-d2 <- tabledf |> feols(all_to_winner ~ winning_margin + republican + college + female + above_median_age | regionf, data=_, vcov="hetero")
-d3 <- tabledf |> feols(all_to_winner ~ winning_margin + republican + college + female + above_median_age + performance_winner | regionf, data=_, vcov="hetero")
-d4 <- tabledf |> feols(share_to_winner ~ winning_margin, data=_, vcov="hetero")
-d5 <- tabledf |> feols(share_to_winner ~ winning_margin + republican + college + female + above_median_age | regionf, data=_, vcov="hetero")
-d6 <- tabledf |> feols(share_to_winner ~ winning_margin + republican + college + female + above_median_age + performance_winner | regionf, data=_, vcov="hetero")
-
-role_of_margin <- list(d1,d2,d3,d4,d5,d6)
-
+tar_load(role_of_winning_margin)
 dm <- c("winning_margin" = "Winning margin",
         "republican" = "Republican",
         "college" = "College",
@@ -698,7 +140,7 @@ dm <- c("winning_margin" = "Winning margin",
         "performance_winner" = "Performance winner",
         "(Intercept)"="Constant"
         )
-tab3 <- role_of_margin |>
+tab3 <- role_of_winning_margin |>
   modelsummary(coef_map=dm,
                stars = c('*' = .1, '**' = .05, '***'=.01),
                                    gof_map = c("nobs", "r.squared"),
@@ -712,31 +154,7 @@ tab3 |> gtsave(here::here("tables","RN2018_role_of_margin.tex"))
 # Regression analysis: Association bweteen giving all to the winner and general attitudes
 
 ```{r general attitudes, echo=FALSE}
-tar_load(mmw2018)
-tabledf <- mmw2018 |>
-  filter(treatment!="Base") |>
-  mutate(all_to_winner = as.numeric(y2==e2),
-         share_to_winner = y2/(y1+y2),
-         winning_margin = x2-x1,
-         republican = as.numeric(pol2==1),
-         college = as.numeric(education>4),
-         female = as.numeric(sex==2),
-         above_median_age = as.numeric(age > median(age)),
-         regionf = factor(area),
-         performance_winner = x2)
-
-t4_c1 <- tabledf |> fixest::feols(scale(8-att3) ~ all_to_winner, data=_, vcov="hetero")
-t4_c2 <- tabledf |> fixest::feols(scale(8-att3) ~ republican + college + female + above_median_age | regionf, data=_, vcov="hetero")
-t4_c3 <- tabledf |> fixest::feols(scale(8-att3) ~ all_to_winner + republican + college + female + above_median_age | regionf, data=_, vcov="hetero")
-
-t4_c4 <- tabledf |> fixest::feols(scale(8-att4) ~ all_to_winner, data=_, vcov="hetero")
-t4_c5 <- tabledf |> fixest::feols(scale(8-att4) ~ republican + college + female + above_median_age | regionf, data=_, vcov="hetero")
-t4_c6 <- tabledf |> fixest::feols(scale(8-att4) ~ all_to_winner + republican + college + female + above_median_age | regionf, data=_, vcov="hetero")
-
-t4_c7 <- tabledf |> fixest::feols(scale(att2) ~ all_to_winner, data=_, vcov="hetero")
-t4_c8 <- tabledf |> fixest::feols(scale(att2) ~ republican + college + female + above_median_age | regionf, data=_, vcov="hetero")
-t4_c9 <- tabledf |> fixest::feols(scale(att2) ~ all_to_winner + republican + college + female + above_median_age | regionf, data=_, vcov="hetero")
-
+tar_load(ass_giving_all_attitudes)
 em <- c("all_to_winner" = "All to winner",
         "republican" = "Republican",
         "college" ="College",
@@ -744,8 +162,7 @@ em <- c("all_to_winner" = "All to winner",
         "above_median_age"="Above median age",
         "(Intercept)"="Constant"
 )
-
-t4_2018 <- list(t4_c1,t4_c2,t4_c3,t4_c4,t4_c5,t4_c6,t4_c7,t4_c8,t4_c9) |>
+t4_2018 <- ass_giving_all_attitudes |>
    modelsummary(coef_map=em,
                stars = c('*' = .1, '**' = .05, '***'=.01),
                                    gof_map = c("nobs", "r.squared"),
@@ -755,9 +172,6 @@ t4_2018 <- list(t4_c1,t4_c2,t4_c3,t4_c4,t4_c5,t4_c6,t4_c7,t4_c8,t4_c9) |>
   tab_spanner(label="Decrease tax on top 1\\%", columns=8:10)
 t4_2018
 t4_2018 |> gtsave(here::here("tables","RN2018_attitudes.tex"))
-
-
-
 ```
 
 # Regression analysis: Comparison of winner-take-all treatments
@@ -824,83 +238,18 @@ ta2 |> gtsave(here::here("tables","RN2018_T_comparisons.tex"))
 # Heterogeneous treatment effects of the role of merit for inequlity acceptance: All to winner
 
 ```{r heterogeneous merit all, echo=FALSE}
-tar_load(mmw2018)
-tabledf <- mmw2018 |>
-  mutate(all_to_winner = as.numeric(y2==e2),
-         share_to_winner = y2/(y1+y2),
-         competition = as.numeric(treatment!="Base"),
-         winning_margin = x2-x1,
-         republican = as.numeric(pol2==1),
-         college = as.numeric(education>4),
-         female = as.numeric(sex==2),
-         above_median_age = as.numeric(age > median(age)),
-         regionf = factor(area),
-         performance_winner = x2,
-         treatment = fct_relevel(treatment, "WTA")
-         )
-q1 <- tabledf |> feols(all_to_winner ~ competition*republican + college + female + above_median_age | regionf , data=_, vcov="hetero")
-me_q1 <- slopes(q1, variables = "competition", by = "republican")
- c1 = c(
-    sprintf("%.3f", tidy(me_q1)$estimate[2]),
-    sprintf("(%.3f)", tidy(me_q1)$std.error[2])
-  )
-q2 <- tabledf |> feols(all_to_winner ~ republican + competition*college + female + above_median_age | regionf , data=_, vcov="hetero")
-me_q2 <- slopes(q2, variables = "competition", by = "college")
- c2 = c(
-    sprintf("%.3f", tidy(me_q2)$estimate[2]),
-    sprintf("(%.3f)", tidy(me_q2)$std.error[2])
-  )
-q3 <- tabledf |> feols(all_to_winner ~ republican + college + competition*female + above_median_age | regionf , data=_, vcov="hetero")
-me_q3 <- slopes(q3, variables = "competition", by = "female")
- c3 = c(
-    sprintf("%.3f", tidy(me_q3)$estimate[2]),
-    sprintf("(%.3f)", tidy(me_q3)$std.error[2])
-  ) 
-q4 <- tabledf |> feols(all_to_winner ~ republican + college + female + competition*above_median_age | regionf , data=_, vcov="hetero")
-me_q4 <- slopes(q4, variables = "competition", by = "above_median_age")
- c4 = c(
-    sprintf("%.3f", tidy(me_q4)$estimate[2]),
-    sprintf("(%.3f)", tidy(me_q4)$std.error[2])
-  ) 
-
- q5 <- tabledf |> filter(winning_margin==1 | treatment=="Base") |> feols(all_to_winner ~ competition*republican + college + female + above_median_age | regionf , data=_, vcov="hetero")
-me_q5 <- slopes(q5, variables = "competition", by = "republican")
- c5 = c(
-    sprintf("%.3f", tidy(me_q5)$estimate[2]),
-    sprintf("(%.3f)", tidy(me_q5)$std.error[2])
-  )
-q6 <- tabledf |> filter(winning_margin==1 | treatment=="Base") |>feols(all_to_winner ~ republican + competition*college + female + above_median_age | regionf , data=_, vcov="hetero")
-me_q6 <- slopes(q6, variables = "competition", by = "college")
- c6 = c(
-    sprintf("%.3f", tidy(me_q6)$estimate[2]),
-    sprintf("(%.3f)", tidy(me_q6)$std.error[2])
-  )
-q7 <- tabledf |> filter(winning_margin==1 | treatment=="Base") |>feols(all_to_winner ~ republican + college + competition*female + above_median_age | regionf , data=_, vcov="hetero")
-me_q7 <- slopes(q7, variables = "competition", by = "female")
- c7 = c(
-    sprintf("%.3f", tidy(me_q7)$estimate[2]),
-    sprintf("(%.3f)", tidy(me_q7)$std.error[2])
-  ) 
-q8 <- tabledf |> filter(winning_margin==1 | treatment=="Base") |> feols(all_to_winner ~ republican + college + female + competition*above_median_age | regionf , data=_, vcov="hetero")
-me_q8 <- slopes(q8, variables = "competition", by = "above_median_age")
- c8 = c(
-    sprintf("%.3f", tidy(me_q8)$estimate[2]),
-    sprintf("(%.3f)", tidy(me_q8)$std.error[2])
-  )
-extra_rows <- tibble(row_names = c("Linear combination WTA$\\times X$", ""),
-                     c1=c1,c2=c2,c3=c3,c4=c4,c5=c5,c6=c6,c7=c7,c8=c8)
-
+tar_load(heterogeneous_treatment_effects_all)
 qm <- c("competition"="WTA Competition",
         "competition:republican" = "WTA Competition $\\times$ Republican",
         "competition:college" = "WTA Competition $\\times$ College",
         "competition:female" = "WTA Competition $\\times$ Female",
         "competition:above_median_age"= "WTA Competition $\\times$ Above median age")
-ta3 <- list(q1,q2,q3,q4,q5,q6,q7,q8) |>
+ta3 <- heterogeneous_treatment_effects_all$regressions |>
   modelsummary(coef_map=qm,
                stars = c('*' = .1, '**' = .05, '***'=.01),
                                    gof_map = c("nobs", "r.squared"),
                                    output = "gt",
-               add_rows = extra_rows) |>
+               add_rows = heterogeneous_treatment_effects_all$extra_rows) |>
   tab_spanner(label="Full sample", columns=2:5) |>
   tab_spanner(label="Smallest winning margin", columns=6:9)
 ta3
@@ -913,83 +262,18 @@ ta3 |> gtsave(here::here("tables","RN2018_hetmerit_all.tex"))
 # Heterogeneous treatment effects of the role of merit for inequlity acceptance: Share to winner
 
 ```{r heterogeneous merit share, echo=FALSE}
-tar_load(mmw2018)
-tabledf <- mmw2018 |>
-  mutate(all_to_winner = as.numeric(y2==e2),
-         share_to_winner = y2/(y1+y2),
-         competition = as.numeric(treatment!="Base"),
-         winning_margin = x2-x1,
-         republican = as.numeric(pol2==1),
-         college = as.numeric(education>4),
-         female = as.numeric(sex==2),
-         above_median_age = as.numeric(age > median(age)),
-         regionf = factor(area),
-         performance_winner = x2,
-         treatment = fct_relevel(treatment, "WTA")
-         )
-q1 <- tabledf |> feols(share_to_winner ~ competition*republican + college + female + above_median_age | regionf , data=_, vcov="hetero")
-me_q1 <- slopes(q1, variables = "competition", by = "republican")
- c1 = c(
-    sprintf("%.3f", tidy(me_q1)$estimate[2]),
-    sprintf("(%.3f)", tidy(me_q1)$std.error[2])
-  )
-q2 <- tabledf |> feols(share_to_winner ~ republican + competition*college + female + above_median_age | regionf , data=_, vcov="hetero")
-me_q2 <- slopes(q2, variables = "competition", by = "college")
- c2 = c(
-    sprintf("%.3f", tidy(me_q2)$estimate[2]),
-    sprintf("(%.3f)", tidy(me_q2)$std.error[2])
-  )
-q3 <- tabledf |> feols(share_to_winner ~ republican + college + competition*female + above_median_age | regionf , data=_, vcov="hetero")
-me_q3 <- slopes(q3, variables = "competition", by = "female")
- c3 = c(
-    sprintf("%.3f", tidy(me_q3)$estimate[2]),
-    sprintf("(%.3f)", tidy(me_q3)$std.error[2])
-  ) 
-q4 <- tabledf |> feols(share_to_winner ~ republican + college + female + competition*above_median_age | regionf , data=_, vcov="hetero")
-me_q4 <- slopes(q4, variables = "competition", by = "above_median_age")
- c4 = c(
-    sprintf("%.3f", tidy(me_q4)$estimate[2]),
-    sprintf("(%.3f)", tidy(me_q4)$std.error[2])
-  ) 
-
- q5 <- tabledf |> filter(winning_margin==1 | treatment=="Base") |> feols(share_to_winner ~ competition*republican + college + female + above_median_age | regionf , data=_, vcov="hetero")
-me_q5 <- slopes(q5, variables = "competition", by = "republican")
- c5 = c(
-    sprintf("%.3f", tidy(me_q5)$estimate[2]),
-    sprintf("(%.3f)", tidy(me_q5)$std.error[2])
-  )
-q6 <- tabledf |> filter(winning_margin==1 | treatment=="Base") |>feols(share_to_winner ~ republican + competition*college + female + above_median_age | regionf , data=_, vcov="hetero")
-me_q6 <- slopes(q6, variables = "competition", by = "college")
- c6 = c(
-    sprintf("%.3f", tidy(me_q6)$estimate[2]),
-    sprintf("(%.3f)", tidy(me_q6)$std.error[2])
-  )
-q7 <- tabledf |> filter(winning_margin==1 | treatment=="Base") |>feols(share_to_winner ~ republican + college + competition*female + above_median_age | regionf , data=_, vcov="hetero")
-me_q7 <- slopes(q7, variables = "competition", by = "female")
- c7 = c(
-    sprintf("%.3f", tidy(me_q7)$estimate[2]),
-    sprintf("(%.3f)", tidy(me_q7)$std.error[2])
-  ) 
-q8 <- tabledf |> filter(winning_margin==1 | treatment=="Base") |> feols(share_to_winner ~ republican + college + female + competition*above_median_age | regionf , data=_, vcov="hetero")
-me_q8 <- slopes(q8, variables = "competition", by = "above_median_age")
- c8 = c(
-    sprintf("%.3f", tidy(me_q8)$estimate[2]),
-    sprintf("(%.3f)", tidy(me_q8)$std.error[2])
-  )
-extra_rows <- tibble(row_names = c("Linear combination WTA$\\times X$", ""),
-                     c1=c1,c2=c2,c3=c3,c4=c4,c5=c5,c6=c6,c7=c7,c8=c8)
-
+tar_load(heterogeneous_treatment_effects_share)
 qm <- c("competition"="WTA Competition",
         "competition:republican" = "WTA Competition $\\times$ Republican",
         "competition:college" = "WTA Competition $\\times$ College",
         "competition:female" = "WTA Competition $\\times$ Female",
         "competition:above_median_age"= "WTA Competition $\\times$ Above median age")
-ta4 <- list(q1,q2,q3,q4,q5,q6,q7,q8) |>
+ta4 <- heterogeneous_treatment_effects_share$regressions |>
   modelsummary(coef_map=qm,
                stars = c('*' = .1, '**' = .05, '***'=.01),
                                    gof_map = c("nobs", "r.squared"),
                                    output = "gt",
-               add_rows = extra_rows) |>
+               add_rows = heterogeneous_treatment_effects_share$extra_rows) |>
   tab_spanner(label="Full sample", columns=2:5) |>
   tab_spanner(label="Smallest winning margin", columns=6:9)
 ta4
@@ -999,83 +283,18 @@ ta4 |> gtsave(here::here("tables","RN2018_hetmerit_share.tex"))
 # Heterogeneous treatment effects of the role of the winning margin
 
 ```{r heterogeneous merit margin, echo=FALSE}
-tar_load(mmw2018)
-tabledf <- mmw2018 |>
-  mutate(all_to_winner = as.numeric(y2==e2),
-         share_to_winner = y2/(y1+y2),
-         competition = as.numeric(treatment!="Base"),
-         winning_margin = x2-x1,
-         republican = as.numeric(pol2==1),
-         college = as.numeric(education>4),
-         female = as.numeric(sex==2),
-         above_median_age = as.numeric(age > median(age)),
-         regionf = factor(area),
-         performance_winner = x2,
-         treatment = fct_relevel(treatment, "WTA")
-         )
-
-r1 <- tabledf |> feols(all_to_winner ~ winning_margin*republican + college + female + above_median_age | regionf , data=_, vcov="hetero")
-me_r1 <- slopes(r1, variables = "winning_margin", by = "republican")
- c1 = c(
-    sprintf("%.3f", tidy(me_r1)$estimate[2]),
-    sprintf("(%.3f)", tidy(me_r1)$std.error[2])
-  )
-r2 <- tabledf |> feols(all_to_winner ~ republican + winning_margin*college + female + above_median_age | regionf , data=_, vcov="hetero")
-me_r2 <- slopes(r2, variables = "winning_margin", by = "college")
- c2 = c(
-    sprintf("%.3f", tidy(me_r2)$estimate[2]),
-    sprintf("(%.3f)", tidy(me_r2)$std.error[2])
-  ) 
-r3 <- tabledf |> feols(all_to_winner ~ republican + college + winning_margin*female + above_median_age | regionf , data=_, vcov="hetero")
-me_r3 <- slopes(r3, variables = "winning_margin", by = "female")
- c3 = c(
-    sprintf("%.3f", tidy(me_r3)$estimate[2]),
-    sprintf("(%.3f)", tidy(me_r3)$std.error[2])
-  ) 
-r4 <- tabledf |> feols(all_to_winner ~ republican + college + winning_margin*female + winning_margin*above_median_age | regionf , data=_, vcov="hetero")
-me_r4 <- slopes(r4, variables = "winning_margin", by = "above_median_age")
- c4 = c(
-    sprintf("%.3f", tidy(me_r4)$estimate[2]),
-    sprintf("(%.3f)", tidy(me_r4)$std.error[2])
-  ) 
-r5 <- tabledf |> feols(share_to_winner ~ winning_margin*republican + college + female + above_median_age | regionf , data=_, vcov="hetero")
-me_r5 <- slopes(r5, variables = "winning_margin", by = "republican")
- c5 = c(
-    sprintf("%.3f", tidy(me_r5)$estimate[2]),
-    sprintf("(%.3f)", tidy(me_r5)$std.error[2])
-  )
-r6 <- tabledf |> feols(share_to_winner ~ republican + winning_margin*college + female + above_median_age | regionf , data=_, vcov="hetero")
-me_r6 <- slopes(r6, variables = "winning_margin", by = "college")
- c6 = c(
-    sprintf("%.3f", tidy(me_r6)$estimate[2]),
-    sprintf("(%.3f)", tidy(me_r6)$std.error[2])
-  ) 
-r7 <- tabledf |> feols(share_to_winner ~ republican + college + winning_margin*female + above_median_age | regionf , data=_, vcov="hetero")
-me_r7 <- slopes(r7, variables = "winning_margin", by = "female")
- c7 = c(
-    sprintf("%.3f", tidy(me_r7)$estimate[2]),
-    sprintf("(%.3f)", tidy(me_r7)$std.error[2])
-  ) 
-r8 <- tabledf |> feols(share_to_winner ~ republican + college + female + winning_margin*above_median_age | regionf , data=_, vcov="hetero")
-me_r8 <- slopes(r8, variables = "winning_margin", by = "above_median_age")
- c8 = c(
-    sprintf("%.3f", tidy(me_r8)$estimate[2]),
-    sprintf("(%.3f)", tidy(me_r8)$std.error[2])
-  )  
- extra_rows <- tibble(row_names = c("Linear combination WTA$\\times X$", ""),
-                     c1=c1,c2=c2,c3=c3,c4=c4,c5=c5,c6=c6,c7=c7,c8=c8)
-
+tar_load(heterogeneous_treatment_effects_wm)
 qm <- c("winning_margin"="Winning margin",
         "winning_margin:republican" = "Winning margin $\\times$ Republican",
         "winning_margin:college" = "Winning margin $\\times$ College",
         "winning_margin:female" = "Winning margin $\\times$ Female",
         "winning_margin:above_median_age"= "Winning margin $\\times$ Above median age")
-ta5 <- list(r1,r2,r3,r4,r5,r6,r7,r8) |>
+ta5 <- heterogeneous_treatment_effects_wm$regressions |>
   modelsummary(coef_map=qm,
                stars = c('*' = .1, '**' = .05, '***'=.01),
                                    gof_map = c("nobs", "r.squared"),
                                    output = "gt",
-               add_rows = extra_rows) |>
+               add_rows = heterogeneous_treatment_effects_wm$extra_rows) |>
   tab_spanner(label="All to winner", columns=2:5) |>
   tab_spanner(label="Share to winner", columns=6:9)
 ta5
@@ -1087,35 +306,13 @@ ta5 |> gtsave(here::here("tables","RN2018_hetmerit_margin.tex"))
 # Regression analysis: Association between share given to the winner and general attitudes
 
 ```{r general attitudes share, echo=FALSE}
-tar_load(mmw2018)
-tabledf <- mmw2018 |>
-  filter(treatment != "Base") |>
-  mutate(share_to_winner = y2/(y1+y2),
-         republican = as.numeric(pol2==1),
-         college = as.numeric(education>4),
-         female = as.numeric(sex==2),
-         above_median_age = as.numeric(age > median(age)),
-         regionf = factor(area)
-         )
-
-s1 <- tabledf |> fixest::feols(scale(8-att3) ~ share_to_winner + republican + college + female + above_median_age | regionf, data=_, vcov="hetero")
-s2 <- tabledf |> filter(y1>y2) |> fixest::feols(scale(8-att3) ~ share_to_winner + republican + college + female + above_median_age | regionf, data=_, vcov="hetero")
-s3 <- tabledf |> filter(y1<=y2) |> fixest::feols(scale(8-att3) ~ share_to_winner + republican + college + female + above_median_age | regionf, data=_, vcov="hetero")
-
-s4 <- tabledf |> fixest::feols(scale(8-att4) ~ share_to_winner + republican + college + female + above_median_age | regionf, data=_, vcov="hetero")
-s5 <- tabledf |> filter(y1>y2) |> fixest::feols(scale(8-att4) ~ share_to_winner + republican + college + female + above_median_age | regionf, data=_, vcov="hetero")
-s6 <- tabledf |> filter(y1<=y2) |> fixest::feols(scale(8-att4) ~ share_to_winner + republican + college + female + above_median_age | regionf, data=_, vcov="hetero")
-
-s7 <- tabledf |> fixest::feols(scale(att2) ~ share_to_winner + republican + college + female + above_median_age | regionf, data=_, vcov="hetero")
-s8 <- tabledf |> filter(y1>y2) |> fixest::feols(scale(att2) ~ share_to_winner + republican + college + female + above_median_age | regionf, data=_, vcov="hetero")
-s9 <- tabledf |> filter(y1<=y2) |> fixest::feols(scale(att2) ~ share_to_winner + republican + college + female + above_median_age | regionf, data=_, vcov="hetero")
-
+tar_load(general_attitudes)
 sm <- c("share_to_winner"="Share to winner",
         "republican" = "Republican",
         "college"="College",
         "female" = "Female",
         "above_median_age"="Above median age")
-ta6 <- list(s1,s2,s3,s4,s5,s6,s7,s8,s9) |>
+ta6 <- general_attitudes |>
     modelsummary(coef_map=sm,
                stars = c('*' = .1, '**' = .05, '***'=.01),
                                    gof_map = c("nobs", "r.squared"),

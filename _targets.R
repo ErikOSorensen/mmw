@@ -4,6 +4,11 @@ library(gt)
 library(modelsummary)
 library(haven)
 library(tarchetypes)
+library(fixest)
+library(marginaleffects)
+library(scales)
+
+source("functions.R")
 
 list(
   tar_target(
@@ -25,6 +30,10 @@ list(
     read_dta(mmw2018_file)
   ),
   tar_target(
+    mmw2018_restricted, 
+    mmw2018 |> filter(y1 <= y2)
+  ),
+  tar_target(
     mmw2025_file,
     "data/mmwinner_Prolific2025.dta",
     format = "file"
@@ -41,5 +50,129 @@ list(
   tar_target(
     classified_motivations,
     read_csv(classified_motivations_file)
+  ),
+  tar_target(
+    role_of_merit_table,
+    role_of_merit_table_l(mmw2018),
+  ),
+  tar_target(
+    role_of_winning_margin,
+    role_of_winning_margin_l(mmw2018)
+  ),
+  tar_target(
+    role_of_winning_margin_2025,
+    role_of_winning_margin_2025_ll(mmw2025)
+  ),
+  tar_target(
+    ass_giving_all_attitudes,
+    ass_giving_all_attitudes_l(mmw2018)
+  ),
+  tar_target(
+    ass_giving_all_attitudes_2025,
+    ass_giving_all_attitudes_2025_l(mmw2025)
+  ),
+  tar_target(
+    share_of_earnings_to_winner,
+    share_of_earnings_to_winner_g(mmw2018)
+  ),
+  tar_target(
+    winner_take_all_vs_luck,
+    winner_take_all_vs_luck_lg(mmw2018)
+  ),
+  tar_target(
+    role_of_winning_margin_graph,
+    role_of_winning_margin_graph_lg(mmw2018)
+  ),
+  tar_target(
+    heterogeneity_figure_all_to_winner,
+    heterogeneity_figure_all_to_winner_lg(mmw2018)
+  ),
+  tar_target(
+    heterogeneity_figure_share,
+    heterogeneity_figure_share_lg(mmw2018)
+  ),
+  tar_target(
+    question_responses,
+    question_responses_lg(mmw2018)
+  ),
+  tar_target(
+    distribution_of_performance_by_treatment,
+    distribution_of_performance_by_treatment_lg(mmw2018)
+  ),
+  tar_target(
+    distribution_of_winning_margin_by_treatment,
+    distribution_of_winning_margin_by_treatment_lg(mmw2018)
+  ),
+  tar_target(
+    flatness_all_to_winner,
+    flatness_all_to_winner_g(mmw2018)
+  ),
+  tar_target(
+    flatness_share_to_winner,
+    flatness_share_to_winner_g(mmw2018)
+  ),
+  tar_target(
+    distributions_performance_and_margin,
+    distributions_performance_and_margin_lg(mmw2025)
+  ),
+  tar_target(
+    restricted_main,
+    restricted_main_l(mmw2018_restricted)
+  ),
+  tar_target(
+    heterogeneous_treatment_effects_all,
+    heterogeneous_treatment_effects_all_ll(mmw2018)
+  ),
+  tar_target(
+    heterogeneous_treatment_effects_all_restricted,
+    heterogeneous_treatment_effects_all_ll(mmw2018_restricted)
+  ),
+  tar_target(
+    heterogeneous_treatment_effects_share,
+    heterogeneous_treatment_effects_share_ll(mmw2018)
+  ),
+  tar_target(
+    heterogeneous_treatment_effects_share_restricted,
+    heterogeneous_treatment_effects_share_ll(mmw2018_restricted)
+  ),
+  tar_target(
+    heterogeneous_treatment_effects_wm,
+    heterogeneous_treatment_effects_wm_ll(mmw2018)
+  ),
+  tar_target(
+    heterogeneous_treatment_effects_wm_restricted,
+    heterogeneous_treatment_effects_wm_ll(mmw2018_restricted)
+  ),
+  tar_target(
+    general_attitudes,
+    general_attitudes_l(mmw2018)
+  ),
+  tar_target(
+    general_attitudes_restricted,
+    general_attitudes_restricted_l(mmw2018_restricted)
+  ),
+  tar_target(
+    by_place_in_distribution,
+    by_place_in_distribution_l(mmw2025)
+  ),
+  tar_target(
+    lab_treatments,
+    lab_treatments_l(mmw2014)
+  ),
+  tar_render(
+    analysis_main_sample,
+    path = "analysis_main_sample.Rmd"
+  ),
+  tar_render(
+    follow_up_2025,
+    path = "follow_up_2025.Rmd"
+  ),
+  tar_render(
+    restricted_sample_2018,
+    path="restricted_sample_2018.Rmd"
+  ),
+  tar_render(
+    lab_experiment,
+    path="lab_experiment.Rmd"
   )
 )
