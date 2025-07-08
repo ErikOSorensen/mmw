@@ -42,18 +42,18 @@ tb1 |> gtsave("tables/RN2018_main_restricted.tex")
 # Heterogeneous treatment effects on all to winner: Restricted sample
 
 ```{r heterogeneous merit all restricted, echo=FALSE}
-tar_load(heterogeneous_treatment_effects_all)
+tar_load(heterogeneous_treatment_effects_all_restricted)
 qm <- c("competition"="WTA Competition",
         "competition:republican" = "WTA Competition $\\times$ Republican",
         "competition:college" = "WTA Competition $\\times$ College",
         "competition:female" = "WTA Competition $\\times$ Female",
         "competition:above_median_age"= "WTA Competition $\\times$ Above median age")
-ta3 <- heterogeneous_treatment_effects_all$regressions |>
+ta3 <- heterogeneous_treatment_effects_all_restricted$regressions |>
   modelsummary(coef_map=qm,
                stars = c('*' = .1, '**' = .05, '***'=.01),
                                    gof_map = c("nobs", "r.squared"),
                                    output = "gt",
-               add_rows = heterogeneous_treatment_effects_all$extra_rows) |>
+               add_rows = heterogeneous_treatment_effects_all_restricted$extra_rows) |>
   tab_spanner(label="Full sample", columns=2:5) |>
   tab_spanner(label="Smallest winning margin", columns=6:9)
 ta3

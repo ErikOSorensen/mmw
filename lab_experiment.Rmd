@@ -19,16 +19,17 @@ library(fixest)
 # Replication of main results: lab experiment
 ```{r replication of main, echo=FALSE}
 tar_load(lab_treatments)
-
 qm <- c("treatmentfWTA-No Choice"="WTA-No Choice",
         "treatmentfWTA-No Exp" = "WTA-No Exp.",
         "competition"="WTA Competition",
-        "winning_margin"="Winning margin")
+        "winning_margin"="Winning margin",
+        "(Intercept)" = "Constant")
 tc1 <-  modelsummary(lab_treatments, 
                      coef_map=qm,
                      stars = c('*' = .1, '**' = .05, '***'=.01),
                      gof_map = c("nobs", "r.squared"),
-                     output = "gt") |>
+                     output = "gt",
+                     standalone = FALSE) |>
     tab_spanner(label="All to winner", columns=2:4) |>
     tab_spanner(label="Share to winner", columns=5:7)
 tc1

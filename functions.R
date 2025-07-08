@@ -978,7 +978,7 @@ heterogeneous_treatment_effects_wm_ll <- function(mmw2018) {
     sprintf("%.3f", tidy(me_r3)$estimate[2]),
     sprintf("(%.3f)", tidy(me_r3)$std.error[2])
   ) 
-  r4 <- tabledf |> feols(all_to_winner ~ republican + college + winning_margin*female + winning_margin*above_median_age | regionf , data=_, vcov="hetero")
+  r4 <- tabledf |> feols(all_to_winner ~ republican + college + female + winning_margin*above_median_age | regionf , data=_, vcov="hetero")
   me_r4 <- slopes(r4, variables = "winning_margin", by = "above_median_age")
   c4 = c(
     sprintf("%.3f", tidy(me_r4)$estimate[2]),
