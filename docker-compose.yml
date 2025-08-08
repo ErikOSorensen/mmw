@@ -1,14 +1,19 @@
-version: "3"
-
 services:
   rstudio:
     build: .
-    image: my-r-env
-    container_name: rstudio-targets
+    image: mmwinner
+    container_name: mmwinner
     ports:
       - "8787:8787"
-    volumes:
-      - .:/home/rstudio/project
+    volumes: # - .:/home/rstudio/project  # mounts the full project directory
+      - ./mmwinner.Rproj:/home/rstudio/project/mmwinner.Rproj
+      - ./code:/home/rstudio/code
+      - ./html_reports:/home/rstudio/project/html_reports
+      - ./data:/home/rstudio/project/data
+      - ./graphs:/home/rstudio/project/graphs
+      - ./tables:/home/rstudio/project/tables
+      - ./classification:/home/rstudio/project/classification
     environment:
-      - PASSWORD=mypassword
+      - PASSWORD=shirapur
+      - RSTUDIO_SESSION_INITIAL_WORKING_DIRECTORY=/home/rstudio/project
     restart: unless-stopped

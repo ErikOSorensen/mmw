@@ -1,0 +1,327 @@
+---
+title: "Analysis on main sample"
+author: "Erik Ø. Sørensen"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(targets)
+library(tidyverse)
+library(gt)
+library(modelsummary)
+library(scales)
+library(patchwork)
+library(fixest)
+```
+
+
+# Share of earnings given to winner
+
+```{r Share of earnings given to winner, echo=FALSE}
+tar_load(share_of_earnings_to_winner)
+share_of_earnings_to_winner
+ggsave("graphs/RN2018_hist_shareY_wta.pdf",width=16, height = 10, units = "cm")
+```
+
+# Winner-take-all vs. Luck
+
+```{r Winner-take-all vs luck, echo=FALSE}
+tar_load(winner_take_all_vs_luck)
+winner_take_all_vs_luck$left + winner_take_all_vs_luck$right + plot_annotation(tag_levels = "a")
+ggsave("graphs/RN2018_wta_luck.pdf", width=16, height = 10, units="cm")
+```
+
+
+# Role of winning margin
+
+```{r Role of winning margin, echo=FALSE}
+tar_load(role_of_winning_margin_graph)
+role_of_winning_margin_graph$top / role_of_winning_margin_graph$bottom + plot_annotation(tag_levels = "a")
+ggsave("graphs/RN2018_flatness1_version2.pdf", width=16, height = 12, units="cm", device=cairo_pdf)
+```
+
+
+# Heterogeneity Analysis: All to winner
+
+
+Putting these together:
+```{r heterogeneity analysis I, echo=FALSE}
+tar_load(heterogeneity_figure_all_to_winner)
+g <- heterogeneity_figure_all_to_winner
+g$g11 + g$g12 + g$g21 + g$g22 + plot_annotation(tag_level="a")
+ggsave("graphs/RN2018_hetero_coefplot.pdf", width=16, height=12, units="cm")
+```
+
+```{r heterogeneity analysis II, echo=FALSE}
+tar_load(heterogeneity_figure_share)
+h <- heterogeneity_figure_share
+h$g11 + h$g12 + h$g21 + h$g22 + plot_annotation(tag_level="a")
+ggsave("graphs/RN2018_hetero_coefplot_s.pdf", width=16, height=12, units="cm")
+```
+
+
+# Questionnaire responses
+
+```{r wuestionnaire responses, echo=FALSE}
+tar_load(question_responses)
+n <- question_responses
+n$a + n$b + n$c + plot_annotation(tag_levels = "a")
+ggsave("graphs/RN2018_attitudes_hist.pdf", width=16, height = 10, units="cm", device = cairo_pdf)
+
+```
+
+# Performance of workers by treatment
+
+```{r distributions I, echo=FALSE}
+tar_load("distribution_of_performance_by_treatment")
+X <- distribution_of_performance_by_treatment
+X$a + X$b + X$c + X$d + plot_annotation(tag_levels = "a")
+ggsave("graphs/RN2018_distribution_levels.pdf", width=16, height=10, units="cm", device=cairo_pdf)
+```
+
+```{r distributions II, echo=FALSE}
+tar_load("distribution_of_winning_margin_by_treatment")
+Y <- distribution_of_winning_margin_by_treatment
+Y$a + Y$b + Y$c + Y$d + plot_annotation(tag_levels="a")
+ggsave("graphs/RN2018_distribution_margins.pdf", width=16, height=10, units="cm", device=cairo_pdf)
+```
+
+
+# Role of winning margin by treatment
+
+```{r role of winning margin take-all, echo=FALSE}
+tar_load("flatness_all_to_winner")
+flatness_all_to_winner
+ggsave("graphs/RN2018_flatness_all_byT.pdf", width=16, height = 14, units="cm", device=cairo_pdf)
+```
+
+```{r role of winning margin share, echo=FALSE}
+tar_load("flatness_share_to_winner")
+flatness_share_to_winner
+ggsave("graphs/RN2018_flatness_share_byT.pdf", width=16, height=14, units="cm", device=cairo_pdf)
+```
+
+
+
+
+# Regression analysis: The role of merit for inequality acceptance
+
+```{r role of merit for inqeuality acceptance, echo=FALSE}
+tar_load(role_of_merit_table)
+
+cm <- c("competition" = "WTA Competition",
+        "republican" = "Republican",
+        "college" = "College",
+        "female" = "Female",
+        "above_median_age" = "Above median age",
+        "(Intercept)"="Constant"
+        )
+tab2 <- role_of_merit_table |>
+  modelsummary(coef_map=cm,
+               stars = c('*' = .1, '**' = .05, '***'=.01),
+                                   gof_map = c("nobs", "r.squared"),
+                                   output = "gt") |>
+  tab_spanner(label="All to Winner", columns=2:5) |>
+  tab_spanner(label="Share to Winner", columns=6:9)
+tab2
+tab2 |> gtsave(here::here("tables","RN2018_role_of_merit.tex"))
+```
+
+# Regression Analysis: The Role of the Winning Margin for Inequality Acceptance
+
+```{r role of margin for inqeuality acceptance, echo=FALSE}
+tar_load(role_of_winning_margin)
+dm <- c("winning_margin" = "Winning margin",
+        "republican" = "Republican",
+        "college" = "College",
+        "female" = "Female",
+        "above_median_age" = "Above median age",
+        "performance_winner" = "Performance winner",
+        "(Intercept)"="Constant"
+        )
+tab3 <- role_of_winning_margin |>
+  modelsummary(coef_map=dm,
+               stars = c('*' = .1, '**' = .05, '***'=.01),
+                                   gof_map = c("nobs", "r.squared"),
+                                   output = "gt") |>
+  tab_spanner(label="All to Winner", columns=2:4) |>
+  tab_spanner(label="Share to Winner", columns=5:7)
+tab3
+tab3 |> gtsave(here::here("tables","RN2018_role_of_margin.tex"))
+```
+
+# Regression analysis: Association bweteen giving all to the winner and general attitudes
+
+```{r general attitudes, echo=FALSE}
+tar_load(ass_giving_all_attitudes)
+em <- c("all_to_winner" = "All to winner",
+        "republican" = "Republican",
+        "college" ="College",
+        "female" = "Female",
+        "above_median_age"="Above median age",
+        "(Intercept)"="Constant"
+)
+t4_2018 <- ass_giving_all_attitudes |>
+   modelsummary(coef_map=em,
+               stars = c('*' = .1, '**' = .05, '***'=.01),
+                                   gof_map = c("nobs", "r.squared"),
+                                   output = "gt" ) |>
+  tab_spanner(label="Gold medalist", columns=2:4) |>
+  tab_spanner(label="Superstar", columns=5:7) |>
+  tab_spanner(label="Decrease tax on top 1\\%", columns=8:10)
+t4_2018
+t4_2018 |> gtsave(here::here("tables","RN2018_attitudes.tex"))
+```
+
+# Regression analysis: Comparison of winner-take-all treatments
+
+```{r comparisons of treatments, echo=FALSE}
+tar_load(mmw2018)
+tabledf <- mmw2018 |>
+  filter(treatment!="Base") |>
+  mutate(all_to_winner = as.numeric(y2==e2),
+         share_to_winner = y2/(y1+y2),
+         winning_margin = x2-x1,
+         republican = as.numeric(pol2==1),
+         college = as.numeric(education>4),
+         female = as.numeric(sex==2),
+         above_median_age = as.numeric(age > median(age)),
+         regionf = factor(area),
+         performance_winner = x2,
+         treatment = fct_relevel(treatment, "WTA")
+         )
+
+f1 <- tabledf |> feols(all_to_winner ~ treatment, data=_, vcov="hetero")
+f1p <- wald(f1, c("treatmentWTA: No Choice", "treatmentWTA: No Exp"))$p
+f2 <- tabledf |> feols(all_to_winner ~ treatment + republican + college + female + above_median_age  | regionf, data=_, vcov="hetero")
+f2p <- wald(f2, c("treatmentWTA: No Choice", "treatmentWTA: No Exp"))$p
+f3 <- tabledf |> feols(all_to_winner ~ treatment + republican + college + female + above_median_age + performance_winner | regionf, data=_, vcov="hetero")
+f3p <- wald(f3, c("treatmentWTA: No Choice", "treatmentWTA: No Exp"))$p
+f4 <- tabledf |> feols(share_to_winner ~ treatment, data=_)
+f4p <- wald(f4, c("treatmentWTA: No Choice", "treatmentWTA: No Exp"))$p
+f5 <- tabledf |> feols(share_to_winner ~ treatment + republican + college + female + above_median_age  | regionf, data=_, vcov="hetero")
+f5p <- wald(f5, c("treatmentWTA: No Choice", "treatmentWTA: No Exp"))$p
+f6 <- tabledf |> feols(share_to_winner ~ treatment + republican + college + female + above_median_age + performance_winner | regionf, data=_, vcov="hetero")
+f6p <- wald(f6, c("treatmentWTA: No Choice", "treatmentWTA: No Exp"))$p
+fextra_rows <- tibble(p0 = c("$P$(all treatments equal)"),
+                     p1 = f1p,
+                     p2 = f2p,
+                     p3 = f3p,
+                     p4 = f4p,
+                     p5 = f5p,
+                     p6 = f6p)
+
+fm <- c("treatmentWTA: No Choice" = "WTA-No Choice",
+        "treatmentWTA: No Exp" = "WTA-No Exp.",
+        "republican" = "Republican",
+        "college" ="College",
+        "female" = "Female",
+        "above_median_age"="Above median age",
+        "performance_winner"="Performance winner",
+        "(Intercept)"="Constant"
+)
+
+ta2 <- list(f1,f2,f3,f4,f5,f6) |>
+   modelsummary(coef_map=fm,
+               stars = c('*' = .1, '**' = .05, '***'=.01),
+                                   gof_map = c("nobs", "r.squared"),
+                                   output = "gt" ,
+               add_rows = fextra_rows) |>
+  tab_spanner(label="All to winner", columns=2:4) |>
+  tab_spanner(label="Share to winner", columns=5:7) 
+ta2
+ta2 |> gtsave(here::here("tables","RN2018_T_comparisons.tex"))
+```
+
+
+# Heterogeneous treatment effects of the role of merit for inequlity acceptance: All to winner
+
+```{r heterogeneous merit all, echo=FALSE}
+tar_load(heterogeneous_treatment_effects_all)
+qm <- c("competition"="WTA Competition",
+        "competition:republican" = "WTA Competition $\\times$ Republican",
+        "competition:college" = "WTA Competition $\\times$ College",
+        "competition:female" = "WTA Competition $\\times$ Female",
+        "competition:above_median_age"= "WTA Competition $\\times$ Above median age")
+ta3 <- heterogeneous_treatment_effects_all$regressions |>
+  modelsummary(coef_map=qm,
+               stars = c('*' = .1, '**' = .05, '***'=.01),
+                                   gof_map = c("nobs", "r.squared"),
+                                   output = "gt",
+               add_rows = heterogeneous_treatment_effects_all$extra_rows) |>
+  tab_spanner(label="Full sample", columns=2:5) |>
+  tab_spanner(label="Smallest winning margin", columns=6:9)
+ta3
+ta3 |> gtsave(here::here("tables","RN2018_hetmerit_all.tex"))
+```
+
+
+
+
+# Heterogeneous treatment effects of the role of merit for inequlity acceptance: Share to winner
+
+```{r heterogeneous merit share, echo=FALSE}
+tar_load(heterogeneous_treatment_effects_share)
+qm <- c("competition"="WTA Competition",
+        "competition:republican" = "WTA Competition $\\times$ Republican",
+        "competition:college" = "WTA Competition $\\times$ College",
+        "competition:female" = "WTA Competition $\\times$ Female",
+        "competition:above_median_age"= "WTA Competition $\\times$ Above median age")
+ta4 <- heterogeneous_treatment_effects_share$regressions |>
+  modelsummary(coef_map=qm,
+               stars = c('*' = .1, '**' = .05, '***'=.01),
+                                   gof_map = c("nobs", "r.squared"),
+                                   output = "gt",
+               add_rows = heterogeneous_treatment_effects_share$extra_rows) |>
+  tab_spanner(label="Full sample", columns=2:5) |>
+  tab_spanner(label="Smallest winning margin", columns=6:9)
+ta4
+ta4 |> gtsave(here::here("tables","RN2018_hetmerit_share.tex"))
+```
+
+# Heterogeneous treatment effects of the role of the winning margin
+
+```{r heterogeneous merit margin, echo=FALSE}
+tar_load(heterogeneous_treatment_effects_wm)
+qm <- c("winning_margin"="Winning margin",
+        "winning_margin:republican" = "Winning margin $\\times$ Republican",
+        "winning_margin:college" = "Winning margin $\\times$ College",
+        "winning_margin:female" = "Winning margin $\\times$ Female",
+        "winning_margin:above_median_age"= "Winning margin $\\times$ Above median age")
+ta5 <- heterogeneous_treatment_effects_wm$regressions |>
+  modelsummary(coef_map=qm,
+               stars = c('*' = .1, '**' = .05, '***'=.01),
+                                   gof_map = c("nobs", "r.squared"),
+                                   output = "gt",
+               add_rows = heterogeneous_treatment_effects_wm$extra_rows) |>
+  tab_spanner(label="All to winner", columns=2:5) |>
+  tab_spanner(label="Share to winner", columns=6:9)
+ta5
+ta5 |> gtsave(here::here("tables","RN2018_hetmerit_margin.tex"))
+```
+
+
+
+# Regression analysis: Association between share given to the winner and general attitudes
+
+```{r general attitudes share, echo=FALSE}
+tar_load(general_attitudes)
+sm <- c("share_to_winner"="Share to winner",
+        "republican" = "Republican",
+        "college"="College",
+        "female" = "Female",
+        "above_median_age"="Above median age")
+ta6 <- general_attitudes |>
+    modelsummary(coef_map=sm,
+               stars = c('*' = .1, '**' = .05, '***'=.01),
+                                   gof_map = c("nobs", "r.squared"),
+                                   output = "gt") |>
+  tab_spanner(label="Gold medalist", columns=2:4) |>
+  tab_spanner(label="Superstar", columns=5:7) |>
+  tab_spanner(label="Decrease tax on top 1\\%", columns=8:10)
+ta6
+ta6 |> gtsave(here::here("tables","RN2018_attitudes_share.tex"))
+
+```
+

@@ -53,3 +53,21 @@ _targets/
 classification/.env
 classification/*.xlsx
 
+# Ignore local renv library, but keep lockfile
+renv/library/
+renv/python/
+
+# Ignore everything in graphs and tables...
+graphs/*
+tables/*
+# ...except the README or .gitkeep files
+!graphs/README.md
+!tables/README.md
+
+# Remove reports 
+restricted_sample_2018.html
+lab_experiment.html
+follow_up_2025.html
+analysis_main_sample.html
+
+
