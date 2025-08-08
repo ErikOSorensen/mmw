@@ -10,6 +10,21 @@ training_data <- list(B1,B2) |>
   left_join(classifications_defs) |>
   left_join(motivations) |> 
   dplyr::select(c("id","classification","motivation"))
-write_csv(training_data,"training_data.csv")
+#write_csv(training_data,"training_data.csv")
 
 
+create_examples_for_system <- function(data, max_examples = 10) {
+  data <- head(data, max_examples)
+  examples <- mapply(function(motivation, classification, idx) {
+    paste0(
+      "Example ", idx, ":\n",
+      "Input: \"", motivation, "\"\n",
+      "Category: ", classification, "\n"
+    )
+  }, data$motivation, data$classification, seq_len(nrow(data)))
+  examples_text <- paste(examples, collapse = "\n\n")
+  return(examples_text)
+}
+
+examples <- create_examples_for_system(training_data, max_examples = 200)
+writeLines(examples, "classification_examples.txt")

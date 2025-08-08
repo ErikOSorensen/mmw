@@ -10,111 +10,230 @@ library(tidyverse)
 library(gt)
 ```
 
-# What are the proportions in the classified date?
 
-```{r echo=FALSE}
+I have experimented with two different GPT models from openAI, and have run 6 classifications: 
+
+- gpt-3.5-turbo: Most advanced model we can access that allows training ("fine-tuning"). 
+  - With fine-tuning, on the full set of categories that Bertil outlined. 10 runs.
+  - Without fine-tuning, on the full set of categories.
+  - Without fine-tuning, on a restricted set of categories (bundling some up in "other")
+- gpt-4o: More advanced language, larger capacity, but we cannot train it.
+  - Without fine-tuning, on the full set of categories.
+  - Without fine-tuning, on a restricted set of categories (bundling some up in "other"). 
+  - Without fine-tuning, but with all training data used, full set of categories. 5 runs of this for evaluating role of noise in the gpt.
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+strip_stars_quotes <- function(x) {
+  gsub('^[*"*]+|[*"*]+$', '', x)
+}
+
 cmdf <- read_csv("classified_motivations.csv")
-cmdf |> group_by(predicted_label) |>
-  summarise(
-    count = n(),
-    fraction = n() / nrow(cmdf)
-) |> arrange(-fraction) |>
-  gt() |>
-  fmt_number(decimals=3, columns="fraction")
+cdf1 <- read_csv("20250721_125504_classified_motivations.csv") |> mutate(predicted_label = strip_stars_quotes(predicted_label))
+cdf2 <- read_csv("20250721_125532_classified_motivations.csv") |> mutate(predicted_label = strip_stars_quotes(predicted_label))
+cdf3 <- read_csv("20250721_125758_classified_motivations.csv") |> mutate(predicted_label = strip_stars_quotes(predicted_label))
+cdf4 <- read_csv("20250721_125837_classified_motivations.csv") |> mutate(predicted_label = strip_stars_quotes(predicted_label)) |>
+  mutate(predicted_label=ifelse(predicted_label=="meritocrat - does not mention the margin", "meritocrat - does not mention margin", predicted_label))
+cdf5 <- read_csv("20250721_145256_classified_motivations.csv") |> mutate(predicted_label = strip_stars_quotes(predicted_label)) |>
+  mutate(predicted_label=ifelse(predicted_label=="meritocrat - does not mention the margin", "meritocrat - does not mention margin", predicted_label))
+cdf6 <- read_csv("20250721_155742_classified_motivations.csv") |> mutate(predicted_label = strip_stars_quotes(predicted_label))
+cdf7 <- read_csv("20250724_111737_classified_motivations.csv") |> mutate(predicted_label = strip_stars_quotes(predicted_label))
+```  
+
+
+Creating shorter names for easy printing of contingency tables:
+
+```{r}
+short_names <- c(
+  "compensate" = "C",
+  "egalitarian" = "E",
+  "fairness" = "F",
+  "incentives" = "I",
+  "libertarian" = "L",
+  "logic" = "LG",
+  "meritocrat - does mention the margin" = "MDM",
+  "meritocrat - does not mention margin" = "MDNM",
+  "misunderstand" = "MS",
+  "no reason" = "NR",
+  "other" = "OTR"
+)
 ```
 
-# Mention of stake-size
-
-We first tried a very broad search for mention of stake size, 
-
-```
-You are a careful assistant. Your task is to determine whether a short motivation text 
-mentions the *size* of the financial stakes or amounts involved in a decision.
-
-If the motivation contains any mention of money amounts, the size of bonuses, 
-large or small rewards, financial impact, or comparable language — respond with "yes".
-
-Otherwise, respond with "no".
-
-Answer with only one word: "yes" or "no".
-``` 
+Looking at how the models agree on statements.
 
 ```{r echo=FALSE}
-stake_mentions <- read_csv("stake_mentions.csv") 
-stake_mentions |> group_by(mentions_stake_size) |>
-  summarise(
-    count = n(),
-    fraction = n() / nrow(stake_mentions)
-  ) |> arrange(-fraction) |>
-  gt() |>
-  fmt_number(decimals=3, columns="fraction")
-```
-
-
-We tried another test for if they mention stakes being small:
+cdf1$predicted_labels <- short_names[cdf1$predicted_label]
+cdf2$predicted_labels <- short_names[cdf2$predicted_label]
+cdf3$predicted_labels <- short_names[cdf3$predicted_label]
+cdf4$predicted_labels <- short_names[cdf4$predicted_label]
+cdf5$predicted_labels <- short_names[cdf5$predicted_label] 
+cdf6$predicted_labels <- short_names[cdf6$predicted_label] 
+cdf7$predicted_labels <- short_names[cdf7$predicted_label] 
 
 ```
-You are a careful assistant. Your task is to determine whether a short 
-motivation text in any way indicates that the monetary stakes are small. Note
-that the numbers themselves are not directly meaningful, but we are looking for 
-whether people mention small stake sizes as a reason for them making the 
-redistributive decision - that is, implicitly, they would have done differently 
-with a large stake size. Or saying that small stake size makes this an 
-irrelevant or uninteresting choice.
 
-If so, respond "yes". Otherwise, respond with "no".
+## Older model (GPT-3.5-turbo) with and without using training data
 
-Answer with only one word: "yes" or "no".
+Here the rows (x) are classifications *using* the training data, and columns (y) use
+only the definitions of groups.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+cdf3 |> left_join(cdf4, by="id") |> 
+  with(table(predicted_labels.x, predicted_labels.y)) |> 
+  addmargins()
 ```
+
+We see that there are many more "compensate" without 
+using the training data.
+
+
+## Newer model (GPT-4o) vs trained old model
+
+Here I use the full set of categories with the trained older model
+as x and the modern model with large set of categories as columns (y).
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+cdf3 |> left_join(cdf1, by="id") |> 
+  with(table(predicted_labels.x, predicted_labels.y)) |> 
+  addmargins()
+```
+
+We see that the more modern model (4o) also allocate a lot of people to "compensate".
+
+
+## Newer model (GPT-4o) with small and large set of categories
+
+Let's try putting "compensate" and others in an "others" category.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+cdf2 |> left_join(cdf1, by="id") |> 
+  with(table(predicted_labels.x, predicted_labels.y)) |> 
+  addmargins()
+```
+
+The new model now has a much smaller set of "others" than the previous 
+compensate.
+
+
+## Restricting categories I
+
+Now, let's restrict the categories post classification on the trained older
+model (x) and compare this to the modern (non-trained) model using the smaller
+set of categories (y). 
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+cdf3 |> mutate(predicted_labels = ifelse(predicted_labels %in% c("C","I","LG","MS","NR"),"OTR",predicted_labels)) |>
+  left_join(cdf2, by="id") |>
+  with(table(predicted_labels.x, predicted_labels.y)) |> 
+  addmargins()
+```
+
+The trained model has fewer "egalitarian" and "fairness". 
+
+
+## Restricting categories II
+
+Let's compare the old (x) and the new (y) model, no fine-tuning for either,
+on the restricted set of categories for both. 
 
 ```{r echo=FALSE}
-small_stake_mentions <- read_csv("stake_small.csv") 
-small_stake_mentions |> group_by(mentions_small_stakes) |>
-  summarise(
-    count = n(),
-    fraction = n() / nrow(small_stake_mentions)
-  ) |> arrange(-fraction) |>
-  gt() |>
-  fmt_number(decimals=3, columns="fraction")
+cdf5 |> left_join(cdf2, by="id") |>
+  with(table(predicted_labels.x, predicted_labels.y)) |> 
+  addmargins()
+```
+
+We see that the old model creates many, many more egalitarians and not much
+agreement about the meritocrats.
+
+
+# What are the "Compensate" about?
+
+Here is a subset of people classified as "compensate" by the 4o (untrained) 
+model on the large set of categories:
+
+```{r echo=FALSE}
+cdf1 |> filter(predicted_labels=="C") |>
+  slice_sample(n=20) |>
+  dplyr::select(c("id","predicted_label","motivation")) |>
+  gt::gt()
+
 ```
 
 
-# How well does coding work on overlaps?
-
-Each of the two manual classifiers classified 100 motivations. 
-There is a shared set of 20 motivations classified by both
-manual classifiers. We can also compare this to what the gpt 
-did on the 180 observations where the gpt predicted
-on the observations used for training.
-
-The manual classifiers are "B1" and "B2", "predicted_label" is the gpt.
-
+## Two runs of the same model
 
 ```{r echo=FALSE}
-dfs <- read_csv("classifications_defs.csv")
-B1 <- read_csv2("B1.csv") |> left_join(dfs) |> rename(B1 = classification) |> dplyr::select(id, B1)
-B2 <- read_csv2("B2.csv") |> left_join(dfs) |> rename(B2 = classification) |> dplyr::select(id, B2)
-Bs <- B1 |> full_join(B2)
-all_overlap <- cmdf |> right_join(Bs) |> 
-  dplyr::select(c(id, B1, B2, predicted_label, motivation))
-all_overlap |> gt() |> 
-  fmt_missing(
-    columns = everything(), 
-    missing_text = "" 
-  )
+cdf2 |> left_join(cdf6, by="id") |>
+  with(table(predicted_labels.x, predicted_labels.y)) |> 
+  addmargins()
+
 ```
 
-The manual classifiers disagreed on 5/20 observations:
+# Reading all data
+
+```{r}
+read_and_combine_motivation_csvs <- function(path = ".") {
+  files <- list.files(path, pattern = "_classified_motivations\\.csv$", full.names = TRUE)
+  read_with_timestamp <- function(file) {
+    filename <- basename(file)
+    timestamp <- sub("_classified_motivations\\.csv$", "", filename)
+    df <- read.csv(file, stringsAsFactors = FALSE)
+    df$timestamp <- timestamp
+    return(df)
+  }
+  combined_df <- do.call(rbind, lapply(files, read_with_timestamp))
+  return(combined_df)
+}
+alld <- read_and_combine_motivation_csvs() 
+alld_finetuned <- alld |> filter(model_name=="ft:gpt-3.5-turbo-0125:fair::BvgCjJLB")
+alld_finetuned |> group_by(predicted_label, timestamp) |>
+  summarize(n = n()) |>
+  summarize(min_n = min(n),
+            mean_n = mean(n),
+            max_n = max(n))
+
+```
 
 
-```{r echo=FALSE}
-all_overlap |> 
-  filter(!is.na(B1), !is.na(B2)) |>
-  filter(B1!=B2) |>
-  gt() |> 
-  fmt_missing(
-    columns = everything(), 
-    missing_text = "" 
-  )
+## Few-shot examples with newer model (GPT-4o) vs trained old model
+
+Here I use the full set of categories with the trained older model
+as x and the modern model with large set of categories as columns (y) that
+has been censored in the 
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+cdf7s <- cdf7 |>  mutate(predicted_labels = ifelse(predicted_labels %in% c("C","I","LG","MS","NR"),"OTR",predicted_labels))
+cdf3s <- cdf3 |> mutate(predicted_labels = ifelse(predicted_labels %in% c("C","I","LG","MS","NR"),"OTR",predicted_labels)) 
+cdf3s |> 
+  left_join(cdf7s, by="id") |> 
+  with(table(predicted_labels.x, predicted_labels.y)) |> 
+  addmargins()
+```
+ 
+ ## How much variation in few-shot example gpt-4o
+ 
+```{r}
+alld_fewshot  <- alld |> 
+  filter(str_starts(system_message_hash, "4ba830"))
+alld_fewshot  |> group_by(predicted_label, timestamp) |>
+  summarize(n = n()) |>
+  summarize(min_n = min(n),
+            mean_n = mean(n),
+            max_n = max(n))
+```
+## Summary table of different models 
+
+```{r}
+d3_sum <- cdf3s |> group_by(predicted_labels) |> summarize( `3.5 turbo FT` = n()/nrow(cdf3s))
+d7_sum <- cdf7s |> group_by(predicted_labels) |> summarize( `4o OS` = n()/nrow(cdf7s))
+d5_sum <- cdf5 |> group_by(predicted_labels) |> summarize(`3.5 turbo` = n()/nrow(cdf5))
+d2_sum <- cdf2 |> group_by(predicted_labels) |> summarize(`4o` = n() / nrow(cdf2))
+tbl_df <- list(d3_sum,d7_sum,d5_sum,d2_sum) |> reduce(left_join, by="predicted_labels") |> mutate(`predicted label` = factor(predicted_labels, levels=c("MDNM","MDM","L","F","E","OTR")))
+tbl_df |> dplyr::select(c(`predicted label`, `3.5 turbo FT`, `4o OS`, `3.5 turbo`, `4o`)) |>
+  arrange(`predicted label`) |>
+  gt::gt() |> 
+  tab_spanner(label="With training data", columns=2:3) |> 
+  tab_spanner(label="Without training data", columns=4:5) |> 
+  fmt_number(decimals = 3)
 ```
 

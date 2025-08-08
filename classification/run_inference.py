@@ -1,13 +1,38 @@
+import argparse
 import pandas as pd
 import os
+import hashlib
+from datetime import datetime
 from openai import OpenAI
 from dotenv import load_dotenv
 from tqdm import tqdm
+from systems import SYSTEMS_LIST
+
+# === Parse command-line arguments ===
+parser = argparse.ArgumentParser(description="Classify motivations using a GPT model.")
+parser.add_argument(
+    "--model",
+    type=str,
+    required=True,
+    help="The GPT model to use (e.g., 'gpt-o4', '-gpt-o4-mini', or a fine-tuned model)."
+)
+parser.add_argument(
+    "--system",
+    type=int,
+    required=True,
+    help="The index of the system message to use (0-based index)."
+)
+args = parser.parse_args()
+MODEL_NAME = args.model
+SYSTEM_INDEX = args.system
 
 # === CONFIG ===
 INPUT_CSV = "motivations.csv"
-OUTPUT_CSV = "classified_motivations.csv"
-MODEL_NAME = "ft:gpt-3.5-turbo-0125:fair::BosTyFuR"  # Replace with your actual model name
+BASE_OUTPUT_CSV = "classified_motivations.csv"
+
+# === Generate timestamped output file name ===
+timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+OUTPUT_CSV = f"{timestamp}_{BASE_OUTPUT_CSV}"
 
 # === Load API key ===
 load_dotenv()
@@ -18,39 +43,20 @@ df = pd.read_csv(INPUT_CSV)
 df = df.dropna(subset=["motivation"])
 
 # === System message used during fine-tuning ===
-SYSTEM_MESSAGE = """You are a helpful assistant that categorizes motivations for decisions in an economic experiment, considering performance outcomes and redistribution choices.
+SYSTEM_MESSAGE = SYSTEMS_LIST[SYSTEM_INDEX]
 
-**Context:**
-Two participants attempt to solve up to 24 problems in 10 minutes. The participant who solves the most problems (Y, the winner) receives earnings proportional to their performance; the other (X, the loser) receives nothing.
+# === Compute hash of SYSTEM_MESSAGE ===
+system_hash = hashlib.sha256(SYSTEM_MESSAGE.encode("utf-8")).hexdigest()
 
-A third party - the Decision Maker (DM) - can redistribute some of Y's earnings to X. After making their decision, the DM provides a written motivation. Your task is to classify these motivations into one of the following categories exhaustive and exclusive categories (choose only one from the list):
-
-**"libertarian"**: Appeals to rules, procedures, or default entitlements - regardless of performance.
-
-**"meritocrat - margin does not matter"**: Arguments based on performance or effort, but with no reference to the size of the performance gap.
-
-**"meritocrat - margin matters"**: Arguments based on performance that explicitly reference the size of the performance gap or the relative number of problems solved.
-
-**"egalitarian"**: Arguments favoring equal outcomes without any reference to merit, performance, or effort.
-
-**"compensate"**: Motivation centers on helping the loser out, without merit-based or equality-based reasoning.
-
-**"fairness"**: Vague or general appeals to fairness without further elaboration.
-
-**"logic"**: The DM states that their choice was the logical or obvious one, without justification rooted in merit, fairness, or equality.
-
-**"incentives"**: The motivation focuses on encouraging future effort or behavior (e.g., rewarding winners to incentivize performance).
-
-**"no reason"**: The DM gives no coherent reason, or simply restates their decision, or no reason at all.
-
-**"misunderstand"**: The DM clearly misunderstands the rules of the task or the meaning of the redistribution.
-
-"""
 # === Run inference ===
 predicted_labels = []
 
 for motivation in tqdm(df["motivation"], desc="Classifying"):
-    user_message = f"Motivation provided by DM: {motivation.strip()}"
+    user_message = (
+        f"Classify the following motivation into a single category label (from the list). "
+        f"Return only the label, with no additional explanation.\n\n"
+        f"Motivation: {motivation.strip()}"
+    )
 
     try:
         response = client.chat.completions.create(
@@ -71,7 +77,9 @@ for motivation in tqdm(df["motivation"], desc="Classifying"):
 output_df = pd.DataFrame({
     "id": df["id"],
     "predicted_label": predicted_labels,
-    "motivation": df["motivation"]
+    "motivation": df["motivation"],
+    "model_name": MODEL_NAME,
+    "system_message_hash": system_hash
 })
 
 output_df.to_csv(OUTPUT_CSV, index=False)
