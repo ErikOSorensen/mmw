@@ -1,0 +1,14 @@
+version: "3"
+
+services:
+  rstudio:
+    build: .
+    image: my-r-env
+    container_name: rstudio-targets
+    ports:
+      - "8787:8787"
+    volumes:
+      - .:/home/rstudio/project
+    environment:
+      - PASSWORD=mypassword
+    restart: unless-stopped
