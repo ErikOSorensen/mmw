@@ -229,11 +229,13 @@ d7_sum <- cdf7s |> group_by(predicted_labels) |> summarize( `4o OS` = n()/nrow(c
 d5_sum <- cdf5 |> group_by(predicted_labels) |> summarize(`3.5 turbo` = n()/nrow(cdf5))
 d2_sum <- cdf2 |> group_by(predicted_labels) |> summarize(`4o` = n() / nrow(cdf2))
 tbl_df <- list(d3_sum,d7_sum,d5_sum,d2_sum) |> reduce(left_join, by="predicted_labels") |> mutate(`predicted label` = factor(predicted_labels, levels=c("MDNM","MDM","L","F","E","OTR")))
-tbl_df |> dplyr::select(c(`predicted label`, `3.5 turbo FT`, `4o OS`, `3.5 turbo`, `4o`)) |>
+tvariants <- tbl_df |> dplyr::select(c(`predicted label`, `3.5 turbo FT`, `4o OS`, `3.5 turbo`, `4o`)) |>
   arrange(`predicted label`) |>
   gt::gt() |> 
   tab_spanner(label="With training data", columns=2:3) |> 
   tab_spanner(label="Without training data", columns=4:5) |> 
   fmt_number(decimals = 3)
+tvariants
+gtsave(tvariants, filename="tvariants.tex")
 ```
 

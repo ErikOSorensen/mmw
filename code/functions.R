@@ -156,10 +156,21 @@ role_of_winning_margin_2025_ll <- function(mmw2025) {
        "extra_rows" = extra_rows)
 }
 
+
+make_labels <- function(x) {
+  x <- trimws(as.character(x))
+  x <- gsub('^WTA:\\s*No\\s*Choice$', "WTA\u2013No Choice", x, perl = TRUE)
+  x <- gsub('^WTA:\\s*No\\s*Exp(?:ectations?)?$', "WTA\u2013No Expectations", x, perl = TRUE)
+  x <- gsub('^WTA:\\s*', "WTA\u2013", x, perl = TRUE)
+  x
+}
+
+
 share_of_earnings_to_winner_g <- function(mmw2018) {
   mmw2018 |> 
     filter(treatment!="Base") |>
-    mutate(share_to_winner = y2/e2) |>
+    mutate(share_to_winner = y2/e2,
+           treatment = make_labels(treatment)) |>
     ggplot(aes(x = share_to_winner)) +
     geom_histogram(aes(x = share_to_winner, y = (..count..)/tapply(..count..,..PANEL..,sum)[..PANEL..]),
                    binwidth = 0.05,
@@ -182,42 +193,88 @@ winner_take_all_vs_luck_lg <- function(mmw2018) {
   all_luck <- t1_all_luck |> filter(treatment=="Base")|>
     group_by(share_to_winner) |> 
     summarize(fraction_luck = n()/nrow(t1_all_luck))
-  left <- all_wta |> left_join(all_luck) |>
-    mutate(diff_fraction = fraction_wta - fraction_luck ) |>
-    ggplot(aes(x=share_to_winner, y = diff_fraction)) +
-    geom_col() +
+  left_df <- all_wta |> left_join(all_luck) 
+
+  left <- left_df |>
+    ggplot(aes(x = share_to_winner)) +
+    geom_col(aes(y = fraction_wta, fill = "WTA"),
+             width = 0.05, colour = NA) +
+    geom_col(aes(y = fraction_luck, fill = "Luck"),
+             width = 0.05, colour = "black") +
     scale_y_continuous(
-      limits = c(-0.35, 0.35),
-      breaks = seq(-0.3, 0.3, by = 0.1),
+      limits = c(0, 0.5),
+      breaks = seq(0, 0.5, by = 0.1),
       labels = number_format(accuracy = 0.1, decimal.mark = ".")
     ) +
     theme_minimal() +
-    labs(x = "Share given to winner", 
-         y = "Fraction: WTA - Luck",
-         title = "Full sample",
-         subtitle="All winning margins")
+    scale_fill_manual(
+      name   = "Treatments",
+      values = c("WTA" = "grey", "Luck" = NA),
+      breaks = c("WTA", "Luck")
+    ) +
+    guides(
+      fill = guide_legend(
+        override.aes = list(
+          fill   = c("grey", NA),
+          colour = c(NA, "black"),
+          size   = c(NA, 0.6) 
+        )
+      )
+    ) +
+    labs(
+      x = "Share given to winner",
+      y = "Fraction of spectators",
+      title = "Full sample",
+      subtitle = "All winning margins"
+    )
   
   
-  t2 <- t1 |> filter( x2-x1 == 1)
+  
+  t2 <- t1 |> filter( x2-x1 == 1) 
   t2_all_wta <-  t2 |> filter(treatment!="Base")
   all_wta <- t2_all_wta |> filter(treatment!="Base")|>
     group_by(share_to_winner) |> 
     summarize(fraction_wta = n()/nrow(t2_all_wta))
-  right <- all_wta |> left_join(all_luck) |>
-    mutate(diff_fraction = fraction_wta - fraction_luck ) |>
-    ggplot(aes(x=share_to_winner, y = diff_fraction)) +
-    geom_col() +
+  nl <- nrow(t1 |> filter(treatment=="Base"))
+  t2_all_luck <-  t1 |> filter(treatment=="Base") |>
+    group_by(share_to_winner) |> 
+    summarize(fraction_luck = n()/nl)
+  right_df <- all_wta |> left_join(t2_all_luck) 
+  right <- right_df |>
+    ggplot(aes(x = share_to_winner)) +
+    geom_col(aes(y = fraction_wta, fill = "WTA"),
+             width = 0.05, colour = NA) +
+    geom_col(aes(y = fraction_luck, fill = "Luck"),
+             width = 0.05, colour = "black") +
     scale_y_continuous(
-      limits = c(-0.35, 0.35),
-      breaks = seq(-0.3, 0.3, by = 0.1),
+      limits = c(0, 0.5),
+      breaks = seq(0, 0.5, by = 0.1),
       labels = number_format(accuracy = 0.1, decimal.mark = ".")
     ) +
     theme_minimal() +
-    labs(x = "Share given to winner", 
-         y = "Fraction: WTA - Luck",
-         title = "Subsample",
-         subtitle="Smallest winning margin") 
-  list( "left"=left, "right"=right)
+    scale_fill_manual(
+      name   = "Treatments",
+      values = c("WTA" = "grey", "Luck" = NA),
+      breaks = c("WTA", "Luck")
+    ) +
+    guides(
+      fill = guide_legend(
+        override.aes = list(
+          fill   = c("grey", NA),
+          colour = c(NA, "black"),
+          size   = c(NA, 0.6) 
+        )
+      )
+    ) +
+    labs(
+      x = "Share given to winner",
+      y = "Fraction of spectators",
+      title = "Subsample",
+      subtitle = "Smallest winning margin"
+    )
+  x <- list( "left"=left, "right"=right)
+  
+  x
 }
 
 role_of_winning_margin_graph_lg <- function(mmw2018) {
@@ -556,7 +613,8 @@ question_responses_lg <- function(mmw2018) {
 
 distribution_of_performance_by_treatment_lg <- function(mmw2018) {
   tdf <- mmw2018 |> 
-    filter(treatment!="Base")
+    filter(treatment!="Base") |>
+    mutate(treatment = make_labels(treatment))
   all_x <- c(tdf$x1, tdf$x2)
   treatment <- c(tdf$treatment, tdf$treatment)
   distdfs1 <- tibble(all_x=all_x,
@@ -614,7 +672,7 @@ distribution_of_performance_by_treatment_lg <- function(mmw2018) {
     labs(
       x = "Performance of worker",
       y = "Fraction",
-      title = "WTA-No Exp.",
+      title = "WTA-No Expectations",
     ) +
     theme_minimal() +
     theme(plot.title.position = "plot")
@@ -623,7 +681,8 @@ distribution_of_performance_by_treatment_lg <- function(mmw2018) {
 
 distribution_of_winning_margin_by_treatment_lg <- function(mmw2018) {
   tdf <- mmw2018 |> 
-    filter(treatment!="Base")
+    filter(treatment!="Base") |>
+    mutate(treatment = make_labels(treatment))
   winning_margin <- tdf$x2 - tdf$x1
   distdfs2 <- tibble(winning_margin=winning_margin,
                      treatment = tdf$treatment)
@@ -679,7 +738,7 @@ distribution_of_winning_margin_by_treatment_lg <- function(mmw2018) {
     labs(
       x = "Winning margin",
       y = "Fraction",
-      title = "WTA-No Exp."
+      title = "WTA-No Expectations"
     ) +
     theme_minimal() +
     theme(plot.title.position = "plot")
@@ -692,6 +751,7 @@ flatness_all_to_winner_g <- function(mmw2018) {
            winning_margin = x2-x1,
            winning_margin = if_else(winning_margin >=15, 15, winning_margin)) |>
     filter(treatment!="Base") |>
+    mutate(treatment = make_labels(treatment)) |>
     group_by(treatment, winning_margin) |>
     summarize(mean_winner = mean(all_to_winner),
               se_winner = sd(all_to_winner)/sqrt(n())) |>
@@ -715,6 +775,7 @@ flatness_share_to_winner_g <- function(mmw2018) {
            winning_margin = x2-x1,
            winning_margin = if_else(winning_margin >=15, 15, winning_margin)) |>
     filter(treatment!="Base") |>
+    mutate(treatment = make_labels(treatment)) |>
     group_by(treatment, winning_margin) |>
     summarize(mean_winner = mean(share_to_winner),
               se_winner = sd(share_to_winner)/sqrt(n())) |>

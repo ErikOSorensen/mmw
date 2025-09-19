@@ -11,7 +11,7 @@
 
 <meta name="author" content="Erik Ø. Sørensen" />
 
-<meta name="date" content="2025-07-03" />
+<meta name="date" content="2025-09-19" />
 
 <title>Summarizing classifications</title>
 
@@ -352,35 +352,155 @@ display: none;
 
 <h1 class="title toc-ignore">Summarizing classifications</h1>
 <h4 class="author">Erik Ø. Sørensen</h4>
-<h4 class="date">2025-07-03</h4>
+<h4 class="date">2025-09-19</h4>
 
 </div>
 
 
-<div id="what-are-the-proportions-in-the-classified-date" class="section level1">
-<h1>What are the proportions in the classified date?</h1>
-<pre><code>## Rows: 2998 Columns: 3
-## ── Column specification ────────────────────────────────────────────────────────
-## Delimiter: &quot;,&quot;
-## chr (2): predicted_label, motivation
-## dbl (1): id
-## 
-## ℹ Use `spec()` to retrieve the full column specification for this data.
-## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
-<div id="jkyvijzsfs" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#jkyvijzsfs table {
+<p>I have experimented with two different GPT models from openAI, and
+have run 6 classifications:</p>
+<ul>
+<li>gpt-3.5-turbo: Most advanced model we can access that allows
+training (“fine-tuning”).
+<ul>
+<li>With fine-tuning, on the full set of categories that Bertil
+outlined. 10 runs.</li>
+<li>Without fine-tuning, on the full set of categories.</li>
+<li>Without fine-tuning, on a restricted set of categories (bundling
+some up in “other”)</li>
+</ul></li>
+<li>gpt-4o: More advanced language, larger capacity, but we cannot train
+it.
+<ul>
+<li>Without fine-tuning, on the full set of categories.</li>
+<li>Without fine-tuning, on a restricted set of categories (bundling
+some up in “other”).</li>
+<li>Without fine-tuning, but with all training data used, full set of
+categories. 5 runs of this for evaluating role of noise in the gpt.</li>
+</ul></li>
+</ul>
+<p>Creating shorter names for easy printing of contingency tables:</p>
+<pre class="r"><code>short_names &lt;- c(
+  &quot;compensate&quot; = &quot;C&quot;,
+  &quot;egalitarian&quot; = &quot;E&quot;,
+  &quot;fairness&quot; = &quot;F&quot;,
+  &quot;incentives&quot; = &quot;I&quot;,
+  &quot;libertarian&quot; = &quot;L&quot;,
+  &quot;logic&quot; = &quot;LG&quot;,
+  &quot;meritocrat - does mention the margin&quot; = &quot;MDM&quot;,
+  &quot;meritocrat - does not mention margin&quot; = &quot;MDNM&quot;,
+  &quot;misunderstand&quot; = &quot;MS&quot;,
+  &quot;no reason&quot; = &quot;NR&quot;,
+  &quot;other&quot; = &quot;OTR&quot;
+)</code></pre>
+<p>Looking at how the models agree on statements.</p>
+<div id="older-model-gpt-3.5-turbo-with-and-without-using-training-data" class="section level2">
+<h2>Older model (GPT-3.5-turbo) with and without using training
+data</h2>
+<p>Here the rows (x) are classifications <em>using</em> the training
+data, and columns (y) use only the definitions of groups.</p>
+<pre><code>##                   predicted_labels.y
+## predicted_labels.x    C    E    F    I    L   LG  MDM MDNM   MS   NR  Sum
+##               C      13    0    0    0    0    0    0    0    0    0   13
+##               E       4   79    0    0    0    0    0    0    0    0   83
+##               F       6   69   61    0    0    0    1    0    0    0  137
+##               I      10    1    0   18    1    2    1    0    1    0   34
+##               L       6    6   13    0  508    8   26   21    8    4  600
+##               LG      0    0    1    0    0    3    0    0    0    0    4
+##               MDM   305  127    3    0    2    0  360    7    3    0  807
+##               MDNM  639  148    8    1   39    3   78  155    4    1 1076
+##               MS      0    1    0    0    0    0    0    0    5    0    6
+##               NR     87   50    7    2    5   12    7    0   21   46  237
+##               Sum  1070  481   93   21  555   28  473  183   42   51 2997</code></pre>
+<p>We see that there are many more “compensate” without using the
+training data.</p>
+</div>
+<div id="newer-model-gpt-4o-vs-trained-old-model" class="section level2">
+<h2>Newer model (GPT-4o) vs trained old model</h2>
+<p>Here I use the full set of categories with the trained older model as
+x and the modern model with large set of categories as columns (y).</p>
+<pre><code>##                   predicted_labels.y
+## predicted_labels.x    C    E    F    I    L   LG  MDM MDNM   MS   NR  Sum
+##               C      12    1    0    0    0    0    0    0    0    0   13
+##               E       1   81    1    0    0    0    0    0    0    0   83
+##               F       2   26  106    0    2    0    1    0    0    0  137
+##               I       5    0    1   25    1    0    0    0    2    0   34
+##               L       0    2    8   10  538    1   13   19    5    4  600
+##               LG      0    0    1    0    0    3    0    0    0    0    4
+##               MDM    56   51   26    2    9    1  557   74   30    1  807
+##               MDNM  415  107  110   14   48    0   38  320   20    4 1076
+##               MS      0    1    0    0    0    0    0    0    5    0    6
+##               NR     40   55    8    3   11    8    6    3   15   89  238
+##               Sum   531  324  261   54  609   13  615  416   77   98 2998</code></pre>
+<p>We see that the more modern model (4o) also allocate a lot of people
+to “compensate”.</p>
+</div>
+<div id="newer-model-gpt-4o-with-small-and-large-set-of-categories" class="section level2">
+<h2>Newer model (GPT-4o) with small and large set of categories</h2>
+<p>Let’s try putting “compensate” and others in an “others”
+category.</p>
+<pre><code>##                   predicted_labels.y
+## predicted_labels.x    C    E    F    I    L   LG  MDM MDNM   MS   NR  Sum
+##               E     124  275    1    0    1    0    0    0    3    2  406
+##               F      91   20  227    3    1    0    3   10    2    2  359
+##               L      11    0    3    9  595    1    3   10   11    6  649
+##               MDM    32   12   13    3    1    2  587   12   26    2  690
+##               MDNM  219   11   10   19    7    0   22  381   13    2  684
+##               OTR    54    6    7   20    4   10    0    3   22   84  210
+##               Sum   531  324  261   54  609   13  615  416   77   98 2998</code></pre>
+<p>The new model now has a much smaller set of “others” than the
+previous compensate.</p>
+</div>
+<div id="restricting-categories-i" class="section level2">
+<h2>Restricting categories I</h2>
+<p>Now, let’s restrict the categories post classification on the trained
+older model (x) and compare this to the modern (non-trained) model using
+the smaller set of categories (y).</p>
+<pre><code>##                   predicted_labels.y
+## predicted_labels.x    E    F    L  MDM MDNM  OTR  Sum
+##               E      81    2    0    0    0    0   83
+##               F      20  111    3    0    0    3  137
+##               L       1    7  555   13   21    3  600
+##               MDM    45   28    7  615  105    7  807
+##               MDNM  190  194   63   46  548   35 1076
+##               OTR    69   17   21   16   10  162  295
+##               Sum   406  359  649  690  684  210 2998</code></pre>
+<p>The trained model has fewer “egalitarian” and “fairness”.</p>
+</div>
+<div id="restricting-categories-ii" class="section level2">
+<h2>Restricting categories II</h2>
+<p>Let’s compare the old (x) and the new (y) model, no fine-tuning for
+either, on the restricted set of categories for both.</p>
+<pre><code>##                   predicted_labels.y
+## predicted_labels.x    E    F    L  MDM MDNM  OTR  Sum
+##               E     396  203   31  157  248   71 1106
+##               F       1  132   13   38   11    8  203
+##               L       1    0  525    3   20    6  555
+##               MDM     4   15   38  487  234   15  793
+##               MDNM    0    5   35    3  168   15  226
+##               OTR     4    4    7    2    3   95  115
+##               Sum   406  359  649  690  684  210 2998</code></pre>
+<p>We see that the old model creates many, many more egalitarians and
+not much agreement about the meritocrats.</p>
+</div>
+<div id="what-are-the-compensate-about" class="section level1">
+<h1>What are the “Compensate” about?</h1>
+<p>Here is a subset of people classified as “compensate” by the 4o
+(untrained) model on the large set of categories:</p>
+<div id="pokgrntocv" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#pokgrntocv table {
 font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 -webkit-font-smoothing: antialiased;
 -moz-osx-font-smoothing: grayscale;
 }
-#jkyvijzsfs thead, #jkyvijzsfs tbody, #jkyvijzsfs tfoot, #jkyvijzsfs tr, #jkyvijzsfs td, #jkyvijzsfs th {
+#pokgrntocv thead, #pokgrntocv tbody, #pokgrntocv tfoot, #pokgrntocv tr, #pokgrntocv td, #pokgrntocv th {
 border-style: none;
 }
-#jkyvijzsfs p {
+#pokgrntocv p {
 margin: 0;
 padding: 0;
 }
-#jkyvijzsfs .gt_table {
+#pokgrntocv .gt_table {
 display: table;
 border-collapse: collapse;
 line-height: normal;
@@ -405,11 +525,11 @@ border-left-style: none;
 border-left-width: 2px;
 border-left-color: #D3D3D3;
 }
-#jkyvijzsfs .gt_caption {
+#pokgrntocv .gt_caption {
 padding-top: 4px;
 padding-bottom: 4px;
 }
-#jkyvijzsfs .gt_title {
+#pokgrntocv .gt_title {
 color: #333333;
 font-size: 125%;
 font-weight: initial;
@@ -420,7 +540,7 @@ padding-right: 5px;
 border-bottom-color: #FFFFFF;
 border-bottom-width: 0;
 }
-#jkyvijzsfs .gt_subtitle {
+#pokgrntocv .gt_subtitle {
 color: #333333;
 font-size: 85%;
 font-weight: initial;
@@ -431,7 +551,7 @@ padding-right: 5px;
 border-top-color: #FFFFFF;
 border-top-width: 0;
 }
-#jkyvijzsfs .gt_heading {
+#pokgrntocv .gt_heading {
 background-color: #FFFFFF;
 text-align: center;
 border-bottom-color: #FFFFFF;
@@ -442,12 +562,12 @@ border-right-style: none;
 border-right-width: 1px;
 border-right-color: #D3D3D3;
 }
-#jkyvijzsfs .gt_bottom_border {
+#pokgrntocv .gt_bottom_border {
 border-bottom-style: solid;
 border-bottom-width: 2px;
 border-bottom-color: #D3D3D3;
 }
-#jkyvijzsfs .gt_col_headings {
+#pokgrntocv .gt_col_headings {
 border-top-style: solid;
 border-top-width: 2px;
 border-top-color: #D3D3D3;
@@ -461,7 +581,7 @@ border-right-style: none;
 border-right-width: 1px;
 border-right-color: #D3D3D3;
 }
-#jkyvijzsfs .gt_col_heading {
+#pokgrntocv .gt_col_heading {
 color: #333333;
 background-color: #FFFFFF;
 font-size: 100%;
@@ -480,7 +600,7 @@ padding-left: 5px;
 padding-right: 5px;
 overflow-x: hidden;
 }
-#jkyvijzsfs .gt_column_spanner_outer {
+#pokgrntocv .gt_column_spanner_outer {
 color: #333333;
 background-color: #FFFFFF;
 font-size: 100%;
@@ -491,13 +611,13 @@ padding-bottom: 0;
 padding-left: 4px;
 padding-right: 4px;
 }
-#jkyvijzsfs .gt_column_spanner_outer:first-child {
+#pokgrntocv .gt_column_spanner_outer:first-child {
 padding-left: 0;
 }
-#jkyvijzsfs .gt_column_spanner_outer:last-child {
+#pokgrntocv .gt_column_spanner_outer:last-child {
 padding-right: 0;
 }
-#jkyvijzsfs .gt_column_spanner {
+#pokgrntocv .gt_column_spanner {
 border-bottom-style: solid;
 border-bottom-width: 2px;
 border-bottom-color: #D3D3D3;
@@ -508,10 +628,10 @@ overflow-x: hidden;
 display: inline-block;
 width: 100%;
 }
-#jkyvijzsfs .gt_spanner_row {
+#pokgrntocv .gt_spanner_row {
 border-bottom-style: hidden;
 }
-#jkyvijzsfs .gt_group_heading {
+#pokgrntocv .gt_group_heading {
 padding-top: 8px;
 padding-bottom: 8px;
 padding-left: 5px;
@@ -536,7 +656,7 @@ border-right-color: #D3D3D3;
 vertical-align: middle;
 text-align: left;
 }
-#jkyvijzsfs .gt_empty_group_heading {
+#pokgrntocv .gt_empty_group_heading {
 padding: 0.5px;
 color: #333333;
 background-color: #FFFFFF;
@@ -550,13 +670,13 @@ border-bottom-width: 2px;
 border-bottom-color: #D3D3D3;
 vertical-align: middle;
 }
-#jkyvijzsfs .gt_from_md > :first-child {
+#pokgrntocv .gt_from_md > :first-child {
 margin-top: 0;
 }
-#jkyvijzsfs .gt_from_md > :last-child {
+#pokgrntocv .gt_from_md > :last-child {
 margin-bottom: 0;
 }
-#jkyvijzsfs .gt_row {
+#pokgrntocv .gt_row {
 padding-top: 8px;
 padding-bottom: 8px;
 padding-left: 5px;
@@ -574,7 +694,7 @@ border-right-color: #D3D3D3;
 vertical-align: middle;
 overflow-x: hidden;
 }
-#jkyvijzsfs .gt_stub {
+#pokgrntocv .gt_stub {
 color: #333333;
 background-color: #FFFFFF;
 font-size: 100%;
@@ -586,468 +706,7 @@ border-right-color: #D3D3D3;
 padding-left: 5px;
 padding-right: 5px;
 }
-#jkyvijzsfs .gt_stub_row_group {
-color: #333333;
-background-color: #FFFFFF;
-font-size: 100%;
-font-weight: initial;
-text-transform: inherit;
-border-right-style: solid;
-border-right-width: 2px;
-border-right-color: #D3D3D3;
-padding-left: 5px;
-padding-right: 5px;
-vertical-align: top;
-}
-#jkyvijzsfs .gt_row_group_first td {
-border-top-width: 2px;
-}
-#jkyvijzsfs .gt_row_group_first th {
-border-top-width: 2px;
-}
-#jkyvijzsfs .gt_summary_row {
-color: #333333;
-background-color: #FFFFFF;
-text-transform: inherit;
-padding-top: 8px;
-padding-bottom: 8px;
-padding-left: 5px;
-padding-right: 5px;
-}
-#jkyvijzsfs .gt_first_summary_row {
-border-top-style: solid;
-border-top-color: #D3D3D3;
-}
-#jkyvijzsfs .gt_first_summary_row.thick {
-border-top-width: 2px;
-}
-#jkyvijzsfs .gt_last_summary_row {
-padding-top: 8px;
-padding-bottom: 8px;
-padding-left: 5px;
-padding-right: 5px;
-border-bottom-style: solid;
-border-bottom-width: 2px;
-border-bottom-color: #D3D3D3;
-}
-#jkyvijzsfs .gt_grand_summary_row {
-color: #333333;
-background-color: #FFFFFF;
-text-transform: inherit;
-padding-top: 8px;
-padding-bottom: 8px;
-padding-left: 5px;
-padding-right: 5px;
-}
-#jkyvijzsfs .gt_first_grand_summary_row {
-padding-top: 8px;
-padding-bottom: 8px;
-padding-left: 5px;
-padding-right: 5px;
-border-top-style: double;
-border-top-width: 6px;
-border-top-color: #D3D3D3;
-}
-#jkyvijzsfs .gt_last_grand_summary_row_top {
-padding-top: 8px;
-padding-bottom: 8px;
-padding-left: 5px;
-padding-right: 5px;
-border-bottom-style: double;
-border-bottom-width: 6px;
-border-bottom-color: #D3D3D3;
-}
-#jkyvijzsfs .gt_striped {
-background-color: rgba(128, 128, 128, 0.05);
-}
-#jkyvijzsfs .gt_table_body {
-border-top-style: solid;
-border-top-width: 2px;
-border-top-color: #D3D3D3;
-border-bottom-style: solid;
-border-bottom-width: 2px;
-border-bottom-color: #D3D3D3;
-}
-#jkyvijzsfs .gt_footnotes {
-color: #333333;
-background-color: #FFFFFF;
-border-bottom-style: none;
-border-bottom-width: 2px;
-border-bottom-color: #D3D3D3;
-border-left-style: none;
-border-left-width: 2px;
-border-left-color: #D3D3D3;
-border-right-style: none;
-border-right-width: 2px;
-border-right-color: #D3D3D3;
-}
-#jkyvijzsfs .gt_footnote {
-margin: 0px;
-font-size: 90%;
-padding-top: 4px;
-padding-bottom: 4px;
-padding-left: 5px;
-padding-right: 5px;
-}
-#jkyvijzsfs .gt_sourcenotes {
-color: #333333;
-background-color: #FFFFFF;
-border-bottom-style: none;
-border-bottom-width: 2px;
-border-bottom-color: #D3D3D3;
-border-left-style: none;
-border-left-width: 2px;
-border-left-color: #D3D3D3;
-border-right-style: none;
-border-right-width: 2px;
-border-right-color: #D3D3D3;
-}
-#jkyvijzsfs .gt_sourcenote {
-font-size: 90%;
-padding-top: 4px;
-padding-bottom: 4px;
-padding-left: 5px;
-padding-right: 5px;
-}
-#jkyvijzsfs .gt_left {
-text-align: left;
-}
-#jkyvijzsfs .gt_center {
-text-align: center;
-}
-#jkyvijzsfs .gt_right {
-text-align: right;
-font-variant-numeric: tabular-nums;
-}
-#jkyvijzsfs .gt_font_normal {
-font-weight: normal;
-}
-#jkyvijzsfs .gt_font_bold {
-font-weight: bold;
-}
-#jkyvijzsfs .gt_font_italic {
-font-style: italic;
-}
-#jkyvijzsfs .gt_super {
-font-size: 65%;
-}
-#jkyvijzsfs .gt_footnote_marks {
-font-size: 75%;
-vertical-align: 0.4em;
-position: initial;
-}
-#jkyvijzsfs .gt_asterisk {
-font-size: 100%;
-vertical-align: 0;
-}
-#jkyvijzsfs .gt_indent_1 {
-text-indent: 5px;
-}
-#jkyvijzsfs .gt_indent_2 {
-text-indent: 10px;
-}
-#jkyvijzsfs .gt_indent_3 {
-text-indent: 15px;
-}
-#jkyvijzsfs .gt_indent_4 {
-text-indent: 20px;
-}
-#jkyvijzsfs .gt_indent_5 {
-text-indent: 25px;
-}
-#jkyvijzsfs .katex-display {
-display: inline-flex !important;
-margin-bottom: 0.75em !important;
-}
-#jkyvijzsfs div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
-height: 0px !important;
-}
-</style>
-<table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
-  <thead>
-    <tr class="gt_col_headings">
-      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="predicted_label">predicted_label</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="count">count</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="fraction">fraction</th>
-    </tr>
-  </thead>
-  <tbody class="gt_table_body">
-    <tr><td headers="predicted_label" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="count" class="gt_row gt_right">990</td>
-<td headers="fraction" class="gt_row gt_right">0.330</td></tr>
-    <tr><td headers="predicted_label" class="gt_row gt_left">meritocrat - margin matters</td>
-<td headers="count" class="gt_row gt_right">895</td>
-<td headers="fraction" class="gt_row gt_right">0.299</td></tr>
-    <tr><td headers="predicted_label" class="gt_row gt_left">libertarian</td>
-<td headers="count" class="gt_row gt_right">617</td>
-<td headers="fraction" class="gt_row gt_right">0.206</td></tr>
-    <tr><td headers="predicted_label" class="gt_row gt_left">no reason</td>
-<td headers="count" class="gt_row gt_right">229</td>
-<td headers="fraction" class="gt_row gt_right">0.076</td></tr>
-    <tr><td headers="predicted_label" class="gt_row gt_left">egalitarian</td>
-<td headers="count" class="gt_row gt_right">121</td>
-<td headers="fraction" class="gt_row gt_right">0.040</td></tr>
-    <tr><td headers="predicted_label" class="gt_row gt_left">fairness</td>
-<td headers="count" class="gt_row gt_right">99</td>
-<td headers="fraction" class="gt_row gt_right">0.033</td></tr>
-    <tr><td headers="predicted_label" class="gt_row gt_left">incentives</td>
-<td headers="count" class="gt_row gt_right">33</td>
-<td headers="fraction" class="gt_row gt_right">0.011</td></tr>
-    <tr><td headers="predicted_label" class="gt_row gt_left">compensate</td>
-<td headers="count" class="gt_row gt_right">8</td>
-<td headers="fraction" class="gt_row gt_right">0.003</td></tr>
-    <tr><td headers="predicted_label" class="gt_row gt_left">misunderstand</td>
-<td headers="count" class="gt_row gt_right">4</td>
-<td headers="fraction" class="gt_row gt_right">0.001</td></tr>
-    <tr><td headers="predicted_label" class="gt_row gt_left">logic</td>
-<td headers="count" class="gt_row gt_right">2</td>
-<td headers="fraction" class="gt_row gt_right">0.001</td></tr>
-  </tbody>
-  
-  
-</table>
-</div>
-</div>
-<div id="mention-of-stake-size" class="section level1">
-<h1>Mention of stake-size</h1>
-<p>We first tried a very broad search for mention of stake size,</p>
-<pre><code>You are a careful assistant. Your task is to determine whether a short motivation text 
-mentions the *size* of the financial stakes or amounts involved in a decision.
-
-If the motivation contains any mention of money amounts, the size of bonuses, 
-large or small rewards, financial impact, or comparable language — respond with &quot;yes&quot;.
-
-Otherwise, respond with &quot;no&quot;.
-
-Answer with only one word: &quot;yes&quot; or &quot;no&quot;.</code></pre>
-<pre><code>## Rows: 3005 Columns: 2
-## ── Column specification ────────────────────────────────────────────────────────
-## Delimiter: &quot;,&quot;
-## chr (1): mentions_stake_size
-## dbl (1): id
-## 
-## ℹ Use `spec()` to retrieve the full column specification for this data.
-## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
-<div id="mvfaissogd" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#mvfaissogd table {
-font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
--webkit-font-smoothing: antialiased;
--moz-osx-font-smoothing: grayscale;
-}
-#mvfaissogd thead, #mvfaissogd tbody, #mvfaissogd tfoot, #mvfaissogd tr, #mvfaissogd td, #mvfaissogd th {
-border-style: none;
-}
-#mvfaissogd p {
-margin: 0;
-padding: 0;
-}
-#mvfaissogd .gt_table {
-display: table;
-border-collapse: collapse;
-line-height: normal;
-margin-left: auto;
-margin-right: auto;
-color: #333333;
-font-size: 16px;
-font-weight: normal;
-font-style: normal;
-background-color: #FFFFFF;
-width: auto;
-border-top-style: solid;
-border-top-width: 2px;
-border-top-color: #A8A8A8;
-border-right-style: none;
-border-right-width: 2px;
-border-right-color: #D3D3D3;
-border-bottom-style: solid;
-border-bottom-width: 2px;
-border-bottom-color: #A8A8A8;
-border-left-style: none;
-border-left-width: 2px;
-border-left-color: #D3D3D3;
-}
-#mvfaissogd .gt_caption {
-padding-top: 4px;
-padding-bottom: 4px;
-}
-#mvfaissogd .gt_title {
-color: #333333;
-font-size: 125%;
-font-weight: initial;
-padding-top: 4px;
-padding-bottom: 4px;
-padding-left: 5px;
-padding-right: 5px;
-border-bottom-color: #FFFFFF;
-border-bottom-width: 0;
-}
-#mvfaissogd .gt_subtitle {
-color: #333333;
-font-size: 85%;
-font-weight: initial;
-padding-top: 3px;
-padding-bottom: 5px;
-padding-left: 5px;
-padding-right: 5px;
-border-top-color: #FFFFFF;
-border-top-width: 0;
-}
-#mvfaissogd .gt_heading {
-background-color: #FFFFFF;
-text-align: center;
-border-bottom-color: #FFFFFF;
-border-left-style: none;
-border-left-width: 1px;
-border-left-color: #D3D3D3;
-border-right-style: none;
-border-right-width: 1px;
-border-right-color: #D3D3D3;
-}
-#mvfaissogd .gt_bottom_border {
-border-bottom-style: solid;
-border-bottom-width: 2px;
-border-bottom-color: #D3D3D3;
-}
-#mvfaissogd .gt_col_headings {
-border-top-style: solid;
-border-top-width: 2px;
-border-top-color: #D3D3D3;
-border-bottom-style: solid;
-border-bottom-width: 2px;
-border-bottom-color: #D3D3D3;
-border-left-style: none;
-border-left-width: 1px;
-border-left-color: #D3D3D3;
-border-right-style: none;
-border-right-width: 1px;
-border-right-color: #D3D3D3;
-}
-#mvfaissogd .gt_col_heading {
-color: #333333;
-background-color: #FFFFFF;
-font-size: 100%;
-font-weight: normal;
-text-transform: inherit;
-border-left-style: none;
-border-left-width: 1px;
-border-left-color: #D3D3D3;
-border-right-style: none;
-border-right-width: 1px;
-border-right-color: #D3D3D3;
-vertical-align: bottom;
-padding-top: 5px;
-padding-bottom: 6px;
-padding-left: 5px;
-padding-right: 5px;
-overflow-x: hidden;
-}
-#mvfaissogd .gt_column_spanner_outer {
-color: #333333;
-background-color: #FFFFFF;
-font-size: 100%;
-font-weight: normal;
-text-transform: inherit;
-padding-top: 0;
-padding-bottom: 0;
-padding-left: 4px;
-padding-right: 4px;
-}
-#mvfaissogd .gt_column_spanner_outer:first-child {
-padding-left: 0;
-}
-#mvfaissogd .gt_column_spanner_outer:last-child {
-padding-right: 0;
-}
-#mvfaissogd .gt_column_spanner {
-border-bottom-style: solid;
-border-bottom-width: 2px;
-border-bottom-color: #D3D3D3;
-vertical-align: bottom;
-padding-top: 5px;
-padding-bottom: 5px;
-overflow-x: hidden;
-display: inline-block;
-width: 100%;
-}
-#mvfaissogd .gt_spanner_row {
-border-bottom-style: hidden;
-}
-#mvfaissogd .gt_group_heading {
-padding-top: 8px;
-padding-bottom: 8px;
-padding-left: 5px;
-padding-right: 5px;
-color: #333333;
-background-color: #FFFFFF;
-font-size: 100%;
-font-weight: initial;
-text-transform: inherit;
-border-top-style: solid;
-border-top-width: 2px;
-border-top-color: #D3D3D3;
-border-bottom-style: solid;
-border-bottom-width: 2px;
-border-bottom-color: #D3D3D3;
-border-left-style: none;
-border-left-width: 1px;
-border-left-color: #D3D3D3;
-border-right-style: none;
-border-right-width: 1px;
-border-right-color: #D3D3D3;
-vertical-align: middle;
-text-align: left;
-}
-#mvfaissogd .gt_empty_group_heading {
-padding: 0.5px;
-color: #333333;
-background-color: #FFFFFF;
-font-size: 100%;
-font-weight: initial;
-border-top-style: solid;
-border-top-width: 2px;
-border-top-color: #D3D3D3;
-border-bottom-style: solid;
-border-bottom-width: 2px;
-border-bottom-color: #D3D3D3;
-vertical-align: middle;
-}
-#mvfaissogd .gt_from_md > :first-child {
-margin-top: 0;
-}
-#mvfaissogd .gt_from_md > :last-child {
-margin-bottom: 0;
-}
-#mvfaissogd .gt_row {
-padding-top: 8px;
-padding-bottom: 8px;
-padding-left: 5px;
-padding-right: 5px;
-margin: 10px;
-border-top-style: solid;
-border-top-width: 1px;
-border-top-color: #D3D3D3;
-border-left-style: none;
-border-left-width: 1px;
-border-left-color: #D3D3D3;
-border-right-style: none;
-border-right-width: 1px;
-border-right-color: #D3D3D3;
-vertical-align: middle;
-overflow-x: hidden;
-}
-#mvfaissogd .gt_stub {
-color: #333333;
-background-color: #FFFFFF;
-font-size: 100%;
-font-weight: initial;
-text-transform: inherit;
-border-right-style: solid;
-border-right-width: 2px;
-border-right-color: #D3D3D3;
-padding-left: 5px;
-padding-right: 5px;
-}
-#mvfaissogd .gt_stub_row_group {
+#pokgrntocv .gt_stub_row_group {
 color: #333333;
 background-color: #FFFFFF;
 font-size: 100%;
@@ -1060,13 +719,13 @@ padding-left: 5px;
 padding-right: 5px;
 vertical-align: top;
 }
-#mvfaissogd .gt_row_group_first td {
+#pokgrntocv .gt_row_group_first td {
 border-top-width: 2px;
 }
-#mvfaissogd .gt_row_group_first th {
+#pokgrntocv .gt_row_group_first th {
 border-top-width: 2px;
 }
-#mvfaissogd .gt_summary_row {
+#pokgrntocv .gt_summary_row {
 color: #333333;
 background-color: #FFFFFF;
 text-transform: inherit;
@@ -1075,14 +734,14 @@ padding-bottom: 8px;
 padding-left: 5px;
 padding-right: 5px;
 }
-#mvfaissogd .gt_first_summary_row {
+#pokgrntocv .gt_first_summary_row {
 border-top-style: solid;
 border-top-color: #D3D3D3;
 }
-#mvfaissogd .gt_first_summary_row.thick {
+#pokgrntocv .gt_first_summary_row.thick {
 border-top-width: 2px;
 }
-#mvfaissogd .gt_last_summary_row {
+#pokgrntocv .gt_last_summary_row {
 padding-top: 8px;
 padding-bottom: 8px;
 padding-left: 5px;
@@ -1091,7 +750,7 @@ border-bottom-style: solid;
 border-bottom-width: 2px;
 border-bottom-color: #D3D3D3;
 }
-#mvfaissogd .gt_grand_summary_row {
+#pokgrntocv .gt_grand_summary_row {
 color: #333333;
 background-color: #FFFFFF;
 text-transform: inherit;
@@ -1100,7 +759,7 @@ padding-bottom: 8px;
 padding-left: 5px;
 padding-right: 5px;
 }
-#mvfaissogd .gt_first_grand_summary_row {
+#pokgrntocv .gt_first_grand_summary_row {
 padding-top: 8px;
 padding-bottom: 8px;
 padding-left: 5px;
@@ -1109,7 +768,7 @@ border-top-style: double;
 border-top-width: 6px;
 border-top-color: #D3D3D3;
 }
-#mvfaissogd .gt_last_grand_summary_row_top {
+#pokgrntocv .gt_last_grand_summary_row_top {
 padding-top: 8px;
 padding-bottom: 8px;
 padding-left: 5px;
@@ -1118,10 +777,10 @@ border-bottom-style: double;
 border-bottom-width: 6px;
 border-bottom-color: #D3D3D3;
 }
-#mvfaissogd .gt_striped {
+#pokgrntocv .gt_striped {
 background-color: rgba(128, 128, 128, 0.05);
 }
-#mvfaissogd .gt_table_body {
+#pokgrntocv .gt_table_body {
 border-top-style: solid;
 border-top-width: 2px;
 border-top-color: #D3D3D3;
@@ -1129,7 +788,7 @@ border-bottom-style: solid;
 border-bottom-width: 2px;
 border-bottom-color: #D3D3D3;
 }
-#mvfaissogd .gt_footnotes {
+#pokgrntocv .gt_footnotes {
 color: #333333;
 background-color: #FFFFFF;
 border-bottom-style: none;
@@ -1142,7 +801,7 @@ border-right-style: none;
 border-right-width: 2px;
 border-right-color: #D3D3D3;
 }
-#mvfaissogd .gt_footnote {
+#pokgrntocv .gt_footnote {
 margin: 0px;
 font-size: 90%;
 padding-top: 4px;
@@ -1150,7 +809,7 @@ padding-bottom: 4px;
 padding-left: 5px;
 padding-right: 5px;
 }
-#mvfaissogd .gt_sourcenotes {
+#pokgrntocv .gt_sourcenotes {
 color: #333333;
 background-color: #FFFFFF;
 border-bottom-style: none;
@@ -1163,967 +822,64 @@ border-right-style: none;
 border-right-width: 2px;
 border-right-color: #D3D3D3;
 }
-#mvfaissogd .gt_sourcenote {
+#pokgrntocv .gt_sourcenote {
 font-size: 90%;
 padding-top: 4px;
 padding-bottom: 4px;
 padding-left: 5px;
 padding-right: 5px;
 }
-#mvfaissogd .gt_left {
+#pokgrntocv .gt_left {
 text-align: left;
 }
-#mvfaissogd .gt_center {
+#pokgrntocv .gt_center {
 text-align: center;
 }
-#mvfaissogd .gt_right {
+#pokgrntocv .gt_right {
 text-align: right;
 font-variant-numeric: tabular-nums;
 }
-#mvfaissogd .gt_font_normal {
+#pokgrntocv .gt_font_normal {
 font-weight: normal;
 }
-#mvfaissogd .gt_font_bold {
+#pokgrntocv .gt_font_bold {
 font-weight: bold;
 }
-#mvfaissogd .gt_font_italic {
+#pokgrntocv .gt_font_italic {
 font-style: italic;
 }
-#mvfaissogd .gt_super {
+#pokgrntocv .gt_super {
 font-size: 65%;
 }
-#mvfaissogd .gt_footnote_marks {
+#pokgrntocv .gt_footnote_marks {
 font-size: 75%;
 vertical-align: 0.4em;
 position: initial;
 }
-#mvfaissogd .gt_asterisk {
+#pokgrntocv .gt_asterisk {
 font-size: 100%;
 vertical-align: 0;
 }
-#mvfaissogd .gt_indent_1 {
+#pokgrntocv .gt_indent_1 {
 text-indent: 5px;
 }
-#mvfaissogd .gt_indent_2 {
+#pokgrntocv .gt_indent_2 {
 text-indent: 10px;
 }
-#mvfaissogd .gt_indent_3 {
+#pokgrntocv .gt_indent_3 {
 text-indent: 15px;
 }
-#mvfaissogd .gt_indent_4 {
+#pokgrntocv .gt_indent_4 {
 text-indent: 20px;
 }
-#mvfaissogd .gt_indent_5 {
+#pokgrntocv .gt_indent_5 {
 text-indent: 25px;
 }
-#mvfaissogd .katex-display {
+#pokgrntocv .katex-display {
 display: inline-flex !important;
 margin-bottom: 0.75em !important;
 }
-#mvfaissogd div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
-height: 0px !important;
-}
-</style>
-<table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
-  <thead>
-    <tr class="gt_col_headings">
-      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="mentions_stake_size">mentions_stake_size</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="count">count</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="fraction">fraction</th>
-    </tr>
-  </thead>
-  <tbody class="gt_table_body">
-    <tr><td headers="mentions_stake_size" class="gt_row gt_left">no</td>
-<td headers="count" class="gt_row gt_right">2319</td>
-<td headers="fraction" class="gt_row gt_right">0.772</td></tr>
-    <tr><td headers="mentions_stake_size" class="gt_row gt_left">yes</td>
-<td headers="count" class="gt_row gt_right">478</td>
-<td headers="fraction" class="gt_row gt_right">0.159</td></tr>
-    <tr><td headers="mentions_stake_size" class="gt_row gt_left">unclear</td>
-<td headers="count" class="gt_row gt_right">208</td>
-<td headers="fraction" class="gt_row gt_right">0.069</td></tr>
-  </tbody>
-  
-  
-</table>
-</div>
-<p>We tried another test for if they mention stakes being small:</p>
-<pre><code>You are a careful assistant. Your task is to determine whether a short 
-motivation text in any way indicates that the monetary stakes are small. Note
-that the numbers themselves are not directly meaningful, but we are looking for 
-whether people mention small stake sizes as a reason for them making the 
-redistributive decision - that is, implicitly, they would have done differently 
-with a large stake size. Or saying that small stake size makes this an 
-irrelevant or uninteresting choice.
-
-If so, respond &quot;yes&quot;. Otherwise, respond with &quot;no&quot;.
-
-Answer with only one word: &quot;yes&quot; or &quot;no&quot;.</code></pre>
-<pre><code>## Rows: 3005 Columns: 2
-## ── Column specification ────────────────────────────────────────────────────────
-## Delimiter: &quot;,&quot;
-## chr (1): mentions_small_stakes
-## dbl (1): id
-## 
-## ℹ Use `spec()` to retrieve the full column specification for this data.
-## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
-<div id="fcipundsnt" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#fcipundsnt table {
-font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
--webkit-font-smoothing: antialiased;
--moz-osx-font-smoothing: grayscale;
-}
-#fcipundsnt thead, #fcipundsnt tbody, #fcipundsnt tfoot, #fcipundsnt tr, #fcipundsnt td, #fcipundsnt th {
-border-style: none;
-}
-#fcipundsnt p {
-margin: 0;
-padding: 0;
-}
-#fcipundsnt .gt_table {
-display: table;
-border-collapse: collapse;
-line-height: normal;
-margin-left: auto;
-margin-right: auto;
-color: #333333;
-font-size: 16px;
-font-weight: normal;
-font-style: normal;
-background-color: #FFFFFF;
-width: auto;
-border-top-style: solid;
-border-top-width: 2px;
-border-top-color: #A8A8A8;
-border-right-style: none;
-border-right-width: 2px;
-border-right-color: #D3D3D3;
-border-bottom-style: solid;
-border-bottom-width: 2px;
-border-bottom-color: #A8A8A8;
-border-left-style: none;
-border-left-width: 2px;
-border-left-color: #D3D3D3;
-}
-#fcipundsnt .gt_caption {
-padding-top: 4px;
-padding-bottom: 4px;
-}
-#fcipundsnt .gt_title {
-color: #333333;
-font-size: 125%;
-font-weight: initial;
-padding-top: 4px;
-padding-bottom: 4px;
-padding-left: 5px;
-padding-right: 5px;
-border-bottom-color: #FFFFFF;
-border-bottom-width: 0;
-}
-#fcipundsnt .gt_subtitle {
-color: #333333;
-font-size: 85%;
-font-weight: initial;
-padding-top: 3px;
-padding-bottom: 5px;
-padding-left: 5px;
-padding-right: 5px;
-border-top-color: #FFFFFF;
-border-top-width: 0;
-}
-#fcipundsnt .gt_heading {
-background-color: #FFFFFF;
-text-align: center;
-border-bottom-color: #FFFFFF;
-border-left-style: none;
-border-left-width: 1px;
-border-left-color: #D3D3D3;
-border-right-style: none;
-border-right-width: 1px;
-border-right-color: #D3D3D3;
-}
-#fcipundsnt .gt_bottom_border {
-border-bottom-style: solid;
-border-bottom-width: 2px;
-border-bottom-color: #D3D3D3;
-}
-#fcipundsnt .gt_col_headings {
-border-top-style: solid;
-border-top-width: 2px;
-border-top-color: #D3D3D3;
-border-bottom-style: solid;
-border-bottom-width: 2px;
-border-bottom-color: #D3D3D3;
-border-left-style: none;
-border-left-width: 1px;
-border-left-color: #D3D3D3;
-border-right-style: none;
-border-right-width: 1px;
-border-right-color: #D3D3D3;
-}
-#fcipundsnt .gt_col_heading {
-color: #333333;
-background-color: #FFFFFF;
-font-size: 100%;
-font-weight: normal;
-text-transform: inherit;
-border-left-style: none;
-border-left-width: 1px;
-border-left-color: #D3D3D3;
-border-right-style: none;
-border-right-width: 1px;
-border-right-color: #D3D3D3;
-vertical-align: bottom;
-padding-top: 5px;
-padding-bottom: 6px;
-padding-left: 5px;
-padding-right: 5px;
-overflow-x: hidden;
-}
-#fcipundsnt .gt_column_spanner_outer {
-color: #333333;
-background-color: #FFFFFF;
-font-size: 100%;
-font-weight: normal;
-text-transform: inherit;
-padding-top: 0;
-padding-bottom: 0;
-padding-left: 4px;
-padding-right: 4px;
-}
-#fcipundsnt .gt_column_spanner_outer:first-child {
-padding-left: 0;
-}
-#fcipundsnt .gt_column_spanner_outer:last-child {
-padding-right: 0;
-}
-#fcipundsnt .gt_column_spanner {
-border-bottom-style: solid;
-border-bottom-width: 2px;
-border-bottom-color: #D3D3D3;
-vertical-align: bottom;
-padding-top: 5px;
-padding-bottom: 5px;
-overflow-x: hidden;
-display: inline-block;
-width: 100%;
-}
-#fcipundsnt .gt_spanner_row {
-border-bottom-style: hidden;
-}
-#fcipundsnt .gt_group_heading {
-padding-top: 8px;
-padding-bottom: 8px;
-padding-left: 5px;
-padding-right: 5px;
-color: #333333;
-background-color: #FFFFFF;
-font-size: 100%;
-font-weight: initial;
-text-transform: inherit;
-border-top-style: solid;
-border-top-width: 2px;
-border-top-color: #D3D3D3;
-border-bottom-style: solid;
-border-bottom-width: 2px;
-border-bottom-color: #D3D3D3;
-border-left-style: none;
-border-left-width: 1px;
-border-left-color: #D3D3D3;
-border-right-style: none;
-border-right-width: 1px;
-border-right-color: #D3D3D3;
-vertical-align: middle;
-text-align: left;
-}
-#fcipundsnt .gt_empty_group_heading {
-padding: 0.5px;
-color: #333333;
-background-color: #FFFFFF;
-font-size: 100%;
-font-weight: initial;
-border-top-style: solid;
-border-top-width: 2px;
-border-top-color: #D3D3D3;
-border-bottom-style: solid;
-border-bottom-width: 2px;
-border-bottom-color: #D3D3D3;
-vertical-align: middle;
-}
-#fcipundsnt .gt_from_md > :first-child {
-margin-top: 0;
-}
-#fcipundsnt .gt_from_md > :last-child {
-margin-bottom: 0;
-}
-#fcipundsnt .gt_row {
-padding-top: 8px;
-padding-bottom: 8px;
-padding-left: 5px;
-padding-right: 5px;
-margin: 10px;
-border-top-style: solid;
-border-top-width: 1px;
-border-top-color: #D3D3D3;
-border-left-style: none;
-border-left-width: 1px;
-border-left-color: #D3D3D3;
-border-right-style: none;
-border-right-width: 1px;
-border-right-color: #D3D3D3;
-vertical-align: middle;
-overflow-x: hidden;
-}
-#fcipundsnt .gt_stub {
-color: #333333;
-background-color: #FFFFFF;
-font-size: 100%;
-font-weight: initial;
-text-transform: inherit;
-border-right-style: solid;
-border-right-width: 2px;
-border-right-color: #D3D3D3;
-padding-left: 5px;
-padding-right: 5px;
-}
-#fcipundsnt .gt_stub_row_group {
-color: #333333;
-background-color: #FFFFFF;
-font-size: 100%;
-font-weight: initial;
-text-transform: inherit;
-border-right-style: solid;
-border-right-width: 2px;
-border-right-color: #D3D3D3;
-padding-left: 5px;
-padding-right: 5px;
-vertical-align: top;
-}
-#fcipundsnt .gt_row_group_first td {
-border-top-width: 2px;
-}
-#fcipundsnt .gt_row_group_first th {
-border-top-width: 2px;
-}
-#fcipundsnt .gt_summary_row {
-color: #333333;
-background-color: #FFFFFF;
-text-transform: inherit;
-padding-top: 8px;
-padding-bottom: 8px;
-padding-left: 5px;
-padding-right: 5px;
-}
-#fcipundsnt .gt_first_summary_row {
-border-top-style: solid;
-border-top-color: #D3D3D3;
-}
-#fcipundsnt .gt_first_summary_row.thick {
-border-top-width: 2px;
-}
-#fcipundsnt .gt_last_summary_row {
-padding-top: 8px;
-padding-bottom: 8px;
-padding-left: 5px;
-padding-right: 5px;
-border-bottom-style: solid;
-border-bottom-width: 2px;
-border-bottom-color: #D3D3D3;
-}
-#fcipundsnt .gt_grand_summary_row {
-color: #333333;
-background-color: #FFFFFF;
-text-transform: inherit;
-padding-top: 8px;
-padding-bottom: 8px;
-padding-left: 5px;
-padding-right: 5px;
-}
-#fcipundsnt .gt_first_grand_summary_row {
-padding-top: 8px;
-padding-bottom: 8px;
-padding-left: 5px;
-padding-right: 5px;
-border-top-style: double;
-border-top-width: 6px;
-border-top-color: #D3D3D3;
-}
-#fcipundsnt .gt_last_grand_summary_row_top {
-padding-top: 8px;
-padding-bottom: 8px;
-padding-left: 5px;
-padding-right: 5px;
-border-bottom-style: double;
-border-bottom-width: 6px;
-border-bottom-color: #D3D3D3;
-}
-#fcipundsnt .gt_striped {
-background-color: rgba(128, 128, 128, 0.05);
-}
-#fcipundsnt .gt_table_body {
-border-top-style: solid;
-border-top-width: 2px;
-border-top-color: #D3D3D3;
-border-bottom-style: solid;
-border-bottom-width: 2px;
-border-bottom-color: #D3D3D3;
-}
-#fcipundsnt .gt_footnotes {
-color: #333333;
-background-color: #FFFFFF;
-border-bottom-style: none;
-border-bottom-width: 2px;
-border-bottom-color: #D3D3D3;
-border-left-style: none;
-border-left-width: 2px;
-border-left-color: #D3D3D3;
-border-right-style: none;
-border-right-width: 2px;
-border-right-color: #D3D3D3;
-}
-#fcipundsnt .gt_footnote {
-margin: 0px;
-font-size: 90%;
-padding-top: 4px;
-padding-bottom: 4px;
-padding-left: 5px;
-padding-right: 5px;
-}
-#fcipundsnt .gt_sourcenotes {
-color: #333333;
-background-color: #FFFFFF;
-border-bottom-style: none;
-border-bottom-width: 2px;
-border-bottom-color: #D3D3D3;
-border-left-style: none;
-border-left-width: 2px;
-border-left-color: #D3D3D3;
-border-right-style: none;
-border-right-width: 2px;
-border-right-color: #D3D3D3;
-}
-#fcipundsnt .gt_sourcenote {
-font-size: 90%;
-padding-top: 4px;
-padding-bottom: 4px;
-padding-left: 5px;
-padding-right: 5px;
-}
-#fcipundsnt .gt_left {
-text-align: left;
-}
-#fcipundsnt .gt_center {
-text-align: center;
-}
-#fcipundsnt .gt_right {
-text-align: right;
-font-variant-numeric: tabular-nums;
-}
-#fcipundsnt .gt_font_normal {
-font-weight: normal;
-}
-#fcipundsnt .gt_font_bold {
-font-weight: bold;
-}
-#fcipundsnt .gt_font_italic {
-font-style: italic;
-}
-#fcipundsnt .gt_super {
-font-size: 65%;
-}
-#fcipundsnt .gt_footnote_marks {
-font-size: 75%;
-vertical-align: 0.4em;
-position: initial;
-}
-#fcipundsnt .gt_asterisk {
-font-size: 100%;
-vertical-align: 0;
-}
-#fcipundsnt .gt_indent_1 {
-text-indent: 5px;
-}
-#fcipundsnt .gt_indent_2 {
-text-indent: 10px;
-}
-#fcipundsnt .gt_indent_3 {
-text-indent: 15px;
-}
-#fcipundsnt .gt_indent_4 {
-text-indent: 20px;
-}
-#fcipundsnt .gt_indent_5 {
-text-indent: 25px;
-}
-#fcipundsnt .katex-display {
-display: inline-flex !important;
-margin-bottom: 0.75em !important;
-}
-#fcipundsnt div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
-height: 0px !important;
-}
-</style>
-<table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
-  <thead>
-    <tr class="gt_col_headings">
-      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="mentions_small_stakes">mentions_small_stakes</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="count">count</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="fraction">fraction</th>
-    </tr>
-  </thead>
-  <tbody class="gt_table_body">
-    <tr><td headers="mentions_small_stakes" class="gt_row gt_left">no</td>
-<td headers="count" class="gt_row gt_right">2856</td>
-<td headers="fraction" class="gt_row gt_right">0.950</td></tr>
-    <tr><td headers="mentions_small_stakes" class="gt_row gt_left">yes</td>
-<td headers="count" class="gt_row gt_right">75</td>
-<td headers="fraction" class="gt_row gt_right">0.025</td></tr>
-    <tr><td headers="mentions_small_stakes" class="gt_row gt_left">unclear</td>
-<td headers="count" class="gt_row gt_right">74</td>
-<td headers="fraction" class="gt_row gt_right">0.025</td></tr>
-  </tbody>
-  
-  
-</table>
-</div>
-</div>
-<div id="how-well-does-coding-work-on-overlaps" class="section level1">
-<h1>How well does coding work on overlaps?</h1>
-<p>Each of the two manual classifiers classified 100 motivations. There
-is a shared set of 20 motivations classified by both manual classifiers.
-We can also compare this to what the gpt did on the 180 observations
-where the gpt predicted on the observations used for training.</p>
-<p>The manual classifiers are “B1” and “B2”, “predicted_label” is the
-gpt.</p>
-<pre><code>## Rows: 10 Columns: 2
-## ── Column specification ────────────────────────────────────────────────────────
-## Delimiter: &quot;,&quot;
-## chr (1): classification
-## dbl (1): classification_code
-## 
-## ℹ Use `spec()` to retrieve the full column specification for this data.
-## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-## ℹ Using &quot;&#39;,&#39;&quot; as decimal and &quot;&#39;.&#39;&quot; as grouping mark. Use `read_delim()` for more control.
-## 
-## New names:
-## Rows: 100 Columns: 5
-## ── Column specification ────────────────────────────────────────────────────────
-## Delimiter: &quot;;&quot;
-## chr (3): Category, ...4, situationtext
-## dbl (2): id, classification_code
-## 
-## ℹ Use `spec()` to retrieve the full column specification for this data.
-## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-## Joining with `by = join_by(classification_code)`
-## ℹ Using &quot;&#39;,&#39;&quot; as decimal and &quot;&#39;.&#39;&quot; as grouping mark. Use `read_delim()` for more control.
-## 
-## Rows: 100 Columns: 3
-## ── Column specification ────────────────────────────────────────────────────────
-## Delimiter: &quot;;&quot;
-## chr (1): situationtext
-## dbl (2): classification_code, id
-## 
-## ℹ Use `spec()` to retrieve the full column specification for this data.
-## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-## Joining with `by = join_by(classification_code)`
-## Joining with `by = join_by(id)`
-## Joining with `by = join_by(id)`</code></pre>
-<pre><code>## Warning: Since gt v0.6.0 `fmt_missing()` is deprecated and will soon be removed.
-## ℹ Use `sub_missing()` instead.
-## This warning is displayed once every 8 hours.</code></pre>
-<div id="pcxroykcwl" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#pcxroykcwl table {
-font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
--webkit-font-smoothing: antialiased;
--moz-osx-font-smoothing: grayscale;
-}
-#pcxroykcwl thead, #pcxroykcwl tbody, #pcxroykcwl tfoot, #pcxroykcwl tr, #pcxroykcwl td, #pcxroykcwl th {
-border-style: none;
-}
-#pcxroykcwl p {
-margin: 0;
-padding: 0;
-}
-#pcxroykcwl .gt_table {
-display: table;
-border-collapse: collapse;
-line-height: normal;
-margin-left: auto;
-margin-right: auto;
-color: #333333;
-font-size: 16px;
-font-weight: normal;
-font-style: normal;
-background-color: #FFFFFF;
-width: auto;
-border-top-style: solid;
-border-top-width: 2px;
-border-top-color: #A8A8A8;
-border-right-style: none;
-border-right-width: 2px;
-border-right-color: #D3D3D3;
-border-bottom-style: solid;
-border-bottom-width: 2px;
-border-bottom-color: #A8A8A8;
-border-left-style: none;
-border-left-width: 2px;
-border-left-color: #D3D3D3;
-}
-#pcxroykcwl .gt_caption {
-padding-top: 4px;
-padding-bottom: 4px;
-}
-#pcxroykcwl .gt_title {
-color: #333333;
-font-size: 125%;
-font-weight: initial;
-padding-top: 4px;
-padding-bottom: 4px;
-padding-left: 5px;
-padding-right: 5px;
-border-bottom-color: #FFFFFF;
-border-bottom-width: 0;
-}
-#pcxroykcwl .gt_subtitle {
-color: #333333;
-font-size: 85%;
-font-weight: initial;
-padding-top: 3px;
-padding-bottom: 5px;
-padding-left: 5px;
-padding-right: 5px;
-border-top-color: #FFFFFF;
-border-top-width: 0;
-}
-#pcxroykcwl .gt_heading {
-background-color: #FFFFFF;
-text-align: center;
-border-bottom-color: #FFFFFF;
-border-left-style: none;
-border-left-width: 1px;
-border-left-color: #D3D3D3;
-border-right-style: none;
-border-right-width: 1px;
-border-right-color: #D3D3D3;
-}
-#pcxroykcwl .gt_bottom_border {
-border-bottom-style: solid;
-border-bottom-width: 2px;
-border-bottom-color: #D3D3D3;
-}
-#pcxroykcwl .gt_col_headings {
-border-top-style: solid;
-border-top-width: 2px;
-border-top-color: #D3D3D3;
-border-bottom-style: solid;
-border-bottom-width: 2px;
-border-bottom-color: #D3D3D3;
-border-left-style: none;
-border-left-width: 1px;
-border-left-color: #D3D3D3;
-border-right-style: none;
-border-right-width: 1px;
-border-right-color: #D3D3D3;
-}
-#pcxroykcwl .gt_col_heading {
-color: #333333;
-background-color: #FFFFFF;
-font-size: 100%;
-font-weight: normal;
-text-transform: inherit;
-border-left-style: none;
-border-left-width: 1px;
-border-left-color: #D3D3D3;
-border-right-style: none;
-border-right-width: 1px;
-border-right-color: #D3D3D3;
-vertical-align: bottom;
-padding-top: 5px;
-padding-bottom: 6px;
-padding-left: 5px;
-padding-right: 5px;
-overflow-x: hidden;
-}
-#pcxroykcwl .gt_column_spanner_outer {
-color: #333333;
-background-color: #FFFFFF;
-font-size: 100%;
-font-weight: normal;
-text-transform: inherit;
-padding-top: 0;
-padding-bottom: 0;
-padding-left: 4px;
-padding-right: 4px;
-}
-#pcxroykcwl .gt_column_spanner_outer:first-child {
-padding-left: 0;
-}
-#pcxroykcwl .gt_column_spanner_outer:last-child {
-padding-right: 0;
-}
-#pcxroykcwl .gt_column_spanner {
-border-bottom-style: solid;
-border-bottom-width: 2px;
-border-bottom-color: #D3D3D3;
-vertical-align: bottom;
-padding-top: 5px;
-padding-bottom: 5px;
-overflow-x: hidden;
-display: inline-block;
-width: 100%;
-}
-#pcxroykcwl .gt_spanner_row {
-border-bottom-style: hidden;
-}
-#pcxroykcwl .gt_group_heading {
-padding-top: 8px;
-padding-bottom: 8px;
-padding-left: 5px;
-padding-right: 5px;
-color: #333333;
-background-color: #FFFFFF;
-font-size: 100%;
-font-weight: initial;
-text-transform: inherit;
-border-top-style: solid;
-border-top-width: 2px;
-border-top-color: #D3D3D3;
-border-bottom-style: solid;
-border-bottom-width: 2px;
-border-bottom-color: #D3D3D3;
-border-left-style: none;
-border-left-width: 1px;
-border-left-color: #D3D3D3;
-border-right-style: none;
-border-right-width: 1px;
-border-right-color: #D3D3D3;
-vertical-align: middle;
-text-align: left;
-}
-#pcxroykcwl .gt_empty_group_heading {
-padding: 0.5px;
-color: #333333;
-background-color: #FFFFFF;
-font-size: 100%;
-font-weight: initial;
-border-top-style: solid;
-border-top-width: 2px;
-border-top-color: #D3D3D3;
-border-bottom-style: solid;
-border-bottom-width: 2px;
-border-bottom-color: #D3D3D3;
-vertical-align: middle;
-}
-#pcxroykcwl .gt_from_md > :first-child {
-margin-top: 0;
-}
-#pcxroykcwl .gt_from_md > :last-child {
-margin-bottom: 0;
-}
-#pcxroykcwl .gt_row {
-padding-top: 8px;
-padding-bottom: 8px;
-padding-left: 5px;
-padding-right: 5px;
-margin: 10px;
-border-top-style: solid;
-border-top-width: 1px;
-border-top-color: #D3D3D3;
-border-left-style: none;
-border-left-width: 1px;
-border-left-color: #D3D3D3;
-border-right-style: none;
-border-right-width: 1px;
-border-right-color: #D3D3D3;
-vertical-align: middle;
-overflow-x: hidden;
-}
-#pcxroykcwl .gt_stub {
-color: #333333;
-background-color: #FFFFFF;
-font-size: 100%;
-font-weight: initial;
-text-transform: inherit;
-border-right-style: solid;
-border-right-width: 2px;
-border-right-color: #D3D3D3;
-padding-left: 5px;
-padding-right: 5px;
-}
-#pcxroykcwl .gt_stub_row_group {
-color: #333333;
-background-color: #FFFFFF;
-font-size: 100%;
-font-weight: initial;
-text-transform: inherit;
-border-right-style: solid;
-border-right-width: 2px;
-border-right-color: #D3D3D3;
-padding-left: 5px;
-padding-right: 5px;
-vertical-align: top;
-}
-#pcxroykcwl .gt_row_group_first td {
-border-top-width: 2px;
-}
-#pcxroykcwl .gt_row_group_first th {
-border-top-width: 2px;
-}
-#pcxroykcwl .gt_summary_row {
-color: #333333;
-background-color: #FFFFFF;
-text-transform: inherit;
-padding-top: 8px;
-padding-bottom: 8px;
-padding-left: 5px;
-padding-right: 5px;
-}
-#pcxroykcwl .gt_first_summary_row {
-border-top-style: solid;
-border-top-color: #D3D3D3;
-}
-#pcxroykcwl .gt_first_summary_row.thick {
-border-top-width: 2px;
-}
-#pcxroykcwl .gt_last_summary_row {
-padding-top: 8px;
-padding-bottom: 8px;
-padding-left: 5px;
-padding-right: 5px;
-border-bottom-style: solid;
-border-bottom-width: 2px;
-border-bottom-color: #D3D3D3;
-}
-#pcxroykcwl .gt_grand_summary_row {
-color: #333333;
-background-color: #FFFFFF;
-text-transform: inherit;
-padding-top: 8px;
-padding-bottom: 8px;
-padding-left: 5px;
-padding-right: 5px;
-}
-#pcxroykcwl .gt_first_grand_summary_row {
-padding-top: 8px;
-padding-bottom: 8px;
-padding-left: 5px;
-padding-right: 5px;
-border-top-style: double;
-border-top-width: 6px;
-border-top-color: #D3D3D3;
-}
-#pcxroykcwl .gt_last_grand_summary_row_top {
-padding-top: 8px;
-padding-bottom: 8px;
-padding-left: 5px;
-padding-right: 5px;
-border-bottom-style: double;
-border-bottom-width: 6px;
-border-bottom-color: #D3D3D3;
-}
-#pcxroykcwl .gt_striped {
-background-color: rgba(128, 128, 128, 0.05);
-}
-#pcxroykcwl .gt_table_body {
-border-top-style: solid;
-border-top-width: 2px;
-border-top-color: #D3D3D3;
-border-bottom-style: solid;
-border-bottom-width: 2px;
-border-bottom-color: #D3D3D3;
-}
-#pcxroykcwl .gt_footnotes {
-color: #333333;
-background-color: #FFFFFF;
-border-bottom-style: none;
-border-bottom-width: 2px;
-border-bottom-color: #D3D3D3;
-border-left-style: none;
-border-left-width: 2px;
-border-left-color: #D3D3D3;
-border-right-style: none;
-border-right-width: 2px;
-border-right-color: #D3D3D3;
-}
-#pcxroykcwl .gt_footnote {
-margin: 0px;
-font-size: 90%;
-padding-top: 4px;
-padding-bottom: 4px;
-padding-left: 5px;
-padding-right: 5px;
-}
-#pcxroykcwl .gt_sourcenotes {
-color: #333333;
-background-color: #FFFFFF;
-border-bottom-style: none;
-border-bottom-width: 2px;
-border-bottom-color: #D3D3D3;
-border-left-style: none;
-border-left-width: 2px;
-border-left-color: #D3D3D3;
-border-right-style: none;
-border-right-width: 2px;
-border-right-color: #D3D3D3;
-}
-#pcxroykcwl .gt_sourcenote {
-font-size: 90%;
-padding-top: 4px;
-padding-bottom: 4px;
-padding-left: 5px;
-padding-right: 5px;
-}
-#pcxroykcwl .gt_left {
-text-align: left;
-}
-#pcxroykcwl .gt_center {
-text-align: center;
-}
-#pcxroykcwl .gt_right {
-text-align: right;
-font-variant-numeric: tabular-nums;
-}
-#pcxroykcwl .gt_font_normal {
-font-weight: normal;
-}
-#pcxroykcwl .gt_font_bold {
-font-weight: bold;
-}
-#pcxroykcwl .gt_font_italic {
-font-style: italic;
-}
-#pcxroykcwl .gt_super {
-font-size: 65%;
-}
-#pcxroykcwl .gt_footnote_marks {
-font-size: 75%;
-vertical-align: 0.4em;
-position: initial;
-}
-#pcxroykcwl .gt_asterisk {
-font-size: 100%;
-vertical-align: 0;
-}
-#pcxroykcwl .gt_indent_1 {
-text-indent: 5px;
-}
-#pcxroykcwl .gt_indent_2 {
-text-indent: 10px;
-}
-#pcxroykcwl .gt_indent_3 {
-text-indent: 15px;
-}
-#pcxroykcwl .gt_indent_4 {
-text-indent: 20px;
-}
-#pcxroykcwl .gt_indent_5 {
-text-indent: 25px;
-}
-#pcxroykcwl .katex-display {
-display: inline-flex !important;
-margin-bottom: 0.75em !important;
-}
-#pcxroykcwl div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+#pokgrntocv div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
 height: 0px !important;
 }
 </style>
@@ -2131,933 +887,192 @@ height: 0px !important;
   <thead>
     <tr class="gt_col_headings">
       <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="id">id</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="B1">B1</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="B2">B2</th>
       <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="predicted_label">predicted_label</th>
       <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="motivation">motivation</th>
     </tr>
   </thead>
   <tbody class="gt_table_body">
-    <tr><td headers="id" class="gt_row gt_right">14</td>
-<td headers="B1" class="gt_row gt_left">no reason</td>
-<td headers="B2" class="gt_row gt_left"><br /></td>
-<td headers="predicted_label" class="gt_row gt_left">no reason</td>
-<td headers="motivation" class="gt_row gt_left">the reward effort is slightly while fairness and merit based performance</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">42</td>
-<td headers="B1" class="gt_row gt_left">libertarian</td>
-<td headers="B2" class="gt_row gt_left"><br /></td>
-<td headers="predicted_label" class="gt_row gt_left">libertarian</td>
-<td headers="motivation" class="gt_row gt_left">The rules of how the money would be distributed were clearly stated and I&#39;m assuming that Participant X was aware of this, so it&#39;s not fair to penalize Participant Y and take away from their earnings when they did nothing wrong.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">137</td>
-<td headers="B1" class="gt_row gt_left"><br /></td>
-<td headers="B2" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="motivation" class="gt_row gt_left">it was the effort of y to earn his money</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">148</td>
-<td headers="B1" class="gt_row gt_left"><br /></td>
-<td headers="B2" class="gt_row gt_left">libertarian</td>
-<td headers="predicted_label" class="gt_row gt_left">libertarian</td>
-<td headers="motivation" class="gt_row gt_left">based on the rules, person Y should get all of the money for solving significantly more problems than person X.  Person Y should not be penalized just to make things appear more &#39;fair&#39; toward person X.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">151</td>
-<td headers="B1" class="gt_row gt_left">libertarian</td>
-<td headers="B2" class="gt_row gt_left"><br /></td>
-<td headers="predicted_label" class="gt_row gt_left">libertarian</td>
-<td headers="motivation" class="gt_row gt_left">It is fair not to distribute anything because the rules were clear, and earnings were to be based on relative performance, and you solved for more than 15 times times X 10</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">164</td>
-<td headers="B1" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="B2" class="gt_row gt_left"><br /></td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="motivation" class="gt_row gt_left">Both exhibited good effort</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">166</td>
-<td headers="B1" class="gt_row gt_left"><br /></td>
-<td headers="B2" class="gt_row gt_left">no reason</td>
-<td headers="predicted_label" class="gt_row gt_left">no reason</td>
-<td headers="motivation" class="gt_row gt_left">want to give them at least a little</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">176</td>
-<td headers="B1" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="B2" class="gt_row gt_left"><br /></td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="motivation" class="gt_row gt_left">X should be compensated for trying.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">177</td>
-<td headers="B1" class="gt_row gt_left">meritocrat - margin matters</td>
-<td headers="B2" class="gt_row gt_left"><br /></td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin matters</td>
-<td headers="motivation" class="gt_row gt_left">I felt it was fair to give the other person at least some bonus because they solved only 1 less problem correctly.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">209</td>
-<td headers="B1" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="B2" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="motivation" class="gt_row gt_left">since they both took their time to solve the tasks they both deserve to receive a bonus, i allocated 2 dollars to participant Y because he solved more and the rest $1.15 goes tp participant X</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">216</td>
-<td headers="B1" class="gt_row gt_left"><br /></td>
-<td headers="B2" class="gt_row gt_left">libertarian</td>
-<td headers="predicted_label" class="gt_row gt_left">libertarian</td>
-<td headers="motivation" class="gt_row gt_left">I don&#39;t like the idea of wealth redistribution, even in tiny amounts like this.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">227</td>
-<td headers="B1" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="B2" class="gt_row gt_left"><br /></td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="motivation" class="gt_row gt_left">I considered participant X&#39;s effort hence giving the 1 dollar</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">233</td>
-<td headers="B1" class="gt_row gt_left">libertarian</td>
-<td headers="B2" class="gt_row gt_left"><br /></td>
-<td headers="predicted_label" class="gt_row gt_left">libertarian</td>
-<td headers="motivation" class="gt_row gt_left">Participant Y solved double the problems that participant X solved. So I figured it was fair to stick with the way they were told the money would be distributed. I gave it all to the participant who solved the most problems.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">296</td>
-<td headers="B1" class="gt_row gt_left">meritocrat - margin matters</td>
-<td headers="B2" class="gt_row gt_left"><br /></td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin matters</td>
-<td headers="motivation" class="gt_row gt_left">They participated and answered few. Just gave them the share of their earning amongst the total of 25 in that they tried and didn&#39;t manage to solve more. Was motivated by their effort</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">314</td>
-<td headers="B1" class="gt_row gt_left">meritocrat - margin matters</td>
-<td headers="B2" class="gt_row gt_left"><br /></td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="motivation" class="gt_row gt_left">Assuming Player X tried their best, they deserve something for their time.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">329</td>
-<td headers="B1" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="B2" class="gt_row gt_left"><br /></td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="motivation" class="gt_row gt_left">participant x also participated it is only fair if he is paid something for the time he took to answer the questions</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">336</td>
-<td headers="B1" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="B2" class="gt_row gt_left"><br /></td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="motivation" class="gt_row gt_left">Y earned the money fairly by solving more problems under the same conditions. Changing this now could undermine the principle of merit-based earnings.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">362</td>
-<td headers="B1" class="gt_row gt_left"><br /></td>
-<td headers="B2" class="gt_row gt_left">libertarian</td>
-<td headers="predicted_label" class="gt_row gt_left">libertarian</td>
-<td headers="motivation" class="gt_row gt_left">It may feel fair to share the earnings for effort, but this would go against the agreed competitive incentive structure if something was given</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">372</td>
-<td headers="B1" class="gt_row gt_left">libertarian</td>
-<td headers="B2" class="gt_row gt_left">libertarian</td>
-<td headers="predicted_label" class="gt_row gt_left">libertarian</td>
-<td headers="motivation" class="gt_row gt_left">The rules were to only compensate whoever answered more questions than the other.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">384</td>
-<td headers="B1" class="gt_row gt_left"><br /></td>
-<td headers="B2" class="gt_row gt_left">libertarian</td>
-<td headers="predicted_label" class="gt_row gt_left">libertarian</td>
-<td headers="motivation" class="gt_row gt_left">The motivation for the distribution decision was anchored on the agreed standard rules beforehand with participant Y earning the reward as a greed. As such, taking from participants would undermine the game expectations and fairness.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">401</td>
-<td headers="B1" class="gt_row gt_left">fairness</td>
-<td headers="B2" class="gt_row gt_left"><br /></td>
-<td headers="predicted_label" class="gt_row gt_left">fairness</td>
-<td headers="motivation" class="gt_row gt_left">fairness over competition</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">402</td>
-<td headers="B1" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="B2" class="gt_row gt_left"><br /></td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="motivation" class="gt_row gt_left">Candidate X had nothing even after completing 10 problems</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">515</td>
-<td headers="B1" class="gt_row gt_left">compensate</td>
-<td headers="B2" class="gt_row gt_left"><br /></td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="motivation" class="gt_row gt_left">i want participant Y to have a share also</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">525</td>
-<td headers="B1" class="gt_row gt_left"><br /></td>
-<td headers="B2" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="motivation" class="gt_row gt_left">I think that they should still be compensated for participating. They can get the extra cents made.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">530</td>
-<td headers="B1" class="gt_row gt_left"><br /></td>
-<td headers="B2" class="gt_row gt_left">libertarian</td>
-<td headers="predicted_label" class="gt_row gt_left">libertarian</td>
-<td headers="motivation" class="gt_row gt_left">Participant Y should keep their full $2.70, and participant X should receive $0.00, as per the original terms of the task. This preserves the integrity of the incentive system and rewards performance as agreed.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">559</td>
-<td headers="B1" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="B2" class="gt_row gt_left"><br /></td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="motivation" class="gt_row gt_left">the fact that the participant participated should be remunerated</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">568</td>
-<td headers="B1" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="B2" class="gt_row gt_left">meritocrat - margin matters</td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin matters</td>
-<td headers="motivation" class="gt_row gt_left">Although Participant Y solved 16 problems and Participant X solved 12 problems, I feel both should be compensated. Participant X should get something for solving the problems although they did not complete as many.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">591</td>
-<td headers="B1" class="gt_row gt_left"><br /></td>
-<td headers="B2" class="gt_row gt_left">meritocrat - margin matters</td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin matters</td>
-<td headers="motivation" class="gt_row gt_left">Participant X did almost as well and deserved some compensation, but not as much as Y.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">605</td>
-<td headers="B1" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="B2" class="gt_row gt_left"><br /></td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="motivation" class="gt_row gt_left">My decision was based on the fact that both participated and the chances that one would end up with nothing and one would end up with all would not be fair. The amount was able to be split to a more even amount for both participants. Also, I feel according to the rules the winner should still benefit more than the loser and thought that something slightly more/less than half would be sufficient enough. This is all due to the fact that I , being the decision maker, is aware of the rules for the participants of the previous study.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">624</td>
-<td headers="B1" class="gt_row gt_left"><br /></td>
-<td headers="B2" class="gt_row gt_left">fairness</td>
-<td headers="predicted_label" class="gt_row gt_left">fairness</td>
-<td headers="motivation" class="gt_row gt_left">I wanted to be fair to each participant</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">643</td>
-<td headers="B1" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="B2" class="gt_row gt_left"><br /></td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="motivation" class="gt_row gt_left">Participant Y should earn more, but participant X should also earn something.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">666</td>
-<td headers="B1" class="gt_row gt_left"><br /></td>
-<td headers="B2" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="motivation" class="gt_row gt_left">Given that they all made efforts to solve the problem and that, I believe each should be paid based on the efforts made</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">690</td>
-<td headers="B1" class="gt_row gt_left"><br /></td>
-<td headers="B2" class="gt_row gt_left">libertarian</td>
-<td headers="predicted_label" class="gt_row gt_left">libertarian</td>
-<td headers="motivation" class="gt_row gt_left">I did not choose to redistribute any of participant Y&#39;s earnings based on very clear rules from the beginning-the participants would only be paid if they performed as well as if not better than their partner. Both participants agreed to those terms, and Y earned the money correctly by doing better than X. To alter the outcome now would cast an undeserving shadow of doubt on the fairness and transparency of the agreement that had been initially reached.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">700</td>
-<td headers="B1" class="gt_row gt_left"><br /></td>
-<td headers="B2" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="motivation" class="gt_row gt_left">Participant X showed good results and should receive a small bonus</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">731</td>
-<td headers="B1" class="gt_row gt_left">meritocrat - margin matters</td>
-<td headers="B2" class="gt_row gt_left">meritocrat - margin matters</td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin matters</td>
-<td headers="motivation" class="gt_row gt_left">The one participant guessed slightly less correct, so I felt like they deserved some money, but not fully half.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">746</td>
-<td headers="B1" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="B2" class="gt_row gt_left"><br /></td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="motivation" class="gt_row gt_left">I was just trying to make it even. They both tried hard.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">772</td>
-<td headers="B1" class="gt_row gt_left"><br /></td>
-<td headers="B2" class="gt_row gt_left">incentives</td>
-<td headers="predicted_label" class="gt_row gt_left">incentives</td>
-<td headers="motivation" class="gt_row gt_left">It will be best to make the candidate have a feel of some rewards to make the candidate try harder</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">782</td>
-<td headers="B1" class="gt_row gt_left"><br /></td>
-<td headers="B2" class="gt_row gt_left">libertarian</td>
-<td headers="predicted_label" class="gt_row gt_left">libertarian</td>
-<td headers="motivation" class="gt_row gt_left">I chose not to redistribute earnings because Participant Y performed significantly better than Participant X and earned their reward according to the rules both agreed to beforehand. Redistributing would undermine the fairness of a system based on relative performance and would penalize Y despite their superior results. Upholding the original rules maintains consistency and respects the integrity of the task.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">789</td>
-<td headers="B1" class="gt_row gt_left"><br /></td>
-<td headers="B2" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="motivation" class="gt_row gt_left">It&#39;s only fair to get the share since he participated.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">810</td>
-<td headers="B1" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="B2" class="gt_row gt_left"><br /></td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="motivation" class="gt_row gt_left">Participant x participated and answered 8 questions, as a little reward for taking part in the participation.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">815</td>
-<td headers="B1" class="gt_row gt_left"><br /></td>
-<td headers="B2" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="motivation" class="gt_row gt_left">Looking at the distribution it is clear to me that player x worked hard and put in effort. I don&#39;t think it is fair that reward is only tied to success. While a higher reward being given to Y for being more successful is fine, I think as long as both players made an effort there should be some reward, that feels more fair to me. Therefore I have X $1 because that felt like a more fair allocation to me.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">823</td>
-<td headers="B1" class="gt_row gt_left"><br /></td>
-<td headers="B2" class="gt_row gt_left">fairness</td>
-<td headers="predicted_label" class="gt_row gt_left">egalitarian</td>
-<td headers="motivation" class="gt_row gt_left">Fairness and equal sharing</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">853</td>
-<td headers="B1" class="gt_row gt_left">egalitarian</td>
-<td headers="B2" class="gt_row gt_left"><br /></td>
-<td headers="predicted_label" class="gt_row gt_left">egalitarian</td>
-<td headers="motivation" class="gt_row gt_left">Since X earned 2.1, I decided to simply give half of it to Y. That way they both have an equal amount.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">857</td>
-<td headers="B1" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="B2" class="gt_row gt_left"><br /></td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="motivation" class="gt_row gt_left">Both worked hard and deserve some compensation for their efforts.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">1004</td>
-<td headers="B1" class="gt_row gt_left"><br /></td>
-<td headers="B2" class="gt_row gt_left">libertarian</td>
-<td headers="predicted_label" class="gt_row gt_left">libertarian</td>
-<td headers="motivation" class="gt_row gt_left">The answer is 0 because the rules said only the person who solved at least as many problems as the other would earn money. Since Y solved more than X, Y earned the money fairly. Changing that would go against the rules both agreed to.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">1049</td>
-<td headers="B1" class="gt_row gt_left"><br /></td>
-<td headers="B2" class="gt_row gt_left">meritocrat - margin matters</td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin matters</td>
-<td headers="motivation" class="gt_row gt_left">Participant X was 2 problems short on what Participant Y solve which involved some effort. Fraction earning goes to acknowledge that effort.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">1067</td>
-<td headers="B1" class="gt_row gt_left">meritocrat - margin matters</td>
-<td headers="B2" class="gt_row gt_left"><br /></td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin matters</td>
-<td headers="motivation" class="gt_row gt_left">BECAUSE HE PARTICIPATED IN DOING SLIGHTLY LESS QUESTIONS THAN y</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">1133</td>
-<td headers="B1" class="gt_row gt_left">fairness</td>
-<td headers="B2" class="gt_row gt_left">fairness</td>
-<td headers="predicted_label" class="gt_row gt_left">fairness</td>
-<td headers="motivation" class="gt_row gt_left">It promotes fairness.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">1139</td>
-<td headers="B1" class="gt_row gt_left"><br /></td>
-<td headers="B2" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="motivation" class="gt_row gt_left">Person x took part in the work so compensating them would be good</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">1219</td>
-<td headers="B1" class="gt_row gt_left">meritocrat - margin matters</td>
-<td headers="B2" class="gt_row gt_left">meritocrat - margin matters</td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin matters</td>
-<td headers="motivation" class="gt_row gt_left">Because he solved 1 less than participant Y hence equal distribution seemed a bit fair</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">1222</td>
-<td headers="B1" class="gt_row gt_left">meritocrat - margin matters</td>
-<td headers="B2" class="gt_row gt_left"><br /></td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin matters</td>
-<td headers="motivation" class="gt_row gt_left">Participant Y solved only 3 more problems than participant X</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">1223</td>
-<td headers="B1" class="gt_row gt_left"><br /></td>
-<td headers="B2" class="gt_row gt_left">egalitarian</td>
-<td headers="predicted_label" class="gt_row gt_left">egalitarian</td>
-<td headers="motivation" class="gt_row gt_left">I wanted to make them have equal amount</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">1227</td>
-<td headers="B1" class="gt_row gt_left"><br /></td>
-<td headers="B2" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="motivation" class="gt_row gt_left">I think the other participant deserves a little something for their work, even though they didn&#39;t outperform. I didn&#39;t want to take away too much from the winner&#39;s earnings as this goes against what they were told about payments.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">1228</td>
-<td headers="B1" class="gt_row gt_left"><br /></td>
-<td headers="B2" class="gt_row gt_left">misunderstand</td>
-<td headers="predicted_label" class="gt_row gt_left">egalitarian</td>
-<td headers="motivation" class="gt_row gt_left">So far as they are partners the reward should be shared, if one is not selfless enough he can just give any amount he wants to give.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">1230</td>
-<td headers="B1" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="B2" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="motivation" class="gt_row gt_left">The main motivation is to acknowledge the efforts made by the other participant. It feels like a fair decision.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">1252</td>
-<td headers="B1" class="gt_row gt_left">misunderstand</td>
-<td headers="B2" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="predicted_label" class="gt_row gt_left">misunderstand</td>
-<td headers="motivation" class="gt_row gt_left">maybe I failed to understand you fully but if one is getting 15 cents for each questin answered correctly, then participant x deserved to get sth agter answering 20 correct questions. Thats why I sacrificed 1 dollar.,</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">1270</td>
-<td headers="B1" class="gt_row gt_left">meritocrat - margin matters</td>
-<td headers="B2" class="gt_row gt_left"><br /></td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin matters</td>
-<td headers="motivation" class="gt_row gt_left">I would give 1.00 to participant X to recognize their significantly greater effort and performance compared to participant Y.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">1278</td>
-<td headers="B1" class="gt_row gt_left"><br /></td>
-<td headers="B2" class="gt_row gt_left">incentives</td>
-<td headers="predicted_label" class="gt_row gt_left">incentives</td>
-<td headers="motivation" class="gt_row gt_left">Redistributing it would give the loser the impression that this sort of thing would happen again.  They might rely on it happening again in the future, or even feel entitled to it.  Also, redistributing it would have demotivated the winner so they wouldn&#39;t have tried as hard in the future and would have looked for other people to do well around.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">1301</td>
-<td headers="B1" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="B2" class="gt_row gt_left"><br /></td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="motivation" class="gt_row gt_left">Participant X should earn at least something for participating, but not more than participant Y</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">1314</td>
-<td headers="B1" class="gt_row gt_left">libertarian</td>
-<td headers="B2" class="gt_row gt_left"><br /></td>
-<td headers="predicted_label" class="gt_row gt_left">libertarian</td>
-<td headers="motivation" class="gt_row gt_left">The participants were told upfront how earnings would be determined and paid out.  They did not have to participate.  Everything was clear and fair.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">1335</td>
-<td headers="B1" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="B2" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="motivation" class="gt_row gt_left">Y did better and should therefore benefit more than X</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">1338</td>
-<td headers="B1" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="B2" class="gt_row gt_left"><br /></td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="motivation" class="gt_row gt_left">The person solved less problems than the other party and that is the payment</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">1342</td>
-<td headers="B1" class="gt_row gt_left">no reason</td>
-<td headers="B2" class="gt_row gt_left"><br /></td>
-<td headers="predicted_label" class="gt_row gt_left">no reason</td>
-<td headers="motivation" class="gt_row gt_left">i think that the they both have the same amount of things</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">1363</td>
-<td headers="B1" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="B2" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="motivation" class="gt_row gt_left">I chose to allocate some of the earnings of participant Y to participant X since he solved fewer problems, and it would be fair to redistribute some in this instance.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">1365</td>
-<td headers="B1" class="gt_row gt_left">no reason</td>
-<td headers="B2" class="gt_row gt_left"><br /></td>
-<td headers="predicted_label" class="gt_row gt_left">libertarian</td>
-<td headers="motivation" class="gt_row gt_left">Because the participant get the score of 11 which is a trial.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">1400</td>
-<td headers="B1" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="B2" class="gt_row gt_left"><br /></td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="motivation" class="gt_row gt_left">I thought it was fair that the person who did the work should get paid more.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">1417</td>
-<td headers="B1" class="gt_row gt_left">misunderstand</td>
-<td headers="B2" class="gt_row gt_left"><br /></td>
-<td headers="predicted_label" class="gt_row gt_left">no reason</td>
-<td headers="motivation" class="gt_row gt_left">If I distribute 0, will receive zero and I will get 2.85</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">1481</td>
-<td headers="B1" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="B2" class="gt_row gt_left">meritocrat - margin matters</td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin matters</td>
-<td headers="motivation" class="gt_row gt_left">Xdid answer 11 questions. Even though Yanswered 4 more wuestions-I feel X should be given something for trying to answer as many as she could.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">1488</td>
-<td headers="B1" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="B2" class="gt_row gt_left"><br /></td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="motivation" class="gt_row gt_left">If the decision-making task was purely chance, I would say to share the money. But if time and thought went into solving the problems, Participant Y earned the money. That was based on skill and intellect.  I am okay with getting paid for skill and intellect.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">1497</td>
-<td headers="B1" class="gt_row gt_left">meritocrat - margin matters</td>
-<td headers="B2" class="gt_row gt_left">meritocrat - margin matters</td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin matters</td>
-<td headers="motivation" class="gt_row gt_left">I feel like participant X lost by 6 to participant Y. Because of their results being close, I feel like participant X should b rewarded something for solving some right.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">1539</td>
-<td headers="B1" class="gt_row gt_left"><br /></td>
-<td headers="B2" class="gt_row gt_left">no reason</td>
-<td headers="predicted_label" class="gt_row gt_left">no reason</td>
-<td headers="motivation" class="gt_row gt_left">It was random</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">1553</td>
-<td headers="B1" class="gt_row gt_left"><br /></td>
-<td headers="B2" class="gt_row gt_left">libertarian</td>
-<td headers="predicted_label" class="gt_row gt_left">libertarian</td>
-<td headers="motivation" class="gt_row gt_left">I mostly based it out of the rules that each participant agreed upon before they started the task. It would be very unfair to reward participant X with anything.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">1560</td>
-<td headers="B1" class="gt_row gt_left">logic</td>
-<td headers="B2" class="gt_row gt_left"><br /></td>
-<td headers="predicted_label" class="gt_row gt_left">logic</td>
-<td headers="motivation" class="gt_row gt_left">because it seem like the most logical answer</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">1579</td>
-<td headers="B1" class="gt_row gt_left">libertarian</td>
-<td headers="B2" class="gt_row gt_left"><br /></td>
-<td headers="predicted_label" class="gt_row gt_left">libertarian</td>
-<td headers="motivation" class="gt_row gt_left">I think participant y won their earnings fairly</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">1613</td>
-<td headers="B1" class="gt_row gt_left"><br /></td>
-<td headers="B2" class="gt_row gt_left">no reason</td>
-<td headers="predicted_label" class="gt_row gt_left">no reason</td>
-<td headers="motivation" class="gt_row gt_left">because Y only earn 0.07 and it would not increase x that much</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">1631</td>
-<td headers="B1" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="B2" class="gt_row gt_left"><br /></td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="motivation" class="gt_row gt_left">Even though it doesn&#39;t follow the stated rules, it seemed fair to compensate the person for answering 15 questions.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">1652</td>
-<td headers="B1" class="gt_row gt_left"><br /></td>
-<td headers="B2" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="motivation" class="gt_row gt_left">Because I think its unfair/unkind to ask someone to do something like solve problems and then not pay them for it when that is the entire reason we are all here.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">1676</td>
-<td headers="B1" class="gt_row gt_left"><br /></td>
-<td headers="B2" class="gt_row gt_left">meritocrat - margin matters</td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin matters</td>
-<td headers="motivation" class="gt_row gt_left">Because it was only a difference of a few, so I think each deserves something</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">1705</td>
-<td headers="B1" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="B2" class="gt_row gt_left"><br /></td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="motivation" class="gt_row gt_left">I feel for trying participant X deserves something</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">1707</td>
-<td headers="B1" class="gt_row gt_left">incentives</td>
-<td headers="B2" class="gt_row gt_left"><br /></td>
-<td headers="predicted_label" class="gt_row gt_left">incentives</td>
-<td headers="motivation" class="gt_row gt_left">To encourage participant X to solve more problems next time</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">1744</td>
-<td headers="B1" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="B2" class="gt_row gt_left"><br /></td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="motivation" class="gt_row gt_left">Participant Y won the competition fair and square by answering more questions. I don&#39;t think it&#39;s fair to take any of their earnings away and give it to Participant X.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">1748</td>
-<td headers="B1" class="gt_row gt_left"><br /></td>
-<td headers="B2" class="gt_row gt_left">libertarian</td>
-<td headers="predicted_label" class="gt_row gt_left">libertarian</td>
-<td headers="motivation" class="gt_row gt_left">That is the agreement you made with the two participants, so I am going to honor it.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">1761</td>
-<td headers="B1" class="gt_row gt_left">egalitarian</td>
-<td headers="B2" class="gt_row gt_left"><br /></td>
-<td headers="predicted_label" class="gt_row gt_left">egalitarian</td>
-<td headers="motivation" class="gt_row gt_left">They played the game together they get the share equally.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">1768</td>
-<td headers="B1" class="gt_row gt_left">meritocrat - margin matters</td>
-<td headers="B2" class="gt_row gt_left"><br /></td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin matters</td>
-<td headers="motivation" class="gt_row gt_left">I did not feel they should be penalized for not getting as many answers. I redistributed the payment to give the person with more correct answers double the amount, 0.10 for correct answers to the person with the most and 0.05 for the correct answers to the person with less correct. I based this off of what I would feel is fair if I were the second person.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">1853</td>
-<td headers="B1" class="gt_row gt_left"><br /></td>
-<td headers="B2" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="motivation" class="gt_row gt_left">I am assuming that Participant X put time and effort into answering the questions also. It j7st seemed fair.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">1864</td>
-<td headers="B1" class="gt_row gt_left">libertarian</td>
-<td headers="B2" class="gt_row gt_left"><br /></td>
-<td headers="predicted_label" class="gt_row gt_left">libertarian</td>
-<td headers="motivation" class="gt_row gt_left">My decision to give $0.00 of participant Ys earnings to participant X was motivated by a commitment to fairness, merit, and respecting agreed-upon rules. Both participants were informed of the conditions before the task began: only the higher performer would be rewarded. Participant Y earned the payout by solving more problems, while participant X did not meet the threshold to earn money. Redistributing the earnings afterward would undermine the integrity of the incentive structure and create uncertainty for participants who relied on the original rules. Upholding the terms that were clearly communicated and agreed upon supports trust and fairness in the study.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">1877</td>
-<td headers="B1" class="gt_row gt_left"><br /></td>
-<td headers="B2" class="gt_row gt_left">meritocrat - margin matters</td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin matters</td>
-<td headers="motivation" class="gt_row gt_left">Participant A solved about half the problems of B so they should get at least a small reward.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">1881</td>
-<td headers="B1" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="B2" class="gt_row gt_left"><br /></td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="motivation" class="gt_row gt_left">I think it&#39;s only fair to reward the person that got the most correct</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">1882</td>
-<td headers="B1" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="B2" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="motivation" class="gt_row gt_left">Participan y deserved the full payment</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">1896</td>
-<td headers="B1" class="gt_row gt_left"><br /></td>
-<td headers="B2" class="gt_row gt_left">no reason</td>
-<td headers="predicted_label" class="gt_row gt_left">no reason</td>
-<td headers="motivation" class="gt_row gt_left">Redistributing  and sharing</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">1946</td>
-<td headers="B1" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="B2" class="gt_row gt_left"><br /></td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="motivation" class="gt_row gt_left">They both participated and solved problems.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">1947</td>
-<td headers="B1" class="gt_row gt_left"><br /></td>
-<td headers="B2" class="gt_row gt_left">meritocrat - margin matters</td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin matters</td>
-<td headers="motivation" class="gt_row gt_left">It seems unfair for one to get nothing when they both were correct about the same number of times.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">1956</td>
-<td headers="B1" class="gt_row gt_left"><br /></td>
-<td headers="B2" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="motivation" class="gt_row gt_left">Because Y perform better and should be rewarded better than X.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">2076</td>
-<td headers="B1" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="B2" class="gt_row gt_left"><br /></td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="motivation" class="gt_row gt_left">I think that participant X should also be recognized for the work they did.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">2089</td>
-<td headers="B1" class="gt_row gt_left">meritocrat - margin matters</td>
-<td headers="B2" class="gt_row gt_left"><br /></td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin matters</td>
-<td headers="motivation" class="gt_row gt_left">I chose this amount because person x completed about half as many questions as person y.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">2098</td>
-<td headers="B1" class="gt_row gt_left"><br /></td>
-<td headers="B2" class="gt_row gt_left">meritocrat - margin matters</td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin matters</td>
-<td headers="motivation" class="gt_row gt_left">I think it&#39;s fair for them to earn one-third of the distribution considering they answered only 3 questions less correctly, 70% compared to the winner.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">2120</td>
-<td headers="B1" class="gt_row gt_left">libertarian</td>
-<td headers="B2" class="gt_row gt_left">libertarian</td>
-<td headers="predicted_label" class="gt_row gt_left">libertarian</td>
-<td headers="motivation" class="gt_row gt_left">I had no reason to take what they earned.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">2126</td>
-<td headers="B1" class="gt_row gt_left"><br /></td>
-<td headers="B2" class="gt_row gt_left">libertarian</td>
-<td headers="predicted_label" class="gt_row gt_left">libertarian</td>
-<td headers="motivation" class="gt_row gt_left">The study described how the outcome would be applied.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">2132</td>
-<td headers="B1" class="gt_row gt_left"><br /></td>
-<td headers="B2" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="motivation" class="gt_row gt_left">I thought that participation in a work activity should be paid at least a small amount and thought the 2 participants were advised in advance that an adjustment might take place so some adjustment is fair</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">2135</td>
-<td headers="B1" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="B2" class="gt_row gt_left"><br /></td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="motivation" class="gt_row gt_left">I would award 0.10 only, and keep in mind , thats being generous.  I think the participant that provided the correct answers should be awarded the amount deserved.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">2149</td>
-<td headers="B1" class="gt_row gt_left"><br /></td>
-<td headers="B2" class="gt_row gt_left">no reason</td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="motivation" class="gt_row gt_left">I think people should receive what they earn</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">2161</td>
-<td headers="B1" class="gt_row gt_left">meritocrat - margin matters</td>
-<td headers="B2" class="gt_row gt_left"><br /></td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin matters</td>
-<td headers="motivation" class="gt_row gt_left">I thought is was a more fair distribution of funds based on the productivity of the participants.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">2166</td>
-<td headers="B1" class="gt_row gt_left">libertarian</td>
-<td headers="B2" class="gt_row gt_left"><br /></td>
-<td headers="predicted_label" class="gt_row gt_left">libertarian</td>
-<td headers="motivation" class="gt_row gt_left">The instructions were clear that they would only get a bonus if they solved at least as many as the other participant. I see no reason to change that.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">2173</td>
-<td headers="B1" class="gt_row gt_left"><br /></td>
-<td headers="B2" class="gt_row gt_left">no reason</td>
-<td headers="predicted_label" class="gt_row gt_left">no reason</td>
-<td headers="motivation" class="gt_row gt_left">It stated it would pay .15 per answer, thus .15 X 4</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">2193</td>
-<td headers="B1" class="gt_row gt_left">meritocrat - margin matters</td>
-<td headers="B2" class="gt_row gt_left"><br /></td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin matters</td>
-<td headers="motivation" class="gt_row gt_left">The fact that Y got almost twice as many right as X was my primary driver. Because Y did better did not mean they should have to redistribute their earnings at all.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">2212</td>
-<td headers="B1" class="gt_row gt_left">libertarian</td>
-<td headers="B2" class="gt_row gt_left"><br /></td>
-<td headers="predicted_label" class="gt_row gt_left">libertarian</td>
-<td headers="motivation" class="gt_row gt_left">I don&#39;t see any reason to redistribute funds that were earned according to a protocol understood by both parties.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">2218</td>
-<td headers="B1" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="B2" class="gt_row gt_left"><br /></td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="motivation" class="gt_row gt_left">Although person X did not get as many as person Y, I feel that person X at least tried their best and should be compensated even a little. Person Y clearly just knew more than person X which may be an unfair advantage.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">2234</td>
-<td headers="B1" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="B2" class="gt_row gt_left"><br /></td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="motivation" class="gt_row gt_left">I think the other participant should earn at least a little something. I decided to give the cents of the participant Y&#39;s earnings to X. Participant Y will get a solid number and X will get at least something.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">2238</td>
-<td headers="B1" class="gt_row gt_left"><br /></td>
-<td headers="B2" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin matters</td>
-<td headers="motivation" class="gt_row gt_left">X got some problems correct as well, just fewer than Y. there shouldn&#39;t be all-or-nothing rewards.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">2259</td>
-<td headers="B1" class="gt_row gt_left"><br /></td>
-<td headers="B2" class="gt_row gt_left">no reason</td>
-<td headers="predicted_label" class="gt_row gt_left">no reason</td>
-<td headers="motivation" class="gt_row gt_left">I believe that figure will be enough</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">2285</td>
-<td headers="B1" class="gt_row gt_left"><br /></td>
-<td headers="B2" class="gt_row gt_left">libertarian</td>
-<td headers="predicted_label" class="gt_row gt_left">libertarian</td>
-<td headers="motivation" class="gt_row gt_left">The rules were known up front, they should be followed.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">2316</td>
-<td headers="B1" class="gt_row gt_left"><br /></td>
-<td headers="B2" class="gt_row gt_left">meritocrat - margin matters</td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin matters</td>
-<td headers="motivation" class="gt_row gt_left">Person Y clearly deserved more for solving more, but Person X did pretty well.  I did not want to penalize Y for the sake of X so tried to be fair and go with what I would have felt comfortable doing myself.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">2321</td>
-<td headers="B1" class="gt_row gt_left">egalitarian</td>
-<td headers="B2" class="gt_row gt_left"><br /></td>
-<td headers="predicted_label" class="gt_row gt_left">egalitarian</td>
-<td headers="motivation" class="gt_row gt_left">equality</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">2322</td>
-<td headers="B1" class="gt_row gt_left"><br /></td>
-<td headers="B2" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin matters</td>
-<td headers="motivation" class="gt_row gt_left">I think they participated well, but not as good at the other participant</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">2342</td>
-<td headers="B1" class="gt_row gt_left">meritocrat - margin matters</td>
-<td headers="B2" class="gt_row gt_left"><br /></td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin matters</td>
-<td headers="motivation" class="gt_row gt_left">I felt that participant X did solve a fair amount of problems, and the fact they earned nothing because they were one correct answer short of meeting participant Y&#39;s correct answers doesn&#39;t feel entirely fair to me. I decided to give them a decent bonus, but I did not give them a majority of participant Y&#39;s earnings because that did not feel fair for participant Y.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">2346</td>
-<td headers="B1" class="gt_row gt_left"><br /></td>
-<td headers="B2" class="gt_row gt_left">meritocrat - margin matters</td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin matters</td>
-<td headers="motivation" class="gt_row gt_left">Participant X solved 2 problems, while Participant Y solved 7, which is a substantial difference. Participant X did not meet the threshold to earn anything according to the original rules.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">2347</td>
-<td headers="B1" class="gt_row gt_left">meritocrat - margin matters</td>
-<td headers="B2" class="gt_row gt_left"><br /></td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin matters</td>
-<td headers="motivation" class="gt_row gt_left">The person may not have gotten as many answers correct, but they at least deserve an almost even amount of compensation for their time and efforts</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">2364</td>
-<td headers="B1" class="gt_row gt_left"><br /></td>
-<td headers="B2" class="gt_row gt_left">no reason</td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin matters</td>
-<td headers="motivation" class="gt_row gt_left">Participant X solved at least as many problems as Participant Y. It doesnt seem fair at all for them to have even done some work and received nothing.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">2383</td>
-<td headers="B1" class="gt_row gt_left">meritocrat - margin matters</td>
-<td headers="B2" class="gt_row gt_left"><br /></td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin matters</td>
-<td headers="motivation" class="gt_row gt_left">Participant Y did solve more problems than Participant X, but only a few more.  Participant should receive a reward for their time and effort, and the number of problems they solved.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">2391</td>
-<td headers="B1" class="gt_row gt_left">libertarian</td>
-<td headers="B2" class="gt_row gt_left"><br /></td>
-<td headers="predicted_label" class="gt_row gt_left">libertarian</td>
-<td headers="motivation" class="gt_row gt_left">Because the description participant x and y received clearly said that if you answered fewer questions correctly than the other participant, then you would receive nothing. Since participant x answered fewer questions correctly, I chose to stay with the determined payout in order to uphold the rules.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">2428</td>
-<td headers="B1" class="gt_row gt_left">no reason</td>
-<td headers="B2" class="gt_row gt_left"><br /></td>
-<td headers="predicted_label" class="gt_row gt_left">logic</td>
-<td headers="motivation" class="gt_row gt_left">just sounded logical</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">2430</td>
-<td headers="B1" class="gt_row gt_left">meritocrat - margin matters</td>
-<td headers="B2" class="gt_row gt_left"><br /></td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin matters</td>
-<td headers="motivation" class="gt_row gt_left">Participant X scored a little below Participant Y and according to the the instructions participant who scored lower would not get anything so i do not think it will be nice to give out from the other participant price.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">2433</td>
-<td headers="B1" class="gt_row gt_left">meritocrat - margin matters</td>
-<td headers="B2" class="gt_row gt_left"><br /></td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin matters</td>
-<td headers="motivation" class="gt_row gt_left">Assuming that both participants spent the same amount of total time on the task and put forth the same effort, I&#39;m not sure one should be rewarded more for performing faster. Some people just don&#39;t test as quickly as others and I&#39;m generally a fan of quality over quantity. It&#39;s hard to determine this without more information, but my inclination given that most participants completed around 14-16 problems is to divide the money equally.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">2452</td>
-<td headers="B1" class="gt_row gt_left">no reason</td>
-<td headers="B2" class="gt_row gt_left"><br /></td>
-<td headers="predicted_label" class="gt_row gt_left">no reason</td>
-<td headers="motivation" class="gt_row gt_left">I like to give</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">2464</td>
-<td headers="B1" class="gt_row gt_left"><br /></td>
-<td headers="B2" class="gt_row gt_left">no reason</td>
-<td headers="predicted_label" class="gt_row gt_left">no reason</td>
-<td headers="motivation" class="gt_row gt_left">I think that that is a good amount to give as it seems average and not too small and not too large</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">2465</td>
-<td headers="B1" class="gt_row gt_left"><br /></td>
-<td headers="B2" class="gt_row gt_left">meritocrat - margin matters</td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin matters</td>
-<td headers="motivation" class="gt_row gt_left">The two participants scores were reasonably close, but Y still solved a few more problems. I thought my distribution of the total earned was fair given the number of problems each person solved.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">2485</td>
-<td headers="B1" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="B2" class="gt_row gt_left"><br /></td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin matters</td>
-<td headers="motivation" class="gt_row gt_left">Solved almost as many problems so should receive something.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">2513</td>
-<td headers="B1" class="gt_row gt_left"><br /></td>
-<td headers="B2" class="gt_row gt_left">no reason</td>
-<td headers="predicted_label" class="gt_row gt_left">no reason</td>
-<td headers="motivation" class="gt_row gt_left">I feel that distributing money like that isn&#39;t equitable and doesn&#39;t result in positive consequences.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">2532</td>
-<td headers="B1" class="gt_row gt_left">libertarian</td>
-<td headers="B2" class="gt_row gt_left">libertarian</td>
-<td headers="predicted_label" class="gt_row gt_left">libertarian</td>
-<td headers="motivation" class="gt_row gt_left">The instructions said that the person with fewer correct answers would get nothing and the person with the most correct answers would get .15 per correct answer. Changing the bonus would not be right or moral.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">2590</td>
-<td headers="B1" class="gt_row gt_left"><br /></td>
-<td headers="B2" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="motivation" class="gt_row gt_left">Even though participant x got less than participant y, they still did do something, so I think they should get some compensation.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">2595</td>
-<td headers="B1" class="gt_row gt_left"><br /></td>
-<td headers="B2" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="motivation" class="gt_row gt_left">I would like to be completely fair and give the other participant a deserving amount.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">2613</td>
-<td headers="B1" class="gt_row gt_left"><br /></td>
-<td headers="B2" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="motivation" class="gt_row gt_left">person y won easily and deserves the money</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">2633</td>
-<td headers="B1" class="gt_row gt_left"><br /></td>
-<td headers="B2" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="motivation" class="gt_row gt_left">Even though X was not able to solve he should be compensated for at least attempting it.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">2637</td>
-<td headers="B1" class="gt_row gt_left"><br /></td>
-<td headers="B2" class="gt_row gt_left">libertarian</td>
-<td headers="predicted_label" class="gt_row gt_left">libertarian</td>
-<td headers="motivation" class="gt_row gt_left">The rules were explained ahead of time. If someone didn&#39;t think they&#39;d be strong, they shouldn&#39;t invest the time. (But politically, I want some redistribution from high earners! This case was low stakes, so I figured my morals were still ok.)</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">2651</td>
-<td headers="B1" class="gt_row gt_left"><br /></td>
-<td headers="B2" class="gt_row gt_left">fairness</td>
-<td headers="predicted_label" class="gt_row gt_left">fairness</td>
-<td headers="motivation" class="gt_row gt_left">because I believe if you have the chance to be fair then do it!!</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">2669</td>
-<td headers="B1" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="B2" class="gt_row gt_left"><br /></td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="motivation" class="gt_row gt_left">should get something for just showing up</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">2679</td>
-<td headers="B1" class="gt_row gt_left"><br /></td>
-<td headers="B2" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="motivation" class="gt_row gt_left">I felt that the participant who got nothing should at least get a little bonus for solving some of the problems.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">2687</td>
-<td headers="B1" class="gt_row gt_left"><br /></td>
-<td headers="B2" class="gt_row gt_left">fairness</td>
-<td headers="predicted_label" class="gt_row gt_left">fairness</td>
-<td headers="motivation" class="gt_row gt_left">I believe its equal and fair</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">2787</td>
-<td headers="B1" class="gt_row gt_left"><br /></td>
-<td headers="B2" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="motivation" class="gt_row gt_left">I feel like Participant X should get something for their effort as they answered some questions correctly. However, Participant Y should get the larger reward since their performance was better.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">2794</td>
-<td headers="B1" class="gt_row gt_left">libertarian</td>
-<td headers="B2" class="gt_row gt_left">libertarian</td>
-<td headers="predicted_label" class="gt_row gt_left">libertarian</td>
-<td headers="motivation" class="gt_row gt_left">the rules</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">2804</td>
-<td headers="B1" class="gt_row gt_left">meritocrat - margin matters</td>
-<td headers="B2" class="gt_row gt_left"><br /></td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin matters</td>
-<td headers="motivation" class="gt_row gt_left">He still answered a majority of the questions, so, there should be some reward</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">2831</td>
-<td headers="B1" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="B2" class="gt_row gt_left"><br /></td>
-<td headers="predicted_label" class="gt_row gt_left">libertarian</td>
-<td headers="motivation" class="gt_row gt_left">The rules in the game were that they would receive nothing if they did not meet the parameters. They did not do as many puzzles as the other, so they got zero. I don&#39;t think it is fair to punish the person that won!</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">2849</td>
-<td headers="B1" class="gt_row gt_left">meritocrat - margin matters</td>
-<td headers="B2" class="gt_row gt_left">meritocrat - margin matters</td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin matters</td>
-<td headers="motivation" class="gt_row gt_left">The numbers where so close it isn&#39;t fair to that participants time to not get a bonus</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">2850</td>
-<td headers="B1" class="gt_row gt_left"><br /></td>
-<td headers="B2" class="gt_row gt_left">compensate</td>
-<td headers="predicted_label" class="gt_row gt_left">incentives</td>
-<td headers="motivation" class="gt_row gt_left">The participants were told that there would be a final round that may affect their distributions. I allocated a nominal amount to the losing participant.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">2859</td>
-<td headers="B1" class="gt_row gt_left">misunderstand</td>
-<td headers="B2" class="gt_row gt_left"><br /></td>
-<td headers="predicted_label" class="gt_row gt_left">libertarian</td>
-<td headers="motivation" class="gt_row gt_left">I&#39;m  not really interested in sharing my winnings.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">2868</td>
-<td headers="B1" class="gt_row gt_left"><br /></td>
-<td headers="B2" class="gt_row gt_left">meritocrat - margin matters</td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin matters</td>
-<td headers="motivation" class="gt_row gt_left">The other participant correctly did 7 more puzzles than the other one. But, the one that did 10 also did a good job of getting that many correct. I think they deserve something for their effort.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">2895</td>
-<td headers="B1" class="gt_row gt_left">meritocrat - margin matters</td>
-<td headers="B2" class="gt_row gt_left"><br /></td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin matters</td>
-<td headers="motivation" class="gt_row gt_left">I calculated approximately what the value of 12 versus 19 would produce out of the total of 2.85 in total earnings. I redistributed one dollar to participant X from this total leaving the remainder for participant Y based on their 19 answers. Y still earned more but in a more fair and just fashion, yes, it was fair in my opinion to give the dollar to X based on the 12 answers achieved.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">2899</td>
-<td headers="B1" class="gt_row gt_left"><br /></td>
-<td headers="B2" class="gt_row gt_left">egalitarian</td>
-<td headers="predicted_label" class="gt_row gt_left">egalitarian</td>
-<td headers="motivation" class="gt_row gt_left">Person x should also be given a certain share of the amount. The amount I have choosen is to try and equalise both of them.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">2927</td>
-<td headers="B1" class="gt_row gt_left">meritocrat - margin matters</td>
-<td headers="B2" class="gt_row gt_left"><br /></td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin matters</td>
-<td headers="motivation" class="gt_row gt_left">X performed twice as well as Y so I wanted X to keep 2/3rds of the $.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">2932</td>
-<td headers="B1" class="gt_row gt_left"><br /></td>
-<td headers="B2" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="motivation" class="gt_row gt_left">Y worked so very much harder, and I did not feel that they should have any funds removed.  Had the payment been larger I may have decided to take a bit for X, but the payment was not large.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">2938</td>
-<td headers="B1" class="gt_row gt_left">meritocrat - margin matters</td>
-<td headers="B2" class="gt_row gt_left"><br /></td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin matters</td>
-<td headers="motivation" class="gt_row gt_left">That person did almost as many problems and should be compensated accordingly.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">2939</td>
-<td headers="B1" class="gt_row gt_left"><br /></td>
-<td headers="B2" class="gt_row gt_left">libertarian</td>
-<td headers="predicted_label" class="gt_row gt_left">libertarian</td>
-<td headers="motivation" class="gt_row gt_left">The original rules that both parties agreed to have not changed.  B should not be penalized because of an arbitrary decisionmaker.</td></tr>
+    <tr><td headers="id" class="gt_row gt_right">2410</td>
+<td headers="predicted_label" class="gt_row gt_left">compensate</td>
+<td headers="motivation" class="gt_row gt_left">Not getting paid seems a bit harsh for missing some questions.</td></tr>
+    <tr><td headers="id" class="gt_row gt_right">3289</td>
+<td headers="predicted_label" class="gt_row gt_left">compensate</td>
+<td headers="motivation" class="gt_row gt_left">Participant X deserves to be paid at least a minimal amount for taking the time to participate, and for having a reasonable number of correct responses.  Meanwhile, participant Y still retains the lion&#39;s share of the reward, so their motivation would still be high.</td></tr>
+    <tr><td headers="id" class="gt_row gt_right">1460</td>
+<td headers="predicted_label" class="gt_row gt_left">compensate</td>
+<td headers="motivation" class="gt_row gt_left">Anyone who spends 10 minutes doing a task should receive SOME compensation. so I gave participant X the amount to the right of the decimal point of participant Y&#39;s earnings.  This gave X some compensation, while Y received a much larger share.  The text did not say these were bonuses, so I assumed these were the only earnings.  Had the text stated that these were bonuses, to be paid in addition to other compensation, I would have given participant X nothing.</td></tr>
     <tr><td headers="id" class="gt_row gt_right">2948</td>
-<td headers="B1" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="B2" class="gt_row gt_left"><br /></td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin does not matter</td>
+<td headers="predicted_label" class="gt_row gt_left">compensate</td>
 <td headers="motivation" class="gt_row gt_left">So the participant that didnt receive anything received a little</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">2956</td>
-<td headers="B1" class="gt_row gt_left">meritocrat - margin matters</td>
-<td headers="B2" class="gt_row gt_left"><br /></td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin matters</td>
-<td headers="motivation" class="gt_row gt_left">Participate X has completed way more questions than Participate Y and it seems like they didnt try to compete for the earnings</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">2985</td>
-<td headers="B1" class="gt_row gt_left"><br /></td>
-<td headers="B2" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="motivation" class="gt_row gt_left">The all-or-nothing reward system seemed excessive, but the better performer should receive a bonus for their performance.</td></tr>
+    <tr><td headers="id" class="gt_row gt_right">3272</td>
+<td headers="predicted_label" class="gt_row gt_left">compensate</td>
+<td headers="motivation" class="gt_row gt_left">It sucks when you don&#39;t get part of the bonus. It did say there may be a redistribution. So I  decided to redistribute half of the .15 per the 7 completed. Person X will get .52 for effort and participation</td></tr>
+    <tr><td headers="id" class="gt_row gt_right">1631</td>
+<td headers="predicted_label" class="gt_row gt_left">compensate</td>
+<td headers="motivation" class="gt_row gt_left">Even though it doesn&#39;t follow the stated rules, it seemed fair to compensate the person for answering 15 questions.</td></tr>
+    <tr><td headers="id" class="gt_row gt_right">981</td>
+<td headers="predicted_label" class="gt_row gt_left">compensate</td>
+<td headers="motivation" class="gt_row gt_left">He still did some tasks, so they deserve some share.</td></tr>
+    <tr><td headers="id" class="gt_row gt_right">2811</td>
+<td headers="predicted_label" class="gt_row gt_left">compensate</td>
+<td headers="motivation" class="gt_row gt_left">they probably tried hard, but its not his fault he didnt know the answers.</td></tr>
+    <tr><td headers="id" class="gt_row gt_right">1898</td>
+<td headers="predicted_label" class="gt_row gt_left">compensate</td>
+<td headers="motivation" class="gt_row gt_left">I felt bad for the participant who didn&#39;t get any money despite solving 10 problems. I didn&#39;t want to take too much from the other participant, so that&#39;s why I only took 20 cents from them.</td></tr>
+    <tr><td headers="id" class="gt_row gt_right">791</td>
+<td headers="predicted_label" class="gt_row gt_left">compensate</td>
+<td headers="motivation" class="gt_row gt_left">even though they did not do as well as the other person, they tried</td></tr>
+    <tr><td headers="id" class="gt_row gt_right">2040</td>
+<td headers="predicted_label" class="gt_row gt_left">compensate</td>
+<td headers="motivation" class="gt_row gt_left">It&#39;s not fair to pay someone nothing at all for doing work. So I gave the lesser cent amount to player X and left Y with 2.00 since they won. People who do work  expect to be paid something and if you do not pay them you are shady period.</td></tr>
+    <tr><td headers="id" class="gt_row gt_right">2282</td>
+<td headers="predicted_label" class="gt_row gt_left">compensate</td>
+<td headers="motivation" class="gt_row gt_left">That seems like a fair amount. Participant X should receive some compensation for their problem solving.</td></tr>
+    <tr><td headers="id" class="gt_row gt_right">2101</td>
+<td headers="predicted_label" class="gt_row gt_left">compensate</td>
+<td headers="motivation" class="gt_row gt_left">Even though Y got more answers correct, X also did well and should receive some compensation.</td></tr>
+    <tr><td headers="id" class="gt_row gt_right">944</td>
+<td headers="predicted_label" class="gt_row gt_left">compensate</td>
+<td headers="motivation" class="gt_row gt_left">I gave participant x a small bonus for their effort.</td></tr>
+    <tr><td headers="id" class="gt_row gt_right">166</td>
+<td headers="predicted_label" class="gt_row gt_left">compensate</td>
+<td headers="motivation" class="gt_row gt_left">want to give them at least a little</td></tr>
+    <tr><td headers="id" class="gt_row gt_right">2944</td>
+<td headers="predicted_label" class="gt_row gt_left">compensate</td>
+<td headers="motivation" class="gt_row gt_left">Give x some credit for work done</td></tr>
+    <tr><td headers="id" class="gt_row gt_right">1088</td>
+<td headers="predicted_label" class="gt_row gt_left">compensate</td>
+<td headers="motivation" class="gt_row gt_left">I believe that participant X also deserved to earn as they also completed the task despite the punitive guidelines, thus I decided to share participant Y&#39;s earnings to ensure the other also got something even if not equally shared.</td></tr>
+    <tr><td headers="id" class="gt_row gt_right">305</td>
+<td headers="predicted_label" class="gt_row gt_left">compensate</td>
+<td headers="motivation" class="gt_row gt_left">participant x deserves to be compensated for the right answers and for participating</td></tr>
     <tr><td headers="id" class="gt_row gt_right">2995</td>
-<td headers="B1" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="B2" class="gt_row gt_left"><br /></td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin does not matter</td>
+<td headers="predicted_label" class="gt_row gt_left">compensate</td>
 <td headers="motivation" class="gt_row gt_left">Participate x did solve 11 problems and deserves some sort of compensation</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">2999</td>
-<td headers="B1" class="gt_row gt_left">egalitarian</td>
-<td headers="B2" class="gt_row gt_left">no reason</td>
-<td headers="predicted_label" class="gt_row gt_left">no reason</td>
-<td headers="motivation" class="gt_row gt_left">to be a good person and share</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">3010</td>
-<td headers="B1" class="gt_row gt_left">meritocrat - margin matters</td>
-<td headers="B2" class="gt_row gt_left"><br /></td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin matters</td>
-<td headers="motivation" class="gt_row gt_left">X put forth a reasonable amount of effort and solved only 6 fewer questions than participant Y.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">3013</td>
-<td headers="B1" class="gt_row gt_left"><br /></td>
-<td headers="B2" class="gt_row gt_left">meritocrat - margin matters</td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin matters</td>
-<td headers="motivation" class="gt_row gt_left">It was a semi even distribution between the two people</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">3018</td>
-<td headers="B1" class="gt_row gt_left">meritocrat - margin matters</td>
-<td headers="B2" class="gt_row gt_left"><br /></td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin matters</td>
-<td headers="motivation" class="gt_row gt_left">I wanted the participants to get paid according to how well they did in relation to eachother, not just if one got more answers that the other</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">3030</td>
-<td headers="B1" class="gt_row gt_left"><br /></td>
-<td headers="B2" class="gt_row gt_left">fairness</td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin matters</td>
-<td headers="motivation" class="gt_row gt_left">As close to 50% should be fair.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">3098</td>
-<td headers="B1" class="gt_row gt_left"><br /></td>
-<td headers="B2" class="gt_row gt_left">libertarian</td>
-<td headers="predicted_label" class="gt_row gt_left">libertarian</td>
-<td headers="motivation" class="gt_row gt_left">I followed your established rules.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">3121</td>
-<td headers="B1" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="B2" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="motivation" class="gt_row gt_left">I believe they should receive something for participating.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">3125</td>
-<td headers="B1" class="gt_row gt_left"><br /></td>
-<td headers="B2" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="motivation" class="gt_row gt_left">He solved 13 problems. It costs 1 usd</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">3140</td>
-<td headers="B1" class="gt_row gt_left"><br /></td>
-<td headers="B2" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="motivation" class="gt_row gt_left">They were due 1/3 of the total winnings due to their response rate, nothing else.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">3178</td>
-<td headers="B1" class="gt_row gt_left"><br /></td>
-<td headers="B2" class="gt_row gt_left">meritocrat - margin matters</td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin matters</td>
-<td headers="motivation" class="gt_row gt_left">X answered 4 questions and should be compensated accordingly regardless of the disparity between X &amp; Y</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">3184</td>
-<td headers="B1" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="B2" class="gt_row gt_left"><br /></td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="motivation" class="gt_row gt_left">Because I don&#39;t think it&#39;s reasonable for one person to get all the money, and the other person to get none -- even if Participant X didn&#39;t solve any problems, they still put in a certain amount of time and effort that deserves to be rewarded.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">3212</td>
-<td headers="B1" class="gt_row gt_left">no reason</td>
-<td headers="B2" class="gt_row gt_left"><br /></td>
-<td headers="predicted_label" class="gt_row gt_left">no reason</td>
-<td headers="motivation" class="gt_row gt_left">Want to share a small amount</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">3227</td>
-<td headers="B1" class="gt_row gt_left"><br /></td>
-<td headers="B2" class="gt_row gt_left">libertarian</td>
-<td headers="predicted_label" class="gt_row gt_left">libertarian</td>
-<td headers="motivation" class="gt_row gt_left">The one who earned the money should keep it.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">3247</td>
-<td headers="B1" class="gt_row gt_left"><br /></td>
-<td headers="B2" class="gt_row gt_left">meritocrat - margin matters</td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin matters</td>
-<td headers="motivation" class="gt_row gt_left">I felt that there should be an equitable distribution of the earnings. I felt that was the fair thing to do since they both performed almost the same.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">3287</td>
-<td headers="B1" class="gt_row gt_left">egalitarian</td>
-<td headers="B2" class="gt_row gt_left"><br /></td>
-<td headers="predicted_label" class="gt_row gt_left">egalitarian</td>
-<td headers="motivation" class="gt_row gt_left">Share equally in the outcome</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">3291</td>
-<td headers="B1" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="B2" class="gt_row gt_left"><br /></td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="motivation" class="gt_row gt_left">I feel as if both tried. The higher performer deserves more but the other individual should be compensated also.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">3294</td>
-<td headers="B1" class="gt_row gt_left"><br /></td>
-<td headers="B2" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="motivation" class="gt_row gt_left">They still got some questions right and the first person wont miss the 59 cents</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">3307</td>
-<td headers="B1" class="gt_row gt_left">no reason</td>
-<td headers="B2" class="gt_row gt_left"><br /></td>
-<td headers="predicted_label" class="gt_row gt_left">no reason</td>
-<td headers="motivation" class="gt_row gt_left">Gave them half.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">3318</td>
-<td headers="B1" class="gt_row gt_left"><br /></td>
-<td headers="B2" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="motivation" class="gt_row gt_left">If the amounts were not distributed then the other person would have got nothing for his time and effort</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">3346</td>
-<td headers="B1" class="gt_row gt_left"><br /></td>
-<td headers="B2" class="gt_row gt_left">meritocrat - margin matters</td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin matters</td>
-<td headers="motivation" class="gt_row gt_left">The reward should be more or less proportional to the number of questions answered correctly.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">3355</td>
-<td headers="B1" class="gt_row gt_left"><br /></td>
-<td headers="B2" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="motivation" class="gt_row gt_left">The participant earned the money; therefore should get all the money.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">3357</td>
-<td headers="B1" class="gt_row gt_left"><br /></td>
-<td headers="B2" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="motivation" class="gt_row gt_left">Seems fair, as long as the effort was put in.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">3358</td>
-<td headers="B1" class="gt_row gt_left"><br /></td>
-<td headers="B2" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="motivation" class="gt_row gt_left">Both parties contributed effort to the project, both should be rewarded.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">3374</td>
-<td headers="B1" class="gt_row gt_left">misunderstand</td>
-<td headers="B2" class="gt_row gt_left">no reason</td>
-<td headers="predicted_label" class="gt_row gt_left">no reason</td>
-<td headers="motivation" class="gt_row gt_left">It appears to me that X did better in their grouping than Y did in their&#39;s. Thus, a sharing of the wealth is appropriate.</td></tr>
+    <tr><td headers="id" class="gt_row gt_right">2106</td>
+<td headers="predicted_label" class="gt_row gt_left">compensate</td>
+<td headers="motivation" class="gt_row gt_left">Be because X tried. So I thought they deserve at least a little of the money.</td></tr>
   </tbody>
   
   
 </table>
 </div>
-<p>The manual classifiers disagreed on 5/20 observations:</p>
-<div id="kqovippjyf" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#kqovippjyf table {
+<div id="two-runs-of-the-same-model" class="section level2">
+<h2>Two runs of the same model</h2>
+<pre><code>##                   predicted_labels.y
+## predicted_labels.x    E    F    L  MDM MDNM  OTR  Sum
+##               E     388    2    1    0   10    5  406
+##               F      18  327    0    1   10    3  359
+##               L       0    2  638    1    6    2  649
+##               MDM     4    4    0  663   18    1  690
+##               MDNM    5   15    6    7  645    6  684
+##               OTR     8    1    5    1    5  190  210
+##               Sum   423  351  650  673  694  207 2998</code></pre>
+</div>
+</div>
+<div id="reading-all-data" class="section level1">
+<h1>Reading all data</h1>
+<pre class="r"><code>read_and_combine_motivation_csvs &lt;- function(path = &quot;.&quot;) {
+  files &lt;- list.files(path, pattern = &quot;_classified_motivations\\.csv$&quot;, full.names = TRUE)
+  read_with_timestamp &lt;- function(file) {
+    filename &lt;- basename(file)
+    timestamp &lt;- sub(&quot;_classified_motivations\\.csv$&quot;, &quot;&quot;, filename)
+    df &lt;- read.csv(file, stringsAsFactors = FALSE)
+    df$timestamp &lt;- timestamp
+    return(df)
+  }
+  combined_df &lt;- do.call(rbind, lapply(files, read_with_timestamp))
+  return(combined_df)
+}
+alld &lt;- read_and_combine_motivation_csvs() 
+alld_finetuned &lt;- alld |&gt; filter(model_name==&quot;ft:gpt-3.5-turbo-0125:fair::BvgCjJLB&quot;)
+alld_finetuned |&gt; group_by(predicted_label, timestamp) |&gt;
+  summarize(n = n()) |&gt;
+  summarize(min_n = min(n),
+            mean_n = mean(n),
+            max_n = max(n))</code></pre>
+<pre><code>## `summarise()` has grouped output by &#39;predicted_label&#39;. You can override using
+## the `.groups` argument.</code></pre>
+<pre><code>## # A tibble: 10 × 4
+##    predicted_label                      min_n mean_n max_n
+##    &lt;chr&gt;                                &lt;int&gt;  &lt;dbl&gt; &lt;int&gt;
+##  1 compensate                              13   13      13
+##  2 egalitarian                             82   82.8    83
+##  3 fairness                               136  137.    137
+##  4 incentives                              34   34.1    35
+##  5 libertarian                            600  600.    601
+##  6 logic                                    4    4       4
+##  7 meritocrat - does mention the margin   806  808.    810
+##  8 meritocrat - does not mention margin  1073 1076.   1078
+##  9 misunderstand                            6    6       6
+## 10 no reason                              237  238.    239</code></pre>
+<div id="few-shot-examples-with-newer-model-gpt-4o-vs-trained-old-model" class="section level2">
+<h2>Few-shot examples with newer model (GPT-4o) vs trained old
+model</h2>
+<p>Here I use the full set of categories with the trained older model as
+x and the modern model with large set of categories as columns (y) that
+has been censored in the</p>
+<pre><code>##                   predicted_labels.y
+## predicted_labels.x    E    F    L  MDM MDNM  OTR  Sum
+##               E      77    0    0    0    4    2   83
+##               F      11   84    5    8   20    9  137
+##               L       0    1  574    1   14   10  600
+##               MDM    13    1   16  634  120   23  807
+##               MDNM   30    5   63   68  867   43 1076
+##               OTR    29    2    7   14   15  228  295
+##               Sum   160   93  665  725 1040  315 2998</code></pre>
+<p>## How much variation in few-shot example gpt-4o</p>
+<pre class="r"><code>alld_fewshot  &lt;- alld |&gt; 
+  filter(str_starts(system_message_hash, &quot;4ba830&quot;))
+alld_fewshot  |&gt; group_by(predicted_label, timestamp) |&gt;
+  summarize(n = n()) |&gt;
+  summarize(min_n = min(n),
+            mean_n = mean(n),
+            max_n = max(n))</code></pre>
+<pre><code>## `summarise()` has grouped output by &#39;predicted_label&#39;. You can override using
+## the `.groups` argument.</code></pre>
+<pre><code>## # A tibble: 10 × 4
+##    predicted_label                      min_n mean_n max_n
+##    &lt;chr&gt;                                &lt;int&gt;  &lt;dbl&gt; &lt;int&gt;
+##  1 compensate                              45   46.2    47
+##  2 egalitarian                            157  159.    161
+##  3 fairness                                92   92.8    94
+##  4 incentives                              41   42.2    43
+##  5 libertarian                            665  669.    672
+##  6 logic                                    1    1.2     2
+##  7 meritocrat - does mention the margin   721  724.    727
+##  8 meritocrat - does not mention margin  1035 1039.   1042
+##  9 misunderstand                           30   33      35
+## 10 no reason                              189  191.    195</code></pre>
+</div>
+<div id="summary-table-of-different-models" class="section level2">
+<h2>Summary table of different models</h2>
+<pre class="r"><code>d3_sum &lt;- cdf3s |&gt; group_by(predicted_labels) |&gt; summarize( `3.5 turbo FT` = n()/nrow(cdf3s))
+d7_sum &lt;- cdf7s |&gt; group_by(predicted_labels) |&gt; summarize( `4o OS` = n()/nrow(cdf7s))
+d5_sum &lt;- cdf5 |&gt; group_by(predicted_labels) |&gt; summarize(`3.5 turbo` = n()/nrow(cdf5))
+d2_sum &lt;- cdf2 |&gt; group_by(predicted_labels) |&gt; summarize(`4o` = n() / nrow(cdf2))
+tbl_df &lt;- list(d3_sum,d7_sum,d5_sum,d2_sum) |&gt; reduce(left_join, by=&quot;predicted_labels&quot;) |&gt; mutate(`predicted label` = factor(predicted_labels, levels=c(&quot;MDNM&quot;,&quot;MDM&quot;,&quot;L&quot;,&quot;F&quot;,&quot;E&quot;,&quot;OTR&quot;)))
+tvariants &lt;- tbl_df |&gt; dplyr::select(c(`predicted label`, `3.5 turbo FT`, `4o OS`, `3.5 turbo`, `4o`)) |&gt;
+  arrange(`predicted label`) |&gt;
+  gt::gt() |&gt; 
+  tab_spanner(label=&quot;With training data&quot;, columns=2:3) |&gt; 
+  tab_spanner(label=&quot;Without training data&quot;, columns=4:5) |&gt; 
+  fmt_number(decimals = 3)
+tvariants</code></pre>
+<div id="rswmnzhpgl" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#rswmnzhpgl table {
 font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 -webkit-font-smoothing: antialiased;
 -moz-osx-font-smoothing: grayscale;
 }
-#kqovippjyf thead, #kqovippjyf tbody, #kqovippjyf tfoot, #kqovippjyf tr, #kqovippjyf td, #kqovippjyf th {
+#rswmnzhpgl thead, #rswmnzhpgl tbody, #rswmnzhpgl tfoot, #rswmnzhpgl tr, #rswmnzhpgl td, #rswmnzhpgl th {
 border-style: none;
 }
-#kqovippjyf p {
+#rswmnzhpgl p {
 margin: 0;
 padding: 0;
 }
-#kqovippjyf .gt_table {
+#rswmnzhpgl .gt_table {
 display: table;
 border-collapse: collapse;
 line-height: normal;
@@ -3082,11 +1097,11 @@ border-left-style: none;
 border-left-width: 2px;
 border-left-color: #D3D3D3;
 }
-#kqovippjyf .gt_caption {
+#rswmnzhpgl .gt_caption {
 padding-top: 4px;
 padding-bottom: 4px;
 }
-#kqovippjyf .gt_title {
+#rswmnzhpgl .gt_title {
 color: #333333;
 font-size: 125%;
 font-weight: initial;
@@ -3097,7 +1112,7 @@ padding-right: 5px;
 border-bottom-color: #FFFFFF;
 border-bottom-width: 0;
 }
-#kqovippjyf .gt_subtitle {
+#rswmnzhpgl .gt_subtitle {
 color: #333333;
 font-size: 85%;
 font-weight: initial;
@@ -3108,7 +1123,7 @@ padding-right: 5px;
 border-top-color: #FFFFFF;
 border-top-width: 0;
 }
-#kqovippjyf .gt_heading {
+#rswmnzhpgl .gt_heading {
 background-color: #FFFFFF;
 text-align: center;
 border-bottom-color: #FFFFFF;
@@ -3119,12 +1134,12 @@ border-right-style: none;
 border-right-width: 1px;
 border-right-color: #D3D3D3;
 }
-#kqovippjyf .gt_bottom_border {
+#rswmnzhpgl .gt_bottom_border {
 border-bottom-style: solid;
 border-bottom-width: 2px;
 border-bottom-color: #D3D3D3;
 }
-#kqovippjyf .gt_col_headings {
+#rswmnzhpgl .gt_col_headings {
 border-top-style: solid;
 border-top-width: 2px;
 border-top-color: #D3D3D3;
@@ -3138,7 +1153,7 @@ border-right-style: none;
 border-right-width: 1px;
 border-right-color: #D3D3D3;
 }
-#kqovippjyf .gt_col_heading {
+#rswmnzhpgl .gt_col_heading {
 color: #333333;
 background-color: #FFFFFF;
 font-size: 100%;
@@ -3157,7 +1172,7 @@ padding-left: 5px;
 padding-right: 5px;
 overflow-x: hidden;
 }
-#kqovippjyf .gt_column_spanner_outer {
+#rswmnzhpgl .gt_column_spanner_outer {
 color: #333333;
 background-color: #FFFFFF;
 font-size: 100%;
@@ -3168,13 +1183,13 @@ padding-bottom: 0;
 padding-left: 4px;
 padding-right: 4px;
 }
-#kqovippjyf .gt_column_spanner_outer:first-child {
+#rswmnzhpgl .gt_column_spanner_outer:first-child {
 padding-left: 0;
 }
-#kqovippjyf .gt_column_spanner_outer:last-child {
+#rswmnzhpgl .gt_column_spanner_outer:last-child {
 padding-right: 0;
 }
-#kqovippjyf .gt_column_spanner {
+#rswmnzhpgl .gt_column_spanner {
 border-bottom-style: solid;
 border-bottom-width: 2px;
 border-bottom-color: #D3D3D3;
@@ -3185,10 +1200,10 @@ overflow-x: hidden;
 display: inline-block;
 width: 100%;
 }
-#kqovippjyf .gt_spanner_row {
+#rswmnzhpgl .gt_spanner_row {
 border-bottom-style: hidden;
 }
-#kqovippjyf .gt_group_heading {
+#rswmnzhpgl .gt_group_heading {
 padding-top: 8px;
 padding-bottom: 8px;
 padding-left: 5px;
@@ -3213,7 +1228,7 @@ border-right-color: #D3D3D3;
 vertical-align: middle;
 text-align: left;
 }
-#kqovippjyf .gt_empty_group_heading {
+#rswmnzhpgl .gt_empty_group_heading {
 padding: 0.5px;
 color: #333333;
 background-color: #FFFFFF;
@@ -3227,13 +1242,13 @@ border-bottom-width: 2px;
 border-bottom-color: #D3D3D3;
 vertical-align: middle;
 }
-#kqovippjyf .gt_from_md > :first-child {
+#rswmnzhpgl .gt_from_md > :first-child {
 margin-top: 0;
 }
-#kqovippjyf .gt_from_md > :last-child {
+#rswmnzhpgl .gt_from_md > :last-child {
 margin-bottom: 0;
 }
-#kqovippjyf .gt_row {
+#rswmnzhpgl .gt_row {
 padding-top: 8px;
 padding-bottom: 8px;
 padding-left: 5px;
@@ -3251,7 +1266,7 @@ border-right-color: #D3D3D3;
 vertical-align: middle;
 overflow-x: hidden;
 }
-#kqovippjyf .gt_stub {
+#rswmnzhpgl .gt_stub {
 color: #333333;
 background-color: #FFFFFF;
 font-size: 100%;
@@ -3263,7 +1278,7 @@ border-right-color: #D3D3D3;
 padding-left: 5px;
 padding-right: 5px;
 }
-#kqovippjyf .gt_stub_row_group {
+#rswmnzhpgl .gt_stub_row_group {
 color: #333333;
 background-color: #FFFFFF;
 font-size: 100%;
@@ -3276,13 +1291,13 @@ padding-left: 5px;
 padding-right: 5px;
 vertical-align: top;
 }
-#kqovippjyf .gt_row_group_first td {
+#rswmnzhpgl .gt_row_group_first td {
 border-top-width: 2px;
 }
-#kqovippjyf .gt_row_group_first th {
+#rswmnzhpgl .gt_row_group_first th {
 border-top-width: 2px;
 }
-#kqovippjyf .gt_summary_row {
+#rswmnzhpgl .gt_summary_row {
 color: #333333;
 background-color: #FFFFFF;
 text-transform: inherit;
@@ -3291,14 +1306,14 @@ padding-bottom: 8px;
 padding-left: 5px;
 padding-right: 5px;
 }
-#kqovippjyf .gt_first_summary_row {
+#rswmnzhpgl .gt_first_summary_row {
 border-top-style: solid;
 border-top-color: #D3D3D3;
 }
-#kqovippjyf .gt_first_summary_row.thick {
+#rswmnzhpgl .gt_first_summary_row.thick {
 border-top-width: 2px;
 }
-#kqovippjyf .gt_last_summary_row {
+#rswmnzhpgl .gt_last_summary_row {
 padding-top: 8px;
 padding-bottom: 8px;
 padding-left: 5px;
@@ -3307,7 +1322,7 @@ border-bottom-style: solid;
 border-bottom-width: 2px;
 border-bottom-color: #D3D3D3;
 }
-#kqovippjyf .gt_grand_summary_row {
+#rswmnzhpgl .gt_grand_summary_row {
 color: #333333;
 background-color: #FFFFFF;
 text-transform: inherit;
@@ -3316,7 +1331,7 @@ padding-bottom: 8px;
 padding-left: 5px;
 padding-right: 5px;
 }
-#kqovippjyf .gt_first_grand_summary_row {
+#rswmnzhpgl .gt_first_grand_summary_row {
 padding-top: 8px;
 padding-bottom: 8px;
 padding-left: 5px;
@@ -3325,7 +1340,7 @@ border-top-style: double;
 border-top-width: 6px;
 border-top-color: #D3D3D3;
 }
-#kqovippjyf .gt_last_grand_summary_row_top {
+#rswmnzhpgl .gt_last_grand_summary_row_top {
 padding-top: 8px;
 padding-bottom: 8px;
 padding-left: 5px;
@@ -3334,10 +1349,10 @@ border-bottom-style: double;
 border-bottom-width: 6px;
 border-bottom-color: #D3D3D3;
 }
-#kqovippjyf .gt_striped {
+#rswmnzhpgl .gt_striped {
 background-color: rgba(128, 128, 128, 0.05);
 }
-#kqovippjyf .gt_table_body {
+#rswmnzhpgl .gt_table_body {
 border-top-style: solid;
 border-top-width: 2px;
 border-top-color: #D3D3D3;
@@ -3345,7 +1360,7 @@ border-bottom-style: solid;
 border-bottom-width: 2px;
 border-bottom-color: #D3D3D3;
 }
-#kqovippjyf .gt_footnotes {
+#rswmnzhpgl .gt_footnotes {
 color: #333333;
 background-color: #FFFFFF;
 border-bottom-style: none;
@@ -3358,7 +1373,7 @@ border-right-style: none;
 border-right-width: 2px;
 border-right-color: #D3D3D3;
 }
-#kqovippjyf .gt_footnote {
+#rswmnzhpgl .gt_footnote {
 margin: 0px;
 font-size: 90%;
 padding-top: 4px;
@@ -3366,7 +1381,7 @@ padding-bottom: 4px;
 padding-left: 5px;
 padding-right: 5px;
 }
-#kqovippjyf .gt_sourcenotes {
+#rswmnzhpgl .gt_sourcenotes {
 color: #333333;
 background-color: #FFFFFF;
 border-bottom-style: none;
@@ -3379,107 +1394,122 @@ border-right-style: none;
 border-right-width: 2px;
 border-right-color: #D3D3D3;
 }
-#kqovippjyf .gt_sourcenote {
+#rswmnzhpgl .gt_sourcenote {
 font-size: 90%;
 padding-top: 4px;
 padding-bottom: 4px;
 padding-left: 5px;
 padding-right: 5px;
 }
-#kqovippjyf .gt_left {
+#rswmnzhpgl .gt_left {
 text-align: left;
 }
-#kqovippjyf .gt_center {
+#rswmnzhpgl .gt_center {
 text-align: center;
 }
-#kqovippjyf .gt_right {
+#rswmnzhpgl .gt_right {
 text-align: right;
 font-variant-numeric: tabular-nums;
 }
-#kqovippjyf .gt_font_normal {
+#rswmnzhpgl .gt_font_normal {
 font-weight: normal;
 }
-#kqovippjyf .gt_font_bold {
+#rswmnzhpgl .gt_font_bold {
 font-weight: bold;
 }
-#kqovippjyf .gt_font_italic {
+#rswmnzhpgl .gt_font_italic {
 font-style: italic;
 }
-#kqovippjyf .gt_super {
+#rswmnzhpgl .gt_super {
 font-size: 65%;
 }
-#kqovippjyf .gt_footnote_marks {
+#rswmnzhpgl .gt_footnote_marks {
 font-size: 75%;
 vertical-align: 0.4em;
 position: initial;
 }
-#kqovippjyf .gt_asterisk {
+#rswmnzhpgl .gt_asterisk {
 font-size: 100%;
 vertical-align: 0;
 }
-#kqovippjyf .gt_indent_1 {
+#rswmnzhpgl .gt_indent_1 {
 text-indent: 5px;
 }
-#kqovippjyf .gt_indent_2 {
+#rswmnzhpgl .gt_indent_2 {
 text-indent: 10px;
 }
-#kqovippjyf .gt_indent_3 {
+#rswmnzhpgl .gt_indent_3 {
 text-indent: 15px;
 }
-#kqovippjyf .gt_indent_4 {
+#rswmnzhpgl .gt_indent_4 {
 text-indent: 20px;
 }
-#kqovippjyf .gt_indent_5 {
+#rswmnzhpgl .gt_indent_5 {
 text-indent: 25px;
 }
-#kqovippjyf .katex-display {
+#rswmnzhpgl .katex-display {
 display: inline-flex !important;
 margin-bottom: 0.75em !important;
 }
-#kqovippjyf div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+#rswmnzhpgl div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
 height: 0px !important;
 }
 </style>
 <table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
   <thead>
+    <tr class="gt_col_headings gt_spanner_row">
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="2" colspan="1" scope="col" id="predicted-label">predicted label</th>
+      <th class="gt_center gt_columns_top_border gt_column_spanner_outer" rowspan="1" colspan="2" scope="colgroup" id="With training data">
+        <div class="gt_column_spanner">With training data</div>
+      </th>
+      <th class="gt_center gt_columns_top_border gt_column_spanner_outer" rowspan="1" colspan="2" scope="colgroup" id="Without training data">
+        <div class="gt_column_spanner">Without training data</div>
+      </th>
+    </tr>
     <tr class="gt_col_headings">
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="id">id</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="B1">B1</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="B2">B2</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="predicted_label">predicted_label</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="motivation">motivation</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="a3.5-turbo-FT">3.5 turbo FT</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="a4o-OS">4o OS</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="a3.5-turbo">3.5 turbo</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="a4o">4o</th>
     </tr>
   </thead>
   <tbody class="gt_table_body">
-    <tr><td headers="id" class="gt_row gt_right">568</td>
-<td headers="B1" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="B2" class="gt_row gt_left">meritocrat - margin matters</td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin matters</td>
-<td headers="motivation" class="gt_row gt_left">Although Participant Y solved 16 problems and Participant X solved 12 problems, I feel both should be compensated. Participant X should get something for solving the problems although they did not complete as many.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">1252</td>
-<td headers="B1" class="gt_row gt_left">misunderstand</td>
-<td headers="B2" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="predicted_label" class="gt_row gt_left">misunderstand</td>
-<td headers="motivation" class="gt_row gt_left">maybe I failed to understand you fully but if one is getting 15 cents for each questin answered correctly, then participant x deserved to get sth agter answering 20 correct questions. Thats why I sacrificed 1 dollar.,</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">1481</td>
-<td headers="B1" class="gt_row gt_left">meritocrat - margin does not matter</td>
-<td headers="B2" class="gt_row gt_left">meritocrat - margin matters</td>
-<td headers="predicted_label" class="gt_row gt_left">meritocrat - margin matters</td>
-<td headers="motivation" class="gt_row gt_left">Xdid answer 11 questions. Even though Yanswered 4 more wuestions-I feel X should be given something for trying to answer as many as she could.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">2999</td>
-<td headers="B1" class="gt_row gt_left">egalitarian</td>
-<td headers="B2" class="gt_row gt_left">no reason</td>
-<td headers="predicted_label" class="gt_row gt_left">no reason</td>
-<td headers="motivation" class="gt_row gt_left">to be a good person and share</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">3374</td>
-<td headers="B1" class="gt_row gt_left">misunderstand</td>
-<td headers="B2" class="gt_row gt_left">no reason</td>
-<td headers="predicted_label" class="gt_row gt_left">no reason</td>
-<td headers="motivation" class="gt_row gt_left">It appears to me that X did better in their grouping than Y did in their&#39;s. Thus, a sharing of the wealth is appropriate.</td></tr>
+    <tr><td headers="predicted label" class="gt_row gt_center">MDNM</td>
+<td headers="3.5 turbo FT" class="gt_row gt_right">0.359</td>
+<td headers="4o OS" class="gt_row gt_right">0.347</td>
+<td headers="3.5 turbo" class="gt_row gt_right">0.075</td>
+<td headers="4o" class="gt_row gt_right">0.228</td></tr>
+    <tr><td headers="predicted label" class="gt_row gt_center">MDM</td>
+<td headers="3.5 turbo FT" class="gt_row gt_right">0.269</td>
+<td headers="4o OS" class="gt_row gt_right">0.242</td>
+<td headers="3.5 turbo" class="gt_row gt_right">0.265</td>
+<td headers="4o" class="gt_row gt_right">0.230</td></tr>
+    <tr><td headers="predicted label" class="gt_row gt_center">L</td>
+<td headers="3.5 turbo FT" class="gt_row gt_right">0.200</td>
+<td headers="4o OS" class="gt_row gt_right">0.222</td>
+<td headers="3.5 turbo" class="gt_row gt_right">0.185</td>
+<td headers="4o" class="gt_row gt_right">0.216</td></tr>
+    <tr><td headers="predicted label" class="gt_row gt_center">F</td>
+<td headers="3.5 turbo FT" class="gt_row gt_right">0.046</td>
+<td headers="4o OS" class="gt_row gt_right">0.031</td>
+<td headers="3.5 turbo" class="gt_row gt_right">0.068</td>
+<td headers="4o" class="gt_row gt_right">0.120</td></tr>
+    <tr><td headers="predicted label" class="gt_row gt_center">E</td>
+<td headers="3.5 turbo FT" class="gt_row gt_right">0.028</td>
+<td headers="4o OS" class="gt_row gt_right">0.053</td>
+<td headers="3.5 turbo" class="gt_row gt_right">0.369</td>
+<td headers="4o" class="gt_row gt_right">0.135</td></tr>
+    <tr><td headers="predicted label" class="gt_row gt_center">OTR</td>
+<td headers="3.5 turbo FT" class="gt_row gt_right">0.098</td>
+<td headers="4o OS" class="gt_row gt_right">0.105</td>
+<td headers="3.5 turbo" class="gt_row gt_right">0.038</td>
+<td headers="4o" class="gt_row gt_right">0.070</td></tr>
   </tbody>
   
   
 </table>
+</div>
+<pre class="r"><code>gtsave(tvariants, filename=&quot;tvariants.tex&quot;)</code></pre>
 </div>
 </div>
 

@@ -28,7 +28,7 @@ ggsave("graphs/RN2018_hist_shareY_wta.pdf",width=16, height = 10, units = "cm")
 
 ```{r Winner-take-all vs luck, echo=FALSE}
 tar_load(winner_take_all_vs_luck)
-winner_take_all_vs_luck$left + winner_take_all_vs_luck$right + plot_annotation(tag_levels = "a")
+winner_take_all_vs_luck$left + winner_take_all_vs_luck$right + plot_annotation(tag_levels = "a") + plot_layout(guides = "collect")
 ggsave("graphs/RN2018_wta_luck.pdf", width=16, height = 10, units="cm")
 ```
 

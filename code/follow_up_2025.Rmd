@@ -173,8 +173,8 @@ tdf <-classified_motivations |>
     predicted_label == "incentives" ~ "Other",
     predicted_label == "libertarian" ~ "Libertarian",
     predicted_label == "logic" ~ "Other",
-    predicted_label == "meritocrat - margin does not matter" ~ "Meritocrat - Margin Not Mentioned",
-    predicted_label == "meritocrat - margin matters" ~ "Meritocrat - Margin Mentioned",
+    predicted_label == "meritocrat - does not mention margin" ~ "Meritocrat - Margin Not Mentioned",
+    predicted_label == "meritocrat - does mention the margin" ~ "Meritocrat - Margin Mentioned",
     predicted_label == "misunderstand" ~ "Other",
     predicted_label == "no reason" ~ "Other")) |>
   group_by(label) |>
@@ -192,7 +192,7 @@ tdf |>
   labs(x = "Classification (GPT)",
        y = "Fraction") +
   theme_minimal()
-ggsave("graphs/P2025_classifications.pdf", width=16, height = 10, units = "cm")
+ggsave(here::here("graphs", "P2025_classifications.pdf"), width=16, height = 10, units = "cm", device=cairo_pdf)
 tdf |> dplyr::select(c("labelf","fraction")) |> arrange(-fraction) |> gt() |> fmt_number(decimals = 3)
 ```
 
@@ -203,8 +203,8 @@ tar_load(mmw2025)
 cdta <- mmw2025 |> left_join(classified_motivations) |>
   mutate( all_to_winner = as.numeric(y2==e2),
           almost_equality = as.numeric(abs(y2 - e2/2)<0.1),
-          lib_nomargin = as.numeric( predicted_label %in% c("libertarian","meritocrat - margin does not matter")),
-          margin_matters = as.numeric(predicted_label %in% c("meritocrat - margin matters"))) 
+          lib_nomargin = as.numeric( predicted_label %in% c("libertarian","meritocrat - does not mention margin")),
+          margin_matters = as.numeric(predicted_label %in% c("meritocrat - does mention the margin"))) 
 cdta |> lm(all_to_winner ~ lib_nomargin, data=_) |> summary()
 cdta |> lm(almost_equality ~ margin_matters, data=_) |> summary()
 

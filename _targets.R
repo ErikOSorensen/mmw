@@ -7,8 +7,9 @@ library(tarchetypes)
 library(fixest)
 library(marginaleffects)
 library(scales)
+library(patchwork)
 
-source("functions.R")
+source("code/functions.R")
 
 list(
   tar_target(
@@ -44,7 +45,7 @@ list(
   ),
   tar_target(
     classified_motivations_file,
-    "classification/classified_motivations.csv",
+    "classification/20250721_125758_classified_motivations.csv",
     format="file"
   ),
   tar_target(
@@ -161,18 +162,26 @@ list(
   ),
   tar_render(
     analysis_main_sample,
-    path = "analysis_main_sample.Rmd"
+    path = "code/analysis_main_sample.Rmd",
+    output_file="analysis_main_sample.html",
+    output_dir  = "html_reports"
   ),
   tar_render(
     follow_up_2025,
-    path = "follow_up_2025.Rmd"
+    path = "code/follow_up_2025.Rmd",
+    output_file="follow_up_2025.html",
+    output_dir  = "html_reports"
   ),
   tar_render(
     restricted_sample_2018,
-    path="restricted_sample_2018.Rmd"
+    path="code/restricted_sample_2018.Rmd",
+    output_file="restricted_sample_2018.html",
+    output_dir  = "html_reports"
   ),
   tar_render(
     lab_experiment,
-    path="lab_experiment.Rmd"
+    path="code/lab_experiment.Rmd",
+    output_file="lab_experiment.html",
+    output_dir  = "html_reports"
   )
 )

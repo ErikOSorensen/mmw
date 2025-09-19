@@ -1,0 +1,16 @@
+# Prevent big files from being sent to Docker build context
+*.html
+*.rds
+*.RData
+*.png
+*.pdf
+*.csv
+*.tsv
+*.zip
+*.gz
+data/
+graphs/
+tables/
+classification/
+_targets/
+renv/library/

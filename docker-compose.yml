@@ -7,7 +7,9 @@ services:
       - "8787:8787"
     volumes: # - .:/home/rstudio/project  # mounts the full project directory
       - ./mmwinner.Rproj:/home/rstudio/project/mmwinner.Rproj
-      - ./code:/home/rstudio/code
+      - ./renv.lock:/home/rstudio/project/renv.lock
+      - ./_targets.R:/home/rstudio/project/_targets.R
+      - ./code:/home/rstudio/project/code
       - ./html_reports:/home/rstudio/project/html_reports
       - ./data:/home/rstudio/project/data
       - ./graphs:/home/rstudio/project/graphs
