@@ -240,3 +240,10 @@ cdta |> lm(almost_equality ~ margin_matters, data=_) |> summary()
 
 ```
 
+
+# Median age
+
+```{r}
+tar_load(mmw2025)
+median(mmw2025$age)
+```

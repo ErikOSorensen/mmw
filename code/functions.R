@@ -1099,32 +1099,6 @@ heterogeneous_treatment_effects_wm_ll <- function(mmw2018) {
 }
 
 
-general_attitudes_l <- function(mmw2018) {
-  tabledf <- mmw2018 |>
-    filter(treatment != "Base") |>
-    mutate(share_to_winner = y2/(y1+y2),
-           republican = as.numeric(pol2==1),
-           college = as.numeric(education>4),
-           female = as.numeric(sex==2),
-           above_median_age = as.numeric(age > median(age)),
-           regionf = factor(area)
-    )
-  
-  s1 <- tabledf |> fixest::feols(scale(8-att3) ~ share_to_winner + republican + college + female + above_median_age | regionf, data=_, vcov="hetero")
-  s2 <- tabledf |> filter(y1>y2) |> fixest::feols(scale(8-att3) ~ share_to_winner + republican + college + female + above_median_age | regionf, data=_, vcov="hetero")
-  s3 <- tabledf |> filter(y1<=y2) |> fixest::feols(scale(8-att3) ~ share_to_winner + republican + college + female + above_median_age | regionf, data=_, vcov="hetero")
-  
-  s4 <- tabledf |> fixest::feols(scale(8-att4) ~ share_to_winner + republican + college + female + above_median_age | regionf, data=_, vcov="hetero")
-  s5 <- tabledf |> filter(y1>y2) |> fixest::feols(scale(8-att4) ~ share_to_winner + republican + college + female + above_median_age | regionf, data=_, vcov="hetero")
-  s6 <- tabledf |> filter(y1<=y2) |> fixest::feols(scale(8-att4) ~ share_to_winner + republican + college + female + above_median_age | regionf, data=_, vcov="hetero")
-  
-  s7 <- tabledf |> fixest::feols(scale(att2) ~ share_to_winner + republican + college + female + above_median_age | regionf, data=_, vcov="hetero")
-  s8 <- tabledf |> filter(y1>y2) |> fixest::feols(scale(att2) ~ share_to_winner + republican + college + female + above_median_age | regionf, data=_, vcov="hetero")
-  s9 <- tabledf |> filter(y1<=y2) |> fixest::feols(scale(att2) ~ share_to_winner + republican + college + female + above_median_age | regionf, data=_, vcov="hetero")
-  
-  list(s1,s2,s3,s4,s5,s6,s7,s8,s9)
-}
-
 general_attitudes_restricted_l <- function(mmw2018r) {
   tabledf <- mmw2018r |>
     filter(treatment != "Base") |>

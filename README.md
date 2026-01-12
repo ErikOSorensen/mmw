@@ -24,8 +24,8 @@ Analysis for mmwinner paper
 | Figure A.4          | RN2018_flatness_share_byT.pdf   |   analysis_main_sample.Rmd   |  role of winning margin share      |
 | Figure A.5          | RN2018_hetero_coefplot_s.pdf           |   analysis_main_sample.Rmd   |  heterogeneity analysis II         |
 | Table 1             | Not applicable: No data         |                              |                                    |
-| Table 2             | RN2018_role_of_merit.tex        |   analysis_main_sample.Rmd   |  role of merit for inqeuality acceptance |
-| Table 3             | RN2018_role_of_margin.tex       |   analysis_main_sample.Rmd   |  role of margin for inqeuality acceptance |
+| Table 2             | RN2018_role_of_merit.tex        |   analysis_main_sample.Rmd   |  role of merit for inequality acceptance |
+| Table 3             | RN2018_role_of_margin.tex       |   analysis_main_sample.Rmd   |  role of margin for inequality acceptance |
 | Table 4             | RN2018_attitudes.tex            |   analysis_main_sample.Rmd   |  general attitudes                |
 | Table 5             | P2025_
 | Table A.2           | RN2018_T_comparisons.tex        |   analysis_main_sample.Rmd   |  comparisons of treatments |

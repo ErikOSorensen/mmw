@@ -145,10 +145,6 @@ list(
     heterogeneous_treatment_effects_wm_ll(mmw2018_restricted)
   ),
   tar_target(
-    general_attitudes,
-    general_attitudes_l(mmw2018)
-  ),
-  tar_target(
     general_attitudes_restricted,
     general_attitudes_restricted_l(mmw2018_restricted)
   ),

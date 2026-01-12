@@ -24,6 +24,24 @@ share_of_earnings_to_winner
 ggsave("graphs/RN2018_hist_shareY_wta.pdf",width=16, height = 10, units = "cm")
 ```
 
+
+Here are corresponding numbers. Sometimes equalizing is difficult in monetary units. 
+For equalize in this table, I allow the difference between implemented amounts and
+equal amounts to be less than 10 cent.
+```{r echo=FALSE}
+tar_load(mmw2018)
+mmw2018 |> group_by(treatment) |>
+  summarize(winner_take_all = mean(y2==e2),
+            equalize = mean(abs(y2- e2/2 )<0.10),
+            mean_to_winner = mean(y2/e2)) |>
+  gt() |>
+  fmt_number(decimals=3)
+
+```
+
+
+
+
 # Winner-take-all vs. Luck
 
 ```{r Winner-take-all vs luck, echo=FALSE}
@@ -332,5 +350,12 @@ ta5 <- heterogeneous_treatment_effects_wm$regressions |>
   tab_spanner(label="Share to winner", columns=6:9)
 ta5
 ta5 |> gtsave(here::here("tables","RN2018_hetmerit_margin.tex"))
+```
+
+# Median age
+
+```{r}
+tar_load(mmw2018)
+median(mmw2018$age)
 ```
 
