@@ -132,9 +132,10 @@ the correct number; participants did pay attention.
 # Association Between Giving All to the Winner and General Attitudes
 
 Note that "Gold Medalist" and "Superstar" have been reverse coded.
-```{r}
+```{r echo=FALSE}
 tar_load(ass_giving_all_attitudes_2025)
 em <- c("all_to_winner" = "All to winner",
+        "share_to_winner" = "Share to winner",
         "republican" = "Republican",
         "college" ="College",
         "female" = "Female",
@@ -142,7 +143,7 @@ em <- c("all_to_winner" = "All to winner",
         "(Intercept)"="Constant"
 )
 
-t4_2025 <- ass_giving_all_attitudes_2025 |>
+t4_2025 <- ass_giving_all_attitudes_2025$all_to_winner |>
    modelsummary(coef_map=em,
                stars = c('*' = .1, '**' = .05, '***'=.01),
                                    gof_map = c("nobs", "r.squared"),
@@ -153,6 +154,35 @@ t4_2025 <- ass_giving_all_attitudes_2025 |>
 t4_2025
 t4_2025 |> gtsave(here::here("tables","P2025_attitudes.tex"))
 ```
+
+
+
+# Association Between Share to the Winner and General Attitudes
+
+```{r echo=FALSE}
+tar_load(ass_giving_all_attitudes_2025)
+em <- c("all_to_winner" = "All to winner",
+        "share_to_winner" = "Share to winner",
+        "republican" = "Republican",
+        "college" ="College",
+        "female" = "Female",
+        "above_median_age"="Above median age",
+        "(Intercept)"="Constant"
+)
+
+u4_2025 <- ass_giving_all_attitudes_2025$share_to_winner |>
+   modelsummary(coef_map=em,
+               stars = c('*' = .1, '**' = .05, '***'=.01),
+                                   gof_map = c("nobs", "r.squared"),
+                                   output = "gt" ) |>
+  tab_spanner(label="Gold medalist", columns=2:4) |>
+  tab_spanner(label="Superstar", columns=5:7) |>
+  tab_spanner(label="Decrease tax on top 1\\%", columns=8:10)
+u4_2025
+u4_2025 |> gtsave(here::here("tables","P2025_attitudes_share.tex"))
+```
+
+
 
 
 # Using the data on classification

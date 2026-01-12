@@ -73,8 +73,29 @@ ass_giving_all_attitudes_l <- function(mmw2018) {
   t4_c8 <- tabledf |> fixest::feols(scale(att2) ~ republican + college + female + above_median_age | regionf, data=_, vcov="hetero")
   t4_c9 <- tabledf |> fixest::feols(scale(att2) ~ all_to_winner + republican + college + female + above_median_age | regionf, data=_, vcov="hetero")
   
-  list(t4_c1, t4_c2, t4_c3, t4_c4, t4_c5, t4_c6, t4_c7, t4_c8, t4_c9)
+  all_to_winner <- list(t4_c1, t4_c2, t4_c3, t4_c4, t4_c5, t4_c6, t4_c7, t4_c8, t4_c9)
+  
+  u4_c1 <- tabledf |> fixest::feols(scale(8-att3) ~ share_to_winner, data=_, vcov="hetero")
+  u4_c2 <- tabledf |> fixest::feols(scale(8-att3) ~ republican + college + female + above_median_age | regionf, data=_, vcov="hetero")
+  u4_c3 <- tabledf |> fixest::feols(scale(8-att3) ~ share_to_winner + republican + college + female + above_median_age | regionf, data=_, vcov="hetero")
+  
+  u4_c4 <- tabledf |> fixest::feols(scale(8-att4) ~ share_to_winner, data=_, vcov="hetero")
+  u4_c5 <- tabledf |> fixest::feols(scale(8-att4) ~ republican + college + female + above_median_age | regionf, data=_, vcov="hetero")
+  u4_c6 <- tabledf |> fixest::feols(scale(8-att4) ~ share_to_winner + republican + college + female + above_median_age | regionf, data=_, vcov="hetero")
+  
+  u4_c7 <- tabledf |> fixest::feols(scale(att2) ~ share_to_winner, data=_, vcov="hetero")
+  u4_c8 <- tabledf |> fixest::feols(scale(att2) ~ republican + college + female + above_median_age | regionf, data=_, vcov="hetero")
+  u4_c9 <- tabledf |> fixest::feols(scale(att2) ~ share_to_winner + republican + college + female + above_median_age | regionf, data=_, vcov="hetero")
+  
+  share_to_winner <- list(u4_c1, u4_c2, u4_c3, u4_c4, u4_c5, u4_c6, u4_c7, u4_c8, u4_c9)
+  
+  list("all_to_winner"=all_to_winner, 
+       "share_to_winner"=share_to_winner)
+  
 }
+
+
+
 
 role_of_winning_margin_2025_ll <- function(mmw2025) {
   tabledf <- mmw2025 |>
@@ -1172,20 +1193,20 @@ by_place_in_distribution_l <- function(mmw2025) {
   prods <- c(tabledf$x1, tabledf$x2)
   md <- median(prods)
   tabledfd <- tabledf |> filter(treatment=="show_distribution")
-  k1 <- tabledfd |> filter(x2<md) |> feols(all_to_winner ~ winning_margin, data=_)
-  k2 <- tabledfd |> filter(x2<md) |> feols(all_to_winner ~ winning_margin + republican + college + female + above_median_age + regionf, data=_)
-  k3 <- tabledfd |> filter(x2<md) |> feols(share_to_winner ~ winning_margin, data=_)
-  k4 <- tabledfd |> filter(x2<md) |> feols(share_to_winner ~ winning_margin + republican + college + female + above_median_age + regionf, data=_)
+  k1 <- tabledfd |> filter(x2<md) |> feols(all_to_winner ~ winning_margin, data=_, vcov="hetero")
+  k2 <- tabledfd |> filter(x2<md) |> feols(all_to_winner ~ winning_margin + republican + college + female + above_median_age + regionf, data=_, vcov="hetero")
+  k3 <- tabledfd |> filter(x2<md) |> feols(share_to_winner ~ winning_margin, data=_, vcov="hetero")
+  k4 <- tabledfd |> filter(x2<md) |> feols(share_to_winner ~ winning_margin + republican + college + female + above_median_age + regionf, data=_, vcov="hetero")
   
-  k5 <- tabledfd |> filter(x2>=md, x1<md) |> feols(all_to_winner ~ winning_margin, data=_)
-  k6 <- tabledfd |> filter(x2>=md, x1<md) |> feols(all_to_winner ~ winning_margin + republican + college + female + above_median_age + regionf, data=_)
-  k7 <- tabledfd |> filter(x2>=md, x1<md) |> feols(share_to_winner ~ winning_margin, data=_)
-  k8 <- tabledfd |> filter(x2>=md, x1<md) |> feols(share_to_winner ~ winning_margin + republican + college + female + above_median_age + regionf, data=_)
+  k5 <- tabledfd |> filter(x2>=md, x1<md) |> feols(all_to_winner ~ winning_margin, data=_, vcov="hetero")
+  k6 <- tabledfd |> filter(x2>=md, x1<md) |> feols(all_to_winner ~ winning_margin + republican + college + female + above_median_age + regionf, data=_, vcov="hetero")
+  k7 <- tabledfd |> filter(x2>=md, x1<md) |> feols(share_to_winner ~ winning_margin, data=_, vcov="hetero")
+  k8 <- tabledfd |> filter(x2>=md, x1<md) |> feols(share_to_winner ~ winning_margin + republican + college + female + above_median_age + regionf, data=_, vcov="hetero")
   
-  k9  <- tabledfd |> filter(x1>=md) |> feols(all_to_winner ~ winning_margin, data=_)
-  k10 <- tabledfd |> filter(x1>=md) |> feols(all_to_winner ~ winning_margin + republican + college + female + above_median_age + regionf, data=_)
-  k11 <- tabledfd |> filter(x1>=md) |> feols(share_to_winner ~ winning_margin, data=_)
-  k12 <- tabledfd |> filter(x1>=md) |> feols(share_to_winner ~ winning_margin + republican + college + female + above_median_age + regionf, data=_)
+  k9  <- tabledfd |> filter(x1>=md) |> feols(all_to_winner ~ winning_margin, data=_, vcov="hetero")
+  k10 <- tabledfd |> filter(x1>=md) |> feols(all_to_winner ~ winning_margin + republican + college + female + above_median_age + regionf, data=_, vcov="hetero")
+  k11 <- tabledfd |> filter(x1>=md) |> feols(share_to_winner ~ winning_margin, data=_, vcov="hetero")
+  k12 <- tabledfd |> filter(x1>=md) |> feols(share_to_winner ~ winning_margin + republican + college + female + above_median_age + regionf, data=_, vcov="hetero")
   
   list(k1,k2,k3,k4,k5,k6,k7,k8,k9,k10,k11,k12)
 }
@@ -1203,17 +1224,34 @@ ass_giving_all_attitudes_2025_l <- function(mmw2025) {
            regionf = factor(region),
            treatmentf = relevel(factor(treatment), ref = "baseline"))
   
-  t4_c1 <- tabledf |> fixest::feols(scale(8-att3) ~ all_to_winner, data=_)
-  t4_c2 <- tabledf |> fixest::feols(scale(8-att3) ~ republican + college + female + above_median_age | regionf, data=_)
-  t4_c3 <- tabledf |> fixest::feols(scale(8-att3) ~ all_to_winner + republican + college + female + above_median_age | regionf, data=_)
+  t4_c1 <- tabledf |> fixest::feols(scale(8-att3) ~ all_to_winner, data=_, vcov="hetero")
+  t4_c2 <- tabledf |> fixest::feols(scale(8-att3) ~ republican + college + female + above_median_age | regionf, data=_, vcov="hetero")
+  t4_c3 <- tabledf |> fixest::feols(scale(8-att3) ~ all_to_winner + republican + college + female + above_median_age | regionf, data=_, vcov="hetero")
   
-  t4_c4 <- tabledf |> fixest::feols(scale(8-att4) ~ all_to_winner, data=_)
-  t4_c5 <- tabledf |> fixest::feols(scale(8-att4) ~ republican + college + female + above_median_age | regionf, data=_)
-  t4_c6 <- tabledf |> fixest::feols(scale(8-att4) ~ all_to_winner + republican + college + female + above_median_age | regionf, data=_)
+  t4_c4 <- tabledf |> fixest::feols(scale(8-att4) ~ all_to_winner, data=_, vcov="hetero")
+  t4_c5 <- tabledf |> fixest::feols(scale(8-att4) ~ republican + college + female + above_median_age | regionf, data=_, vcov="hetero")
+  t4_c6 <- tabledf |> fixest::feols(scale(8-att4) ~ all_to_winner + republican + college + female + above_median_age | regionf, data=_, vcov="hetero")
   
-  t4_c7 <- tabledf |> fixest::feols(scale(att2) ~ all_to_winner, data=_)
-  t4_c8 <- tabledf |> fixest::feols(scale(att2) ~ republican + college + female + above_median_age | regionf, data=_)
-  t4_c9 <- tabledf |> fixest::feols(scale(att2) ~ all_to_winner + republican + college + female + above_median_age | regionf, data=_)
+  t4_c7 <- tabledf |> fixest::feols(scale(att2) ~ all_to_winner, data=_, vcov="hetero")
+  t4_c8 <- tabledf |> fixest::feols(scale(att2) ~ republican + college + female + above_median_age | regionf, data=_, vcov="hetero")
+  t4_c9 <- tabledf |> fixest::feols(scale(att2) ~ all_to_winner + republican + college + female + above_median_age | regionf, data=_, vcov="hetero")
   
-  list(t4_c1, t4_c2, t4_c3, t4_c4, t4_c5, t4_c6, t4_c7, t4_c8, t4_c9)
+  all_to_winner <- list(t4_c1, t4_c2, t4_c3, t4_c4, t4_c5, t4_c6, t4_c7, t4_c8, t4_c9)
+  
+  u4_c1 <- tabledf |> fixest::feols(scale(8-att3) ~ share_to_winner, data=_, vcov="hetero")
+  u4_c2 <- tabledf |> fixest::feols(scale(8-att3) ~ republican + college + female + above_median_age | regionf, data=_, vcov="hetero")
+  u4_c3 <- tabledf |> fixest::feols(scale(8-att3) ~ share_to_winner + republican + college + female + above_median_age | regionf, data=_, vcov="hetero")
+
+  u4_c4 <- tabledf |> fixest::feols(scale(8-att4) ~ share_to_winner, data=_, vcov="hetero")
+  u4_c5 <- tabledf |> fixest::feols(scale(8-att4) ~ republican + college + female + above_median_age | regionf, data=_, vcov="hetero")
+  u4_c6 <- tabledf |> fixest::feols(scale(8-att4) ~ share_to_winner + republican + college + female + above_median_age | regionf, data=_, vcov="hetero")
+  
+  u4_c7 <- tabledf |> fixest::feols(scale(att2) ~ share_to_winner, data=_, vcov="hetero")
+  u4_c8 <- tabledf |> fixest::feols(scale(att2) ~ republican + college + female + above_median_age | regionf, data=_, vcov="hetero")
+  u4_c9 <- tabledf |> fixest::feols(scale(att2) ~ share_to_winner + republican + college + female + above_median_age | regionf, data=_, vcov="hetero")
+  
+  share_to_winner <- list(u4_c1, u4_c2, u4_c3, u4_c4, u4_c5, u4_c6, u4_c7, u4_c8, u4_c9)
+  
+  list("all_to_winner"=all_to_winner, "share_to_winner"=share_to_winner)
+  
 }

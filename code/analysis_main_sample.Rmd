@@ -151,18 +151,19 @@ tab3
 tab3 |> gtsave(here::here("tables","RN2018_role_of_margin.tex"))
 ```
 
-# Regression analysis: Association bweteen giving all to the winner and general attitudes
+# Regression analysis: Association between giving all to the winner and general attitudes
 
 ```{r general attitudes, echo=FALSE}
 tar_load(ass_giving_all_attitudes)
 em <- c("all_to_winner" = "All to winner",
+        "share_to_winner" = "Share to winner",
         "republican" = "Republican",
         "college" ="College",
         "female" = "Female",
         "above_median_age"="Above median age",
         "(Intercept)"="Constant"
 )
-t4_2018 <- ass_giving_all_attitudes |>
+t4_2018 <- ass_giving_all_attitudes$all_to_winner |>
    modelsummary(coef_map=em,
                stars = c('*' = .1, '**' = .05, '***'=.01),
                                    gof_map = c("nobs", "r.squared"),
@@ -172,7 +173,39 @@ t4_2018 <- ass_giving_all_attitudes |>
   tab_spanner(label="Decrease tax on top 1\\%", columns=8:10)
 t4_2018
 t4_2018 |> gtsave(here::here("tables","RN2018_attitudes.tex"))
+
+
+
 ```
+
+# Regression analysis: Association between share to the winner and general attitudes
+
+```{r}
+tar_load(ass_giving_all_attitudes)
+em <- c("all_to_winner" = "All to winner",
+        "share_to_winner" = "Share to winner",
+        "republican" = "Republican",
+        "college" ="College",
+        "female" = "Female",
+        "above_median_age"="Above median age",
+        "(Intercept)"="Constant"
+)
+u4_2018 <- ass_giving_all_attitudes$share_to_winner |>
+   modelsummary(coef_map=em,
+               stars = c('*' = .1, '**' = .05, '***'=.01),
+                                   gof_map = c("nobs", "r.squared"),
+                                   output = "gt" ) |>
+  tab_spanner(label="Gold medalist", columns=2:4) |>
+  tab_spanner(label="Superstar", columns=5:7) |>
+  tab_spanner(label="Decrease tax on top 1\\%", columns=8:10)
+u4_2018
+u4_2018 |> gtsave(here::here("tables","RN2018_attitudes_share.tex"))
+
+```
+
+
+
+
 
 # Regression analysis: Comparison of winner-take-all treatments
 
@@ -299,29 +332,5 @@ ta5 <- heterogeneous_treatment_effects_wm$regressions |>
   tab_spanner(label="Share to winner", columns=6:9)
 ta5
 ta5 |> gtsave(here::here("tables","RN2018_hetmerit_margin.tex"))
-```
-
-
-
-# Regression analysis: Association between share given to the winner and general attitudes
-
-```{r general attitudes share, echo=FALSE}
-tar_load(general_attitudes)
-sm <- c("share_to_winner"="Share to winner",
-        "republican" = "Republican",
-        "college"="College",
-        "female" = "Female",
-        "above_median_age"="Above median age")
-ta6 <- general_attitudes |>
-    modelsummary(coef_map=sm,
-               stars = c('*' = .1, '**' = .05, '***'=.01),
-                                   gof_map = c("nobs", "r.squared"),
-                                   output = "gt") |>
-  tab_spanner(label="Gold medalist", columns=2:4) |>
-  tab_spanner(label="Superstar", columns=5:7) |>
-  tab_spanner(label="Decrease tax on top 1\\%", columns=8:10)
-ta6
-ta6 |> gtsave(here::here("tables","RN2018_attitudes_share.tex"))
-
 ```
 
