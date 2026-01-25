@@ -198,7 +198,7 @@ share_of_earnings_to_winner_g <- function(mmw2018) {
                    boundary=0) +
     theme_minimal() +
     labs(x = "Share to winner",
-         y = "Fraction") +
+         y = "Share of spectators") +
     scale_x_continuous(breaks = c(0, 0.5, 1)) +
     facet_wrap(~treatment)
 }
@@ -244,7 +244,7 @@ winner_take_all_vs_luck_lg <- function(mmw2018) {
     ) +
     labs(
       x = "Share to winner",
-      y = "Fraction of spectators",
+      y = "Share of spectators",
       title = "Full sample",
       subtitle = "All winning margins"
     )
@@ -289,7 +289,7 @@ winner_take_all_vs_luck_lg <- function(mmw2018) {
     ) +
     labs(
       x = "Share to winner",
-      y = "Fraction of spectators",
+      y = "Share of spectators",
       title = "Subsample",
       subtitle = "Smallest winning margin"
     )
@@ -377,7 +377,7 @@ het11 <- function(mmw2018) {
     geom_errorbar(width=0.5) +
     theme_minimal() + 
     coord_flip() + 
-    labs(y="Proportion of spectators \u00B1 SE", 
+    labs(y="Share of spectators \u00B1 SE", 
          x=element_blank(),
          title="All to winner") +
     theme(plot.title.position = "plot")
@@ -679,7 +679,7 @@ qresponse1 <- function(mmw2018) {
     geom_col() + 
     theme_minimal() +
     labs(x = element_blank(),
-         y = "Fraction",
+         y = "Share",
          title="Gold medalist's earnings") +
     theme(plot.title.position = "plot",
           axis.text.x = element_text(angle = 45, hjust = 1),
@@ -697,7 +697,7 @@ qresponse2 <- function(mmw2018) {
     geom_col() + 
     theme_minimal() +
     labs(x = element_blank(),
-         y = "Fraction",
+         y = "Share",
          title="Earnings of superstars acceptable") +
     theme(plot.title.position = "plot",
           axis.text.x = element_text(angle = 45, hjust = 1),
@@ -714,7 +714,7 @@ qresponse3 <- function(mmw2018) {
     geom_col() + 
     theme_minimal() +
     labs(x = element_blank(),
-         y = "Fraction",
+         y = "Share",
          title="Taxes on top 1% should") +
     theme(plot.title.position = "plot",
           axis.text.x = element_text(angle = 45, hjust = 1),
@@ -749,7 +749,7 @@ distribution_of_performance_by_treatment_lg <- function(mmw2018) {
     scale_x_continuous(breaks = c(0,5,10,15,20,25), limits = c(-0.5, 24.5)) +
     labs(
       x = "Performance of worker",
-      y = "Fraction",
+      y = "Share",
       title = "All WTA treatments"
     ) +
     theme_minimal() +
@@ -763,7 +763,7 @@ distribution_of_performance_by_treatment_lg <- function(mmw2018) {
     scale_x_continuous(breaks = c(0,5,10,15,20,25), limits = c(-0.5, 24.5)) +
     labs(
       x = "Performance of worker",
-      y = "Fraction",
+      y = "Share",
       title = "WTA",
     ) +
     theme_minimal() +
@@ -777,7 +777,7 @@ distribution_of_performance_by_treatment_lg <- function(mmw2018) {
     scale_x_continuous(breaks = c(0,5,10,15,20,25), limits = c(-0.5, 24.5)) +
     labs(
       x = "Performance of worker",
-      y = "Fraction",
+      y = "Share",
       title = "WTA-No Choice",
     ) +
     theme_minimal() +
@@ -791,7 +791,7 @@ distribution_of_performance_by_treatment_lg <- function(mmw2018) {
     scale_x_continuous(breaks = c(0,5,10,15,20,25), limits = c(-0.5, 24.5)) +
     labs(
       x = "Performance of worker",
-      y = "Fraction",
+      y = "Share",
       title = "WTA-No Expectations",
     ) +
     theme_minimal() +
@@ -815,7 +815,7 @@ distribution_of_winning_margin_by_treatment_lg <- function(mmw2018) {
     scale_x_continuous(breaks = c(0,5,10,15,20), limits = c(-0.5, 21.5)) +
     labs(
       x = "Winning margin",
-      y = "Fraction",
+      y = "Share",
       title = "All WTA treatments"
     ) +
     theme_minimal() +
@@ -829,7 +829,7 @@ distribution_of_winning_margin_by_treatment_lg <- function(mmw2018) {
     scale_x_continuous(breaks = c(0,5,10,15,20), limits = c(-0.5, 21.5)) +
     labs(
       x = "Winning margin",
-      y = "Fraction",
+      y = "Share",
       title = "WTA"
     ) +
     theme_minimal() +
@@ -843,7 +843,7 @@ distribution_of_winning_margin_by_treatment_lg <- function(mmw2018) {
     scale_x_continuous(breaks = c(0,5,10,15,20), limits = c(-0.5, 21.5)) +
     labs(
       x = "Winning margin",
-      y = "Fraction",
+      y = "Share",
       title = "WTA-No Choice"
     ) +
     theme_minimal() +
@@ -857,7 +857,7 @@ distribution_of_winning_margin_by_treatment_lg <- function(mmw2018) {
     scale_x_continuous(breaks = c(0,5,10,15,20), limits = c(-0.5, 21.5)) +
     labs(
       x = "Winning margin",
-      y = "Fraction",
+      y = "Share",
       title = "WTA-No Expectations"
     ) +
     theme_minimal() +
@@ -940,7 +940,7 @@ distributions_performance_and_margin_lg <- function(mmw2025) {
     scale_x_continuous(breaks = c(0,5,10,15,20), limits = c(0.5, 21.5)) +
     labs(
       x = "Winning margin",
-      y = "Fraction",
+      y = "Share",
     ) +
     theme_minimal()
   
@@ -953,7 +953,7 @@ distributions_performance_and_margin_lg <- function(mmw2025) {
     scale_x_continuous(breaks = c(0,5,10,15,20,25), limits = c(-0.5, 24.5)) +
     labs(
       x = "Performance of worker",
-      y = "Fraction",
+      y = "Share",
     ) +
     theme_minimal()
   
