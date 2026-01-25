@@ -363,29 +363,39 @@ het11 <- function(mmw2018) {
       share_to_winner = y2/e2
     ) |> filter(treatment!="Base")
   lvls <- rev(c("Republican","Nonrepublican","College", "Noncollege","Male","Female","Young","Old"))
-  r1 <- f4df1 |> group_by(republican) |> summarize(maw = mean(all_to_winner)) |> rename(group=republican)
-  r2 <- f4df1 |> group_by(college) |> summarize(maw = mean(all_to_winner)) |> rename(group=college)
-  r3 <- f4df1 |> group_by(male) |> summarize(maw = mean(all_to_winner)) |> rename(group = male)
-  r4 <- f4df1 |> group_by(above_median_age) |> summarize(maw = mean(all_to_winner)) |> rename(group = above_median_age)
+  r1 <- f4df1 |> group_by(republican) |> summarize(maw = mean(all_to_winner),
+                                                   maw_se = sd(all_to_winner)/sqrt(n())) |> rename(group=republican)
+  r2 <- f4df1 |> group_by(college) |> summarize(maw = mean(all_to_winner),
+                                                maw_se = sd(all_to_winner)/sqrt(n())) |> rename(group=college)
+  r3 <- f4df1 |> group_by(male) |> summarize(maw = mean(all_to_winner),
+                                             maw_se = sd(all_to_winner)/sqrt(n())) |> rename(group = male)
+  r4 <- f4df1 |> group_by(above_median_age) |> summarize(maw = mean(all_to_winner),
+                                                         maw_se = sd(all_to_winner)/sqrt(n())) |> rename(group = above_median_age)
   g11df <- list(r1,r2,r3,r4) |> bind_rows() |> mutate(groupf = factor(group, levels=lvls))
-  g11 <- g11df |> ggplot(aes(x=groupf, y = maw)) + 
+  g11 <- g11df |> ggplot(aes(x=groupf, y = maw, ymin = maw - maw_se, ymax = maw + maw_se)) + 
     geom_col() + 
+    geom_errorbar(width=0.5) +
     theme_minimal() + 
     coord_flip() + 
-    labs(y="Proportion of spectators", 
+    labs(y="Proportion of spectators \u00B1 SE", 
          x=element_blank(),
          title="All to winner") +
     theme(plot.title.position = "plot")
-  rs1 <- f4df1 |> group_by(republican) |> summarize(maw = mean(share_to_winner)) |> rename(group=republican)
-  rs2 <- f4df1 |> group_by(college) |> summarize(maw = mean(share_to_winner)) |> rename(group=college)
-  rs3 <- f4df1 |> group_by(male) |> summarize(maw = mean(share_to_winner)) |> rename(group = male)
-  rs4 <- f4df1 |> group_by(above_median_age) |> summarize(maw = mean(share_to_winner)) |> rename(group = above_median_age)
+  rs1 <- f4df1 |> group_by(republican) |> summarize(maw = mean(share_to_winner),
+                                                    maw_se = sd(all_to_winner)/sqrt(n())) |> rename(group=republican)
+  rs2 <- f4df1 |> group_by(college) |> summarize(maw = mean(share_to_winner),
+                                                 maw_se = sd(all_to_winner)/sqrt(n())) |> rename(group=college)
+  rs3 <- f4df1 |> group_by(male) |> summarize(maw = mean(share_to_winner),
+                                              maw_se = sd(all_to_winner)/sqrt(n())) |> rename(group = male)
+  rs4 <- f4df1 |> group_by(above_median_age) |> summarize(maw = mean(share_to_winner),
+                                                          maw_se = sd(all_to_winner)/sqrt(n())) |> rename(group = above_median_age)
   h11df <- list(rs1,rs2,rs3,rs4) |> bind_rows() |> mutate(groupf = factor(group, levels=lvls))
-  h11 <- h11df |> ggplot(aes(x=groupf, y = maw)) + 
+  h11 <- h11df |> ggplot(aes(x=groupf, y = maw, ymin = maw - maw_se, ymax = maw + maw_se)) + 
     geom_col() + 
+    geom_errorbar(width=0.5) + 
     theme_minimal() + 
     coord_flip() + 
-    labs(y="Share to winner", 
+    labs(y="Share to winner \u00B1 SE", 
          x=element_blank(),
          title="Share to winner") +
     theme(plot.title.position = "plot")
@@ -1318,3 +1328,34 @@ ass_giving_all_attitudes_2025_l <- function(mmw2025) {
   list("all_to_winner"=all_to_winner, "share_to_winner"=share_to_winner)
   
 }
+
+outcomes_on_background_l <- function(mmw2018) {
+  outcomes <- mmw2018 |>  
+    filter(treatment != "Base") |>
+    mutate(all_to_winner = as.numeric(y2==e2),
+         share_to_winner = y2/(y1+y2),
+         competition = as.numeric(treatment!="Base"),
+         winning_margin = x2-x1,
+         republican = as.numeric(pol2==1),
+         college = as.numeric(education>4),
+         female = as.numeric(sex==2),
+         above_median_age = as.numeric(age > median(age)),
+         regionf = factor(area),
+         performance_winner = x2,
+         treatment = fct_relevel(treatment, "WTA")
+  )
+  
+  k1 <- outcomes |> feols(all_to_winner ~ republican + college + female + above_median_age + regionf, data=_, vcov="hetero")
+  k2 <- outcomes |> filter(winning_margin==1) |> feols(all_to_winner ~ republican + college + female + above_median_age + regionf, data=_, vcov="hetero")
+  k3 <- outcomes |> feols(share_to_winner ~ republican + college + female + above_median_age + regionf, data=_, vcov="hetero")
+  k4 <- outcomes |> filter(winning_margin==1) |> feols(share_to_winner ~ republican + college + female + above_median_age + regionf, data=_, vcov="hetero")
+
+  names <- c("republican"="Republican",
+             "college"= "College",
+             "female"="Female",
+             "above_median_age"="Above median age")
+  regs <- list(k1,k2,k3,k4)
+  list("names"=names, 
+       "regs"=regs)
+}
+

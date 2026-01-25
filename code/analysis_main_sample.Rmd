@@ -333,6 +333,28 @@ ta2 |> gtsave(here::here("tables","RN2018_T_comparisons.tex"))
 ```
 
 
+# Outcomes on background variables
+
+```{r outcomes on background, echo=FALSE, message=FALSE, warning=FALSE}
+tar_load(outcomes_on_background)
+oob <- outcomes_on_background$regs |> 
+   modelsummary(coef_map=outcomes_on_background$names,
+               stars = c('*' = .1, '**' = .05, '***'=.01),
+                                   gof_map = c("nobs", "r.squared"),
+                                   output = "gt") |>
+  tab_spanner(label="Full sample", columns = 2, id=101) |>
+  tab_spanner(label="Smallest margin", columns = 3, id=102) |>
+  tab_spanner(label="Full sample", columns = 4, id=103) |>
+  tab_spanner(label="Smallest margin", columns = 5, id=104) |>
+  tab_spanner(label="All to winner", columns=2:3) |>
+  tab_spanner(label="Share to winner", columns=4:5) 
+oob
+oob |> gtsave(here::here("tables","RN2018_outcomes_on_background.tex"))
+```
+
+Also included but not reported: Census area FE. 
+
+
 # Heterogeneous treatment effects of the role of merit for inequlity acceptance: All to winner
 
 ```{r heterogeneous merit all, echo=FALSE}
