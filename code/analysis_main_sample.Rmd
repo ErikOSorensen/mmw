@@ -60,7 +60,10 @@ ggsave("graphs/RN2018_flatness1_version2.pdf", width=16, height = 12, units="cm"
 ```
 
 
-# Heterogeneity Analysis: All to winner
+
+
+
+# Heterogeneity Analysis: All to winner and share to winner
 
 
 Putting these together:
@@ -79,15 +82,59 @@ ggsave("graphs/RN2018_hetero_coefplot_s.pdf", width=16, height=12, units="cm")
 ```
 
 
+# Heterogeneity between competition treatments
+
+```{r}
+GL <- tar_read(heterogeneous_subtreatment_effects_gg)
+GL$g11 + GL$g12 + GL$g21 + GL$g22 + plot_annotation(tag_levels="a")
+ggsave("graphs/RN2018_subtreatment_heterogeneity.pdf", width=16, heigh=12, units="cm")
+```
+
+
+
 # Questionnaire responses
+Important to remeber that the Gold medalist and Steven Spielberg questions must be scale reversed
+to fit graph.
 
 ```{r wuestionnaire responses, echo=FALSE}
 tar_load(question_responses)
 n <- question_responses
 n$a + n$b + n$c + plot_annotation(tag_levels = "a")
 ggsave("graphs/RN2018_attitudes_hist.pdf", width=16, height = 10, units="cm", device = cairo_pdf)
-
 ```
+
+Numbers of agreement with Gold medalists: 
+
+```{r}
+tar_load(mmw2018)
+mean( (8-mmw2018$att3)>4)
+```
+
+Numbers of agreement with Steven Spielberg ...
+```{r}
+mean( (8-mmw2018$att4)>4)
+```
+Taxes on top 1 percent should stay the same or decrease
+```{r}
+mean( (mmw2018$att2)>1)
+```
+Correlations (Spearman) between Gold Medalist and Steven Spielberg question:
+
+```{r}
+cor.test(8-mmw2018$att3, 8-mmw2018$att4, method="spearman")
+```
+
+Correlations (Spearman) between Gold Medalist and income taxation question:
+
+```{r}
+cor.test(8-mmw2018$att3, mmw2018$att2, method="spearman")
+```
+Correlations (Spearman) between Steven Spielberg and income taxation question:
+
+```{r}
+cor.test(8-mmw2018$att4, mmw2018$att2, method="spearman")
+```
+
 
 # Performance of workers by treatment
 

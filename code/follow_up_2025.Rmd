@@ -219,8 +219,8 @@ tdf |>
   ggplot(aes(x=labelf, y=fraction)) +
   geom_bar(stat = "identity") +
   coord_flip() +
-  labs(x = "Classification (GPT)",
-       y = "Fraction") +
+  labs(x = "Estimated proportion",
+       y = element_blank()) +
   theme_minimal()
 ggsave(here::here("graphs", "P2025_classifications.pdf"), width=16, height = 10, units = "cm", device=cairo_pdf)
 tdf |> dplyr::select(c("labelf","fraction")) |> arrange(-fraction) |> gt() |> fmt_number(decimals = 3)

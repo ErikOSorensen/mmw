@@ -299,13 +299,28 @@ winner_take_all_vs_luck_lg <- function(mmw2018) {
 }
 
 role_of_winning_margin_graph_lg <- function(mmw2018) {
-  top <- mmw2018 |> mutate(all_to_winner = as.numeric(y2==e2),
+  top_df <- mmw2018 |> mutate(all_to_winner = as.numeric(y2==e2),
                            winning_margin = x2-x1,
                            winning_margin = if_else(winning_margin >=15, 15, winning_margin)) |>
     filter(treatment!="Base") |>
     group_by(winning_margin) |>
     summarize(mean_winner = mean(all_to_winner),
-              se_winner = sd(all_to_winner)/sqrt(n())) |>
+              se_winner = sd(all_to_winner)/sqrt(n()))
+  
+  top_df_terciles <- mmw2018 |>
+    mutate(
+      all_to_winner   = as.numeric(y2 == e2),
+      winning_margin  = x2 - x1,
+      margin_group    = ntile(winning_margin, 3) 
+    ) |>
+    filter(treatment != "Base") |>
+    group_by(margin_group) |>
+    summarize(
+      mean_winner_all = mean(all_to_winner),
+      se_winner   = sd(all_to_winner) / sqrt(n())
+    )
+
+  top <- top_df |>
     ggplot(aes(x = winning_margin, y = mean_winner, ymin = mean_winner-se_winner, ymax=mean_winner+se_winner)) +
     geom_point() +
     geom_errorbar(width=0.4) +
@@ -317,13 +332,33 @@ role_of_winning_margin_graph_lg <- function(mmw2018) {
     ) +
     scale_y_continuous(limits = c(0, 1)) +
     labs(x="Winning margin", y = "Proportion giving all to winner", title="All to winner")
-  bottom <-  mmw2018 |> mutate(share_to_winner = y2/e2,
+  
+  
+  
+  
+  bottom_df  <-  mmw2018 |> mutate(share_to_winner = y2/e2,
                                winning_margin = x2-x1,
                                winning_margin = if_else(winning_margin >=15, 15, winning_margin)) |>
     filter(treatment!="Base") |>
     group_by(winning_margin) |>
     summarize(mean_winner = mean(share_to_winner),
-              se_winner = sd(share_to_winner)/sqrt(n())) |>
+              se_winner = sd(share_to_winner)/sqrt(n()))
+  
+  bottom_df_terciles <- mmw2018 |>
+    mutate(
+      share_to_winner   = y2/e2,
+      winning_margin  = x2 - x1,
+      margin_group    = ntile(winning_margin, 3) 
+    ) |>
+    filter(treatment != "Base") |>
+    group_by(margin_group) |>
+    summarize(
+      mean_winner_share = mean(share_to_winner),
+      se_winner   = sd(share_to_winner) / sqrt(n())
+    )
+  
+  
+  bottom <- bottom_df
     ggplot(aes(x = winning_margin, y = mean_winner, 
                ymin = mean_winner-se_winner, ymax=mean_winner+se_winner)) +
     geom_point() +
@@ -337,6 +372,10 @@ role_of_winning_margin_graph_lg <- function(mmw2018) {
     scale_y_continuous(limits = c(0.5, 1)) +
     labs(x="Winning margin", y = "Share given to winner", title="Share to winner")
   list("top"=top, "bottom"=bottom)
+  
+  
+  
+  
 }
 
 
@@ -409,7 +448,7 @@ het12 <- function(mmw2018) {
     scale_y_continuous(limits = c(-0.1, 0.3)) +
     coord_flip() +
     theme_minimal() +
-    labs(title="WTA effect: All winning margins",
+    labs(title="WTA competition vs. Luck",
          y = "Estimate \u00B1 SE",
          x = element_blank()) +
     theme(plot.title.position = "plot")
@@ -430,7 +469,7 @@ het12 <- function(mmw2018) {
     scale_y_continuous(limits = c(-0.1, 0.3)) +
     coord_flip() +
     theme_minimal() +
-    labs(title="WTA effect: All winning margins",
+    labs(title="WTA competition vs. Luck",
          y = "Estimate \u00B1 SE",
          x = element_blank()) +
     theme(plot.title.position = "plot")
@@ -449,7 +488,7 @@ het21 <- function(mmw2018) {
       all_to_winner = as.numeric(y2==e2),
       share_to_winner = y2/e2
     ) |> filter(x2-x1 ==1 | is.na(x2))
-  lvls <- rev(c("Republican","Nonrepublican","College", "Noncollege","Male","Female","Young","Old"))
+  lvls <- rev(c("Republican","Nonrepublican", "College", "Noncollege","Male","Female","Young","Old"))
   l1 <- f4df3 |> filter(republican=="Republican") |> lm(all_to_winner ~ wta, data=_) |> broom::tidy() |> mutate(group="Republican")
   l2 <- f4df3 |> filter(republican=="Nonrepublican") |> lm(all_to_winner ~ wta, data=_) |> broom::tidy() |> mutate(group="Nonrepublican")
   l3 <- f4df3 |> filter(college=="College") |> lm(all_to_winner ~ wta, data=_) |> broom::tidy() |> mutate(group="College")
@@ -458,7 +497,9 @@ het21 <- function(mmw2018) {
   l6 <- f4df3 |> filter(male=="Female") |> lm(all_to_winner ~ wta, data=_) |> broom::tidy() |> mutate(group="Female")
   l7 <- f4df3 |> filter(above_median_age=="Young") |> lm(all_to_winner ~ wta, data=_) |> broom::tidy() |> mutate(group="Young")
   l8 <- f4df3 |> filter(above_median_age=="Old") |> lm(all_to_winner ~ wta, data=_) |> broom::tidy() |> mutate(group="Old")
-  g21df <- list(l1,l2,l3,l4,l5,l6,l7,l8) |> bind_rows() |> mutate(groupf = factor(group, levels=lvls)) |>
+
+  
+    g21df <- list(l1,l2,l3,l4,l5,l6,l7,l8) |> bind_rows() |> mutate(groupf = factor(group, levels=lvls)) |>
     filter(term=="wta") 
   g21 <- g21df |> ggplot(aes(x=groupf, y = estimate, ymin=estimate - std.error, ymax=estimate+std.error)) +
     geom_point() +
@@ -467,7 +508,7 @@ het21 <- function(mmw2018) {
     scale_y_continuous(limits = c(-0.1, 0.3)) +
     coord_flip() +
     theme_minimal() +
-    labs(title="WTA effect: Smallest winning margin",
+    labs(title="WTA comp. vs. Luck (minimal margin)",
          y = "Estimate \u00B1 SE",
          x = element_blank()) +
     theme(plot.title.position = "plot")
@@ -489,7 +530,7 @@ het21 <- function(mmw2018) {
     scale_y_continuous(limits = c(-0.1, 0.3)) +
     coord_flip() +
     theme_minimal() +
-    labs(title="WTA effect: Smallest winning margin",
+    labs(title="WTA comp. vs. Luck (minimal margin)",
          y = "Estimate \u00B1 SE",
          x = element_blank()) +
     theme(plot.title.position = "plot")
@@ -527,7 +568,7 @@ het22 <- function(mmw2018) {
     scale_y_continuous(limits = c(-0.01, 0.03)) +
     coord_flip() +
     theme_minimal() +
-    labs(title="Effect of increasing winning margin",
+    labs(title="Effect of winning margin",
          y = "Estimate \u00B1 SE",
          x = element_blank()) +
     theme(plot.title.position = "plot")
@@ -549,7 +590,7 @@ het22 <- function(mmw2018) {
     scale_y_continuous(limits = c(-0.01, 0.03)) +
     coord_flip() +
     theme_minimal() +
-    labs(title="Effect of increasing winning margin",
+    labs(title="Effect of winning margin",
          y = "Estimate \u00B1 SE",
          x = element_blank()) +
     theme(plot.title.position = "plot")
@@ -570,6 +611,81 @@ heterogeneity_figure_share_lg <- function(mmw2018)  {
        "g21" = het21(mmw2018)$share,
        "g22" = het22(mmw2018)$share)
 }
+
+treatment_names_translate <- function(x) {
+    stopifnot(is.character(x), length(x) == 1)
+    lookup <- c(
+      "WTA: No Choice" = "WTA-No Choice",
+      "WTA: No Exp"   = "WTA-No Exp",
+      "WTA" = "WTA",
+      "Base"= "Luck"
+    )
+    if (x %in% names(lookup)) lookup[[x]] else x
+}
+
+treatments_heterogeneities <- function(mmw2018, treatments, outcome) {
+  lvls <- rev(c("Republican","Nonrepublican","College", "Noncollege","Male","Female","Young","Old"))
+  sample <- mmw2018 |> 
+    filter(treatment %in% treatments) |>
+    mutate(treat = as.numeric( treatment == treatments[2])) |>
+  mutate(
+    republican = ifelse(pol2==1,"Republican","Nonrepublican"),
+    college = ifelse(education>4, "College", "Noncollege"),
+    male = ifelse(sex==1, "Male", "Female"),
+    above_median_age = ifelse(age>=median(age), "Old", "Young"),
+    all_to_winner = as.numeric(y2==e2),
+    share_to_winner = y2/e2,
+    margin = x2-x1
+  )
+  if (outcome=="share") {
+    sample <- sample |> mutate(y = share_to_winner)
+    subt <- "Outcome: Share to winner"
+  } else {
+    sample <- sample |> mutate(y = all_to_winner)
+    subt <- "Outcome: All to winner"
+  }
+  ms1 <- sample |> filter(republican=="Republican") |> lm(y ~ treat, data=_) |> broom::tidy() |> mutate(group="Republican")
+  ms2 <- sample |> filter(republican=="Nonrepublican") |> lm(y ~ treat, data=_) |> broom::tidy() |> mutate(group="Nonrepublican")
+  ms3 <- sample |> filter(college=="College") |> lm(y ~ treat, data=_) |> broom::tidy() |> mutate(group="College")
+  ms4 <- sample |> filter(college=="Noncollege") |> lm(y ~ treat, data=_) |> broom::tidy() |> mutate(group="Noncollege")
+  ms5 <- sample |> filter(male=="Male") |> lm(y ~ treat, data=_) |> broom::tidy() |> mutate(group="Male")
+  ms6 <- sample |> filter(male=="Female") |> lm(y ~ treat, data=_) |> broom::tidy() |> mutate(group="Female")
+  ms7 <- sample |> filter(above_median_age=="Young") |> lm(y ~ treat, data=_) |> broom::tidy() |> mutate(group="Young")
+  ms8 <- sample |> filter(above_median_age=="Old") |> lm(y ~ treat, data=_) |> broom::tidy() |> mutate(group="Old")
+  elist <- list(ms1,ms2,ms3,ms4,ms5,ms6,ms7,ms8) |> 
+    bind_rows() |> 
+    mutate(groupf = factor(group, levels=lvls)) |>
+    filter(term=="treat") 
+  treatment_string <- paste( treatment_names_translate(treatments[2]), "vs." , treatment_names_translate(treatments[1]))
+  elist |> ggplot(aes(x=groupf, y = estimate, ymin=estimate - std.error, ymax=estimate+std.error)) +
+    geom_point() +
+    geom_errorbar(width=0.4) +
+    geom_hline(yintercept = 0) + 
+    scale_y_continuous(limits = c(-0.09, 0.05)) +
+    coord_flip() +
+    theme_minimal() +
+    labs(title=treatment_string,
+         subtitle = subt,
+         y = "Estimate \u00B1 SE",
+         x = element_blank()) +
+    theme(plot.title.position = "plot")
+}
+
+heterogeneous_subtreatment_effects <- function(mmw2018) {
+  g11 <- treatments_heterogeneities(mmw2018, c("WTA", "WTA: No Choice"), "all")
+  g12 <- treatments_heterogeneities(mmw2018, c("WTA", "WTA: No Choice"), "share")
+  g21 <- treatments_heterogeneities(mmw2018, c("WTA", "WTA: No Exp"), "all")
+  g22 <- treatments_heterogeneities(mmw2018, c("WTA", "WTA: No Exp"), "share")
+  
+  list("g11"=g11,
+       "g12"=g12,
+       "g21"=g21,
+       "g22"=g22)
+}
+
+    
+
+
 
 qresponse1 <- function(mmw2018) {
   n1 <- mmw2018 |> 

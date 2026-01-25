@@ -156,6 +156,10 @@ list(
     lab_treatments,
     lab_treatments_l(mmw2014)
   ),
+  tar_target(
+    heterogeneous_subtreatment_effects_gg,
+    heterogeneous_subtreatment_effects(mmw2018)
+  ),
   tar_render(
     analysis_main_sample,
     path = "code/analysis_main_sample.Rmd",
