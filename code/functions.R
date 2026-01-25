@@ -197,7 +197,7 @@ share_of_earnings_to_winner_g <- function(mmw2018) {
                    binwidth = 0.05,
                    boundary=0) +
     theme_minimal() +
-    labs(x = "Share given to winner",
+    labs(x = "Share to winner",
          y = "Fraction") +
     scale_x_continuous(breaks = c(0, 0.5, 1)) +
     facet_wrap(~treatment)
@@ -243,7 +243,7 @@ winner_take_all_vs_luck_lg <- function(mmw2018) {
       )
     ) +
     labs(
-      x = "Share given to winner",
+      x = "Share to winner",
       y = "Fraction of spectators",
       title = "Full sample",
       subtitle = "All winning margins"
@@ -288,7 +288,7 @@ winner_take_all_vs_luck_lg <- function(mmw2018) {
       )
     ) +
     labs(
-      x = "Share given to winner",
+      x = "Share to winner",
       y = "Fraction of spectators",
       title = "Subsample",
       subtitle = "Smallest winning margin"
@@ -307,19 +307,6 @@ role_of_winning_margin_graph_lg <- function(mmw2018) {
     summarize(mean_winner = mean(all_to_winner),
               se_winner = sd(all_to_winner)/sqrt(n()))
   
-  top_df_terciles <- mmw2018 |>
-    mutate(
-      all_to_winner   = as.numeric(y2 == e2),
-      winning_margin  = x2 - x1,
-      margin_group    = ntile(winning_margin, 3) 
-    ) |>
-    filter(treatment != "Base") |>
-    group_by(margin_group) |>
-    summarize(
-      mean_winner_all = mean(all_to_winner),
-      se_winner   = sd(all_to_winner) / sqrt(n())
-    )
-
   top <- top_df |>
     ggplot(aes(x = winning_margin, y = mean_winner, ymin = mean_winner-se_winner, ymax=mean_winner+se_winner)) +
     geom_point() +
@@ -331,7 +318,7 @@ role_of_winning_margin_graph_lg <- function(mmw2018) {
       labels = function(x) ifelse(x == 15, "\u226515", x)
     ) +
     scale_y_continuous(limits = c(0, 1)) +
-    labs(x="Winning margin", y = "Proportion giving all to winner", title="All to winner")
+    labs(x="Winning margin", y = "Share of spectators", title="All to winner")
   
   
   
@@ -344,21 +331,7 @@ role_of_winning_margin_graph_lg <- function(mmw2018) {
     summarize(mean_winner = mean(share_to_winner),
               se_winner = sd(share_to_winner)/sqrt(n()))
   
-  bottom_df_terciles <- mmw2018 |>
-    mutate(
-      share_to_winner   = y2/e2,
-      winning_margin  = x2 - x1,
-      margin_group    = ntile(winning_margin, 3) 
-    ) |>
-    filter(treatment != "Base") |>
-    group_by(margin_group) |>
-    summarize(
-      mean_winner_share = mean(share_to_winner),
-      se_winner   = sd(share_to_winner) / sqrt(n())
-    )
-  
-  
-  bottom <- bottom_df
+  bottom <- bottom_df |>
     ggplot(aes(x = winning_margin, y = mean_winner, 
                ymin = mean_winner-se_winner, ymax=mean_winner+se_winner)) +
     geom_point() +
@@ -370,7 +343,7 @@ role_of_winning_margin_graph_lg <- function(mmw2018) {
       labels = function(x) ifelse(x == 15, "\u226515", x)
     ) +
     scale_y_continuous(limits = c(0.5, 1)) +
-    labs(x="Winning margin", y = "Share given to winner", title="Share to winner")
+    labs(x="Winning margin", y = "Share of income", title="Share to winner")
   list("top"=top, "bottom"=bottom)
   
   
@@ -401,7 +374,7 @@ het11 <- function(mmw2018) {
     coord_flip() + 
     labs(y="Proportion of spectators", 
          x=element_blank(),
-         title="Give all to winner") +
+         title="All to winner") +
     theme(plot.title.position = "plot")
   rs1 <- f4df1 |> group_by(republican) |> summarize(maw = mean(share_to_winner)) |> rename(group=republican)
   rs2 <- f4df1 |> group_by(college) |> summarize(maw = mean(share_to_winner)) |> rename(group=college)
@@ -414,7 +387,7 @@ het11 <- function(mmw2018) {
     coord_flip() + 
     labs(y="Share to winner", 
          x=element_blank(),
-         title="Share given to winner") +
+         title="Share to winner") +
     theme(plot.title.position = "plot")
   list("all"=g11, "share"=h11)
 }
@@ -639,10 +612,10 @@ treatments_heterogeneities <- function(mmw2018, treatments, outcome) {
   )
   if (outcome=="share") {
     sample <- sample |> mutate(y = share_to_winner)
-    subt <- "Outcome: Share to winner"
+    subt <- "Share to winner"
   } else {
     sample <- sample |> mutate(y = all_to_winner)
-    subt <- "Outcome: All to winner"
+    subt <- "All to winner"
   }
   ms1 <- sample |> filter(republican=="Republican") |> lm(y ~ treat, data=_) |> broom::tidy() |> mutate(group="Republican")
   ms2 <- sample |> filter(republican=="Nonrepublican") |> lm(y ~ treat, data=_) |> broom::tidy() |> mutate(group="Nonrepublican")
@@ -785,7 +758,7 @@ distribution_of_performance_by_treatment_lg <- function(mmw2018) {
     ) +
     theme_minimal() +
     theme(plot.title.position = "plot")
-  l21 <- distdfs1 |> filter(treatment=="WTA: No Choice") |>
+  l21 <- distdfs1 |> filter(treatment=="WTA–No Choice") |>
     ggplot(aes(x=all_x)) +
     geom_histogram(aes(y = after_stat(density)),
                    binwidth = 1, 
@@ -799,7 +772,7 @@ distribution_of_performance_by_treatment_lg <- function(mmw2018) {
     ) +
     theme_minimal() +
     theme(plot.title.position = "plot")
-  l22 <- distdfs1 |> filter(treatment=="WTA: No Exp") |>
+  l22 <- distdfs1 |> filter(treatment=="WTA–No Expectations") |>
     ggplot(aes(x=all_x)) +
     geom_histogram(aes(y = after_stat(density)),
                    binwidth = 1, 
@@ -851,7 +824,7 @@ distribution_of_winning_margin_by_treatment_lg <- function(mmw2018) {
     ) +
     theme_minimal() +
     theme(plot.title.position = "plot")
-  m21 <- distdfs2 |> filter(treatment=="WTA: No Choice") |>
+  m21 <- distdfs2 |> filter(treatment=="WTA–No Choice") |>
     ggplot(aes(x=winning_margin)) +
     geom_histogram(aes(y = after_stat(density)),
                    binwidth = 1, 
@@ -865,7 +838,7 @@ distribution_of_winning_margin_by_treatment_lg <- function(mmw2018) {
     ) +
     theme_minimal() +
     theme(plot.title.position = "plot")
-  m22 <- distdfs2 |> filter(treatment=="WTA: No Exp") |>
+  m22 <- distdfs2 |> filter(treatment=="WTA–No Expectations") |>
     ggplot(aes(x=winning_margin)) +
     geom_histogram(aes(y = after_stat(density)),
                    binwidth = 1, 
@@ -902,7 +875,7 @@ flatness_all_to_winner_g <- function(mmw2018) {
       labels = function(x) ifelse(x == 15, "\u226515", x)
     ) +
     scale_y_continuous(limits = c(0, 1)) +
-    labs(x="Winning margin", y = "Proportion giving all to winner \u00B1 SE") +
+    labs(x="Winning margin", y = "Share allocating all to winner \u00B1 SE") +
     facet_wrap(.~treatment, ncol=1)
 }
 
@@ -927,7 +900,7 @@ flatness_share_to_winner_g <- function(mmw2018) {
       labels = function(x) ifelse(x == 15, "\u226515", x)
     ) +
     scale_y_continuous(limits = c(0.45, 1)) +
-    labs(x="Winning margin", y = "Share given to winner \u00B1 SE") +
+    labs(x="Winning margin", y = "Share allocated to winner \u00B1 SE") +
     facet_wrap(.~treatment, ncol=1)
 }
 
