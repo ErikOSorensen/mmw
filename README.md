@@ -86,6 +86,9 @@ R --vanilla -q -e "renv::restore(prompt = FALSE)"
 ```
 # 4. List of Display Items and Programs
 
+All the Figures are output in the `graphs` subdirectory, while latex versions of
+the tables are output in the `tables` subdirectory.
+
 For the main paper:
 
 | Display item        | File name           | Vignette         | Chunk name       |
@@ -93,13 +96,10 @@ For the main paper:
 | Figure 1            | RN2018_hist_shareY_wta.pdf      |   analysis_main_sample.Rmd   |  Share of earnings given to winner |
 | Figure 2            | RN2018_wta_luck.pdf             |   analysis_main_sample.Rmd   |  Winner-take-all vs luck           |
 | Figure 3            | RN2018_flatness1_version2.pdf   |   analysis_main_sample.Rmd   |  Role of winning margin            |
-| Figure 4            | RN2018_hetero_coefplot.pdf             |   analysis_main_sample.Rmd   |  heterogeneity analysis I          |
-| Figure 5            | RN2018_attitudes_hist.pdf              |   analysis_main_sample.Rmd   |  questionnaire responses           |
-| Table 1             | Not applicable: No data         |                              |                                    |
-| Table 2             | RN2018_role_of_merit.tex        |   analysis_main_sample.Rmd   |  role of merit for inequality acceptance |
-| Table 3             | RN2018_role_of_margin.tex       |   analysis_main_sample.Rmd   |  role of margin for inequality acceptance |
-| Table 4             | RN2018_attitudes.tex            |   analysis_main_sample.Rmd   |  general attitudes                |
-| Table 5             | P2025_
+| Table 1             | RN2018_role_of_merit.tex        |   analysis_main_sample.Rmd   |  role of merit for inequality acceptance |
+| Table 2             | RN2018_role_of_margin.tex       |   analysis_main_sample.Rmd   |  role of margin for inequality acceptance |
+| Table 3             | RN2018_attitudes.tex            |   analysis_main_sample.Rmd   |  general attitudes                |
+| Table 4             | P2025_winning_margin.tex        |   follow_up_2025.Rmd | winning margin 2025 |
 
 For the supplementary material:
 
@@ -110,14 +110,28 @@ For the supplementary material:
 | Figure A.3          | RN2018_flatness_all_byT.pdf     |   analysis_main_sample.Rmd   |  role of winning margin take-all   |
 | Figure A.4          | RN2018_flatness_share_byT.pdf   |   analysis_main_sample.Rmd   |  role of winning margin share      |
 | Figure A.5          | RN2018_hetero_coefplot_s.pdf           |   analysis_main_sample.Rmd   |  heterogeneity analysis II         |
-| Table A.2           | RN2018_T_comparisons.tex        |   analysis_main_sample.Rmd   |  comparisons of treatments |
-| Table A.3           | RN2018_hetmerit_all.tex         |   analysis_main_sample.Rmd   |  heterogeneous merit all   |
-| Table A.4           | RN2018_hetmerit_share.tex       |   analysis_main_sample.Rmd   |  heterogeneous merit share |
-| Table A.5           | RN2018_hetmerit_margin.tex      |   analysis_main_sample.Rmd   |  heterogeneous merit margin|
-| Table A.6           | RN2018_attitudes_share.tex      |   analysis_main_sample.Rmd   |  general attitudes share   |
-| Table B.1           | RN2018_main_restricted.tex      |   restricted_sample_2018.Rmd |  main_restricted           |
+
+| Figure 4            | RN2018_hetero_coefplot.pdf             |   analysis_main_sample.Rmd   |  heterogeneity analysis I          |
+| Figure 5            | RN2018_attitudes_hist.pdf              |   analysis_main_sample.Rmd   |  questionnaire responses           |
+
+
+
+| Table A.1           | Not applicable: No data            |    | |
+| Table A.2           | RN_2018_balance.tex                | analysis_main_sample.Rmd | balance |            
+| Table A.3           | RN2018_T_comparisons.tex           |   analysis_main_sample.Rmd   |  comparisons of treatments |
+| Table A.4           | RN2018_outcomes_on_background.tex  |   analysis_main_sample.Rmd   | outcomes on background |
+| Table A.5           | RN2018_hetmerit_all.tex            |   analysis_main_sample.Rmd   |  heterogeneous merit all   |
+| Table A.6           | RN2018_hetmerit_share.tex          |   analysis_main_sample.Rmd   |  heterogeneous merit share |
+| Table A.7           | RN2018_hetmerit_margin.tex         |   analysis_main_sample.Rmd   |  heterogeneous merit margin|
+| Table A.8           | RN2018_attitudes_share.tex         |   analysis_main_sample.Rmd   |  general attitudes share   |
+| Table A.9           | P2025_ntab.tex                     |   follow_up_2025.Rmd         | by place in distribution |
+| Table A.10          | P2025_attitudes.tex                |   follow_up_2025.Rmd         | general attitudes all |
+| Table A.11          | P2025_attitudes_share.tex          |   follow_up_2025.Rmd         | general attitudes share |
+| Table A.12          | classification/tvariants.tex       |   classification/explore_classifications.Rmd | different models |
+| Table B.1           | RN2018_main_restricted.tex         |   restricted_sample_2018.Rmd |  main_restricted           |
 | Table B.2           | RN2018_hetmerit_all_restricted.tex | restricted_sample_2018.Rmd | heterogeneous merit all restricted |
 | Table B.3           | RN2018_hetmerit_share_restricted.tex | restricted_sample_2018.Rmd | heterogeneous merit share restricted |
 | Table B.4           | RN2018_hetmerit_margin_restricted.tex | restricted_sample_2018.Rmd | heterogeneous merit margin restricted |
 | Table B.5           | RN2018_attitudes_restricted.tex | restricted_sample_2018.Rmd | general attitudes restricted | 
+| Table C.1           | LAB_balance.tex                     | lab_experiment.Rmd | balance |
 | Table C.2           | LAB_replication.tex | lab_experiment.Rmd | replication of main |

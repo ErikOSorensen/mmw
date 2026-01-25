@@ -1359,3 +1359,105 @@ outcomes_on_background_l <- function(mmw2018) {
        "regs"=regs)
 }
 
+balance_table_2018 <- function(mmw2018) {
+  columns <- c("Age", "Female","Republican","Education","Taxes on top one percent",
+               "Gold medalist","Superstar","Midwest","Northeast", "South","West", "Num.Obs")
+  
+  treatments <- c("WTA","WTA: No Choice","WTA: No Exp", "Base")
+  
+  df <- mmw2018 |> mutate(republican = as.numeric(pol2==1),
+                          female = as.numeric(sex==2))
+  # First for the pooled data
+  cs <- list("all"= c(
+    mean(df$age),
+    mean(df$female),
+    mean(df$republican),
+    mean(df$education),
+    mean(df$att2),
+    mean(df$att3),
+    mean(df$att4),
+    mean(df$area=="Midwest"),
+    mean(df$area=="Northeast"),
+    mean(df$area=="South"),
+    mean(df$area=="West"),
+    nrow(df)))
+  
+  # For each of the treatments
+  for (trt in treatments) {
+    smpl <- df |> filter(treatment==trt)
+    k <- c(
+      mean(smpl$age),
+      mean(smpl$female),
+      mean(smpl$republican),
+      mean(smpl$education),
+      mean(smpl$att2),
+      mean(smpl$att3),
+      mean(smpl$att4),
+      mean(smpl$area=="Midwest"),
+      mean(smpl$area=="Northeast"),
+      mean(smpl$area=="South"),
+      mean(smpl$area=="West"),
+      nrow(smpl))
+    cs[[trt]]=k
+  }
+  
+  # Final column with F-test/ANOVA
+  tests <- c(
+    oneway.test(age ~ treatment, data=df)$p.value,
+    oneway.test(female ~ treatment, data=df)$p.value,
+    oneway.test(republican ~ treatment, data=df)$p.value,
+    oneway.test(education ~ treatment, data=df)$p.value,
+    oneway.test(att2 ~ treatment, data=df)$p.value,
+    oneway.test(att3 ~ treatment, data=df)$p.value,
+    oneway.test(att4 ~ treatment, data=df)$p.value,
+    oneway.test(area=="Midwest" ~ treatment, data=df)$p.value,
+    oneway.test(area=="Northeast" ~ treatment, data=df)$p.value,
+    oneway.test(area=="South" ~ treatment, data=df)$p.value,
+    oneway.test(area=="West" ~ treatment, data=df)$p.value,
+    nrow(df)
+  )
+  
+  tibble(variable =  columns,
+         all = cs$all,
+         wta = cs$`WTA`,
+         nochoice = cs$`WTA: No Choice`,
+         noexp = cs$`WTA: No Exp`,
+         luck = cs$`Base`,
+         tests = tests)
+}
+
+lab_balance_l <- function(mmw2014) {
+  rows <- c("Age", "Female","Rightwing", "Num.Obs")
+  df <- mmw2014 |> mutate(rightwing = as.numeric(political>3),
+                          female = as.numeric(sex==2)) |>
+    filter(e1!=e2)
+  cs <- list( "all" = c(
+    mean(df$age),
+    mean(df$female),
+    mean(df$rightwing),
+    nrow(df)))
+  trts <- list()
+  for (t in seq(1,4)) {
+    smpl <- df |> filter(T==t)
+    trts[[t]] <- c(
+      mean(smpl$age),
+      mean(smpl$female),
+      mean(smpl$rightwing),
+      nrow(smpl)
+      )
+  }
+  tests <- c( 
+    oneway.test(age ~ T, data=df)$p.value,
+    oneway.test(female ~ T, data=df)$p.value,
+    oneway.test(rightwing ~T, data=df)$p.value,
+    nrow(df)
+  )
+  tibble(variable=rows, 
+         all = cs$all,
+         wta = trts[[2]],
+         wtanochoice = trts[[1]],
+         wtanoexp = trts[[3]],
+         luck = trts[[4]],
+         tests = tests)
+  
+}

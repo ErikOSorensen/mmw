@@ -223,7 +223,7 @@ alld_fewshot  |> group_by(predicted_label, timestamp) |>
 ```
 ## Summary table of different models 
 
-```{r}
+```{r different models, echo=FALSE}
 d3_sum <- cdf3s |> group_by(predicted_labels) |> summarize( `3.5 turbo FT` = n()/nrow(cdf3s))
 d7_sum <- cdf7s |> group_by(predicted_labels) |> summarize( `4o OS` = n()/nrow(cdf7s))
 d5_sum <- cdf5 |> group_by(predicted_labels) |> summarize(`3.5 turbo` = n()/nrow(cdf5))

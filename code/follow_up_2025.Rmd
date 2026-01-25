@@ -27,7 +27,7 @@ We can try to calculate something similar using the follow-up data,
 and see if there are any treatment differences.
 
 
-```{r winning margin 2025, message=FALSE, warning=FALSE, include=FALSE}
+```{r winning margin 2025, echo=FALSE, message=FALSE, warning=FALSE}
 tar_load(role_of_winning_margin_2025)
 cm <- c("winning_margin" = "Winning Margin",
         "winning_margin:treatmentfattention" = "W.M. X Attention",
@@ -64,7 +64,7 @@ Are there differences within the "show distribution" treatment depending on wher
 total production falls? I split the performance by median. Now there are three natural
 groups: 1) Both winner and loser are below median, 2) Winner is above median, loser belows, 3) Both winner and loser are below 
 median.
-```{r}
+```{r by place in distribution, echo=FALSE}
 tar_load(by_place_in_distribution)
 fm <- c("winning_margin" = "Winning Margin",
         "republican" = "Republican",
@@ -132,7 +132,7 @@ the correct number; participants did pay attention.
 # Association Between Giving All to the Winner and General Attitudes
 
 Note that "Gold Medalist" and "Superstar" have been reverse coded.
-```{r echo=FALSE}
+```{r general attitudes all, echo=FALSE}
 tar_load(ass_giving_all_attitudes_2025)
 em <- c("all_to_winner" = "All to winner",
         "share_to_winner" = "Share to winner",
@@ -159,7 +159,7 @@ t4_2025 |> gtsave(here::here("tables","P2025_attitudes.tex"))
 
 # Association Between Share to the Winner and General Attitudes
 
-```{r echo=FALSE}
+```{r general attitudes share, echo=FALSE}
 tar_load(ass_giving_all_attitudes_2025)
 em <- c("all_to_winner" = "All to winner",
         "share_to_winner" = "Share to winner",

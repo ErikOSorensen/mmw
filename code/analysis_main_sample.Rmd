@@ -16,6 +16,19 @@ library(fixest)
 ```
 
 
+# Balance table
+
+```{r balance, echo=FALSE, message=FALSE, warning=FALSE}
+tar_load(balance_2018)
+btable <- balance_2018 |>
+  gt() |> 
+  fmt_number(decimals = 3) |>
+  tab_spanner(label="Winner-Take-All treatments", columns=3:5)
+btable
+btable |> gtsave(here::here("tables","RN2018_balance.tex"))
+```
+
+
 # Share of earnings given to winner
 
 ```{r Share of earnings given to winner, echo=FALSE}

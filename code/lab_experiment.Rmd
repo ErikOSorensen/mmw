@@ -16,6 +16,32 @@ library(fixest)
 ```
 
 
+# Labelling of treatments.
+
+In the data from theoriginal lab experiment in 2014, the labelling of 
+treatments is slightly different: 
+
+| 2014 label  | 2018, 2025 label |
+|-------------|------------------|
+| 1:full info | WTA-No Choice    |
+| 2:choice    | WTA              |
+| 3:no info   | WTA-No Expectations |
+| 4:luck      | Luck             |
+
+
+# Balance table
+
+```{r balance, echo=FALSE}
+tar_load(lab_balance)
+btable <- lab_balance |> gt() |>
+  fmt_number(decimals=3, rows=1:3) |>
+  fmt_number(decimals=1, rows=1, columns = 2:6) |>
+  tab_spanner(label="Winner-Take-All Treatments", columns=3:5)
+btable
+btable |> gtsave(here::here("tables","LAB_balance.tex"))
+```
+
+
 # Replication of main results: lab experiment
 ```{r replication of main, echo=FALSE}
 tar_load(lab_treatments)

@@ -52,6 +52,8 @@ list(
     classified_motivations,
     read_csv(classified_motivations_file)
   ),
+  tar_target(balance_2018,
+             balance_table_2018(mmw2018)),
   tar_target(
     role_of_merit_table,
     role_of_merit_table_l(mmw2018),
@@ -155,6 +157,10 @@ list(
   tar_target(
     lab_treatments,
     lab_treatments_l(mmw2014)
+  ),
+  tar_target(
+    lab_balance,
+    lab_balance_l(mmw2014)
   ),
   tar_target(
     heterogeneous_subtreatment_effects_gg,
