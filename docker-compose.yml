@@ -13,22 +13,15 @@ services:
     ports:
       - "8787:8787"
     volumes:
-      # Mount project files for live editing
-      - ./mmwinner.Rproj:/home/rstudio/project/mmwinner.Rproj
-      - ./renv.lock:/home/rstudio/project/renv.lock
-      - ./_targets.R:/home/rstudio/project/_targets.R
-      - ./code:/home/rstudio/project/code
-      - ./data:/home/rstudio/project/data
-      - ./classification:/home/rstudio/project/classification
-      # Mount output directories for persistence
-      - ./html_reports:/home/rstudio/project/html_reports
-      - ./graphs:/home/rstudio/project/graphs
-      - ./tables:/home/rstudio/project/tables
-      # Mount _targets cache for incremental builds
-      - ./_targets:/home/rstudio/project/_targets
+      # Mount entire project directory for live editing
+      - .:/home/rstudio/project
     environment:
       - PASSWORD=shirapur
       - RSTUDIO_SESSION_INITIAL_WORKING_DIRECTORY=/home/rstudio/project
+      - USERID=${UID:-1000}
+      - GROUPID=${GID:-1000}
+      # Use container's renv library instead of mounted one
+      - RENV_PATHS_LIBRARY=/opt/renv/library
     restart: unless-stopped
 
   # =============================================================================

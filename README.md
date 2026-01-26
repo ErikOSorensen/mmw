@@ -157,12 +157,21 @@ docker compose run --rm runner
 This builds a container with all dependencies from `renv.lock`, copies the data and code,
 and executes `targets::tar_make()`. Outputs are saved to `html_reports/`, `graphs/`, and `tables/`.
 
+Note: The initial `docker compose build` downloads the base image and installs all R packages,
+which may take several minutes. Subsequent builds and container starts are fast since Docker
+caches the layers.
+
 **Interactive development with RStudio:**
 ```bash
 docker compose build rstudio
 docker compose up rstudio
 ```
 Then open http://localhost:8787 in a browser (user: `rstudio`, password: `shirapur`).
+
+The RStudio container provides a browser-based IDE for exploring the analysis interactively.
+You can inspect intermediate results, run individual targets, modify code, and re-run
+parts of the pipeline. Changes to code and data files are synced with your local directory,
+while outputs (`html_reports/`, `graphs/`, `tables/`) persist after the container stops.
 
 ## 3.2 Without Docker
 

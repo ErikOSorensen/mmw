@@ -14,7 +14,11 @@ RUN apt-get update && apt-get install -y \
 # Set working directory inside container
 WORKDIR /home/rstudio/project
 
-# Install renv globally and restore packages (cached layer)
+# Create renv library directory outside project (won't be overwritten by mounts)
+RUN mkdir -p /opt/renv/library && chown -R rstudio:rstudio /opt/renv
+ENV RENV_PATHS_LIBRARY=/opt/renv/library
+
+# Install renv globally and restore packages to /opt/renv/library
 RUN R -e "install.packages('renv')"
 COPY renv.lock ./renv.lock
 COPY renv/activate.R ./renv/activate.R
