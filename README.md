@@ -231,10 +231,10 @@ For the supplementary material:
 | Table A.8           | RN2018_attitudes_share.tex             |   analysis_main_sample.Rmd   |  general attitudes share   |
 | Table A.9           | P2025_balance.tex                      |   follow_up_2025.Rmd         | balance |
 | Table A.10          | P2025_ntab.tex                         |   follow_up_2025.Rmd         | by place in distribution |
-| Table A.11          | P2025_attitudes.tex                    |   follow_up_2025.Rmd         | general attitudes all |
-| Table A.12          | P2025_attitudes_share.tex              |   follow_up_2025.Rmd         | general attitudes share |
-| Table A.13          | classification/tvariants.tex           |   classification/explore_classifications.Rmd | different models |
-| Table A.14          | P2025_outcomes_by_classification.tex   |   follow_up_2025.Rmd         | classifications and decisions |
+| Table A.11          | classification/tvariants.tex           |   classification/explore_classifications.Rmd | different models |
+| Table A.12          | P2025_outcomes_by_classification.tex   |   follow_up_2025.Rmd         | classifications and decisions |
+| Table A.13          | P2025_attitudes.tex                    |   follow_up_2025.Rmd         | general attitudes all |
+| Table A.14          | P2025_attitudes_share.tex              |   follow_up_2025.Rmd         | general attitudes share |
 | Table B.1           | RN2018_main_restricted.tex             |   restricted_sample_2018.Rmd |  main_restricted           |
 | Table B.2           | RN2018_hetmerit_all_restricted.tex     |   restricted_sample_2018.Rmd | heterogeneous merit all restricted |
 | Table B.3           | RN2018_hetmerit_share_restricted.tex   |   restricted_sample_2018.Rmd | heterogeneous merit share restricted |
