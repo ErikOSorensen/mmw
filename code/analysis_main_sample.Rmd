@@ -13,6 +13,7 @@ library(modelsummary)
 library(scales)
 library(patchwork)
 library(fixest)
+source(here::here("code", "functions.R"))
 ```
 
 
@@ -88,6 +89,14 @@ g$g11 + g$g12 + g$g21 + g$g22 + plot_annotation(tag_level="a")
 ggsave("graphs/RN2018_hetero_coefplot.pdf", width=16, height=12, units="cm")
 ```
 
+And the numbers in upper left corner:
+```{r}
+het11(mmw2018)$all_data |> gt() |> fmt_number(decimals=3)
+```
+
+
+
+
 ```{r heterogeneity analysis II, echo=FALSE}
 tar_load(heterogeneity_figure_share)
 h <- heterogeneity_figure_share
@@ -95,6 +104,11 @@ h$g11 + h$g12 + h$g21 + h$g22 + plot_annotation(tag_level="a")
 ggsave("graphs/RN2018_hetero_coefplot_s.pdf", width=16, height=12, units="cm")
 ```
 
+
+And the numbers in upper left corner:
+```{r}
+het11(mmw2018)$share_data |> gt() |> fmt_number(decimals=3)
+```
 
 # Heterogeneity between competition treatments
 

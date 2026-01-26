@@ -399,7 +399,8 @@ het11 <- function(mmw2018) {
          x=element_blank(),
          title="Share to winner") +
     theme(plot.title.position = "plot")
-  list("all"=g11, "share"=h11)
+  list("all"=g11, "share"=h11,
+       "all_data"=g11df, "share_data"=h11df)
 }
 
 het12 <- function(mmw2018) {
