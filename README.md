@@ -2,8 +2,6 @@
 
 This repository provides data and code to replicate the analysis of the paper.
 
-
-
 ## Authors
 
 - Björn Bartling
@@ -44,6 +42,14 @@ The main source for the data is Harvard Dataverse at
 
 
 # 1.4 Details on each data source
+
+| Data file | Content | License |
+|-----------|---------|---------|
+| data/mmwinner.dta | Data from lab experiment | CC0 |
+| data/mmwinner_RN2018.dta | Data main experiment | CC0 |
+| data/mmwinner_Prolific2025.dta | Data from Follow-Up Study | CC0 | 
+| classification/B1.csv | Manual classification data for training LLM | CC0 |
+| classification/B2.csv | Manual classification data for training LLM | CC0 |
 
 
 # 2. Computational requirements
@@ -94,7 +100,7 @@ derives from two files containing human-coded classifications:
 
 - `classification/B1.csv` - First batch of manually coded motivations
 - `classification/B2.csv` - Second batch of manually coded motivations
-
+/e
 These files are combined with `classification/classifications_defs.csv` (category definitions)
 by `classification/normalize_data.R` to produce `classification/training_data.csv`, which is
 then converted to the JSONL format required by OpenAI's fine-tuning API.
