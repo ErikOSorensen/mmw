@@ -1426,6 +1426,75 @@ balance_table_2018 <- function(mmw2018) {
          tests = tests)
 }
 
+
+balance_table_2025 <- function(mmw2025) {
+  columns <- c("Age", "Female","Republican","Education","Taxes on top one percent",
+               "Gold medalist","Superstar","Midwest","Northeast", "South","West", "Num.Obs")
+  
+  treatments <- c("baseline","attention","show_distribution")
+  
+  df <- mmw2025 |> mutate(republican = as.numeric(pol2==1),
+                          female = as.numeric(sex==2))
+  # First for the pooled data
+  cs <- list("all"= c(
+    mean(df$age),
+    mean(df$female),
+    mean(df$republican),
+    mean(df$education),
+    mean(df$att2),
+    mean(df$att3),
+    mean(df$att4),
+    mean(df$region==1),
+    mean(df$region==2),
+    mean(df$region==3),
+    mean(df$region==4),
+    nrow(df)))
+  
+  # For each of the treatments
+  for (trt in treatments) {
+    smpl <- df |> filter(treatment==trt)
+    k <- c(
+      mean(smpl$age),
+      mean(smpl$female),
+      mean(smpl$republican),
+      mean(smpl$education),
+      mean(smpl$att2),
+      mean(smpl$att3),
+      mean(smpl$att4),
+      mean(smpl$region==1),
+      mean(smpl$region==2),
+      mean(smpl$region==3),
+      mean(smpl$region==4),
+      nrow(smpl))
+    cs[[trt]]=k
+  }
+  
+  # Final column with F-test/ANOVA
+  tests <- c(
+    oneway.test(age ~ treatment, data=df)$p.value,
+    oneway.test(female ~ treatment, data=df)$p.value,
+    oneway.test(republican ~ treatment, data=df)$p.value,
+    oneway.test(education ~ treatment, data=df)$p.value,
+    oneway.test(att2 ~ treatment, data=df)$p.value,
+    oneway.test(att3 ~ treatment, data=df)$p.value,
+    oneway.test(att4 ~ treatment, data=df)$p.value,
+    oneway.test(region==1 ~ treatment, data=df)$p.value,
+    oneway.test(region==2 ~ treatment, data=df)$p.value,
+    oneway.test(region==3 ~ treatment, data=df)$p.value,
+    oneway.test(region==4 ~ treatment, data=df)$p.value,
+    nrow(df)
+  )
+  
+  tibble(variable =  columns,
+         all = cs$all,
+         baseline = cs$baseline,
+         attention = cs$attention,
+         show_distribution = cs$show_distribution,
+         tests = tests)
+}
+
+
+
 lab_balance_l <- function(mmw2014) {
   rows <- c("Age", "Female","Rightwing", "Num.Obs")
   df <- mmw2014 |> mutate(rightwing = as.numeric(political>3),

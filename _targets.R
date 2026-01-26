@@ -53,7 +53,11 @@ list(
     read_csv(classified_motivations_file)
   ),
   tar_target(balance_2018,
-             balance_table_2018(mmw2018)),
+             balance_table_2018(mmw2018)
+  ),
+  tar_target(balance_2025,
+             balance_table_2025(mmw2025)
+  ),
   tar_target(
     role_of_merit_table,
     role_of_merit_table_l(mmw2018),

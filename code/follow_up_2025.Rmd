@@ -16,7 +16,17 @@ library(marginaleffects)
 library(patchwork)
 library(labelled)
 ```
+# Balance table
 
+```{r balance, echo=FALSE}
+tar_load(balance_2025)
+btable <- balance_2025 |> gt() |> 
+  fmt_number(decimals=3, rows=1:11) |>  
+  fmt_number(decimals=1, rows=1, columns = 2:5) |>
+  tab_spanner(label="Winner-Take-All Treatments", columns=3:5)
+btable
+btable |> gtsave(here::here("tables","P2025_balance.tex"))
+```
 
 # The winning margin
 
