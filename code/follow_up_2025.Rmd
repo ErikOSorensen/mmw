@@ -238,7 +238,7 @@ tdf |> dplyr::select(c("labelf","fraction")) |> arrange(-fraction) |> gt() |> fm
 
 Is it the case that the classifications are informative about distribution?
 
-```{r Classifications and decisions, echo=FALSE}
+```{r classifications and decisions, echo=FALSE}
 tar_load(outcomes_by_classification_l)
 obc <- outcomes_by_classification_l$regs |>
    modelsummary(coef_map=outcomes_by_classification_l$names,

@@ -98,7 +98,7 @@ ggsave("graphs/RN2018_hetero_coefplot_s.pdf", width=16, height=12, units="cm")
 
 # Heterogeneity between competition treatments
 
-```{r}
+```{r heterogeneity between treatments}
 GL <- tar_read(heterogeneous_subtreatment_effects_gg)
 GL$g11 + GL$g12 + GL$g21 + GL$g22 + plot_annotation(tag_levels="a")
 ggsave("graphs/RN2018_subtreatment_heterogeneity.pdf", width=16, heigh=12, units="cm")
