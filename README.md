@@ -191,6 +191,10 @@ R --vanilla -q -e "renv::restore(prompt = FALSE)"
 All the Figures are output in the `graphs` subdirectory, while latex versions of
 the tables are output in the `tables` subdirectory.
 
+There are also html reports created in the `html_reports` subdirectory that 
+contains the narrative results, with figures and tables included, of the 
+Vignettes that are found in `code/*.Rmd`.
+
 For the main paper:
 
 | Display item        | File name           | Vignette         | Chunk name       |
