@@ -229,7 +229,7 @@ tdf |>
   ggplot(aes(x=labelf, y=fraction)) +
   geom_bar(stat = "identity") +
   coord_flip() +
-  labs(y = "Estimated proportion",
+  labs(y = "Estimated share",
        x = element_blank()) +
   theme_minimal()
 ggsave(here::here("graphs", "P2025_classifications.pdf"), width=16, height = 10, units = "cm", device=cairo_pdf)
