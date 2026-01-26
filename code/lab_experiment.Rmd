@@ -62,3 +62,16 @@ tc1
 gtsave(tc1,"tables/LAB_replication.tex")
 ```
 
+# What about the equal performance case?
+
+```{r}
+tar_load(mmw2014)
+equal_performance <- mmw2014 |> 
+  filter(e1==e2) |>
+  mutate(equality = y1==y2) 
+table(equal_performance$equality)
+equal_performance |> 
+  filter(equality==FALSE) |>
+  select(c(T,x1,x2,e1,e2,y1,y2)) |> gt()
+```
+

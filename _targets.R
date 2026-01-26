@@ -170,6 +170,10 @@ list(
     outcomes_on_background,
     outcomes_on_background_l(mmw2018)
   ),
+  tar_target(
+    outcomes_by_classification_l,
+    outcomes_by_classification(mmw2025, classified_motivations)
+  ),
   tar_render(
     analysis_main_sample,
     path = "code/analysis_main_sample.Rmd",

@@ -187,7 +187,7 @@ u4_2025 |> gtsave(here::here("tables","P2025_attitudes_share.tex"))
 
 # Using the data on classification
 
-
+## 
 ```{r Shares of classifications, echo=FALSE}
 tar_load(classified_motivations)
 classified_motivations |> 
@@ -229,15 +229,16 @@ tdf |> dplyr::select(c("labelf","fraction")) |> arrange(-fraction) |> gt() |> fm
 Is it the case that the classifications are informative about distribution?
 
 ```{r Classifications and decisions, echo=FALSE}
-tar_load(mmw2025)
-cdta <- mmw2025 |> left_join(classified_motivations) |>
-  mutate( all_to_winner = as.numeric(y2==e2),
-          almost_equality = as.numeric(abs(y2 - e2/2)<0.1),
-          lib_nomargin = as.numeric( predicted_label %in% c("libertarian","meritocrat - does not mention margin")),
-          margin_matters = as.numeric(predicted_label %in% c("meritocrat - does mention the margin"))) 
-cdta |> lm(all_to_winner ~ lib_nomargin, data=_) |> summary()
-cdta |> lm(almost_equality ~ margin_matters, data=_) |> summary()
-
+tar_load(outcomes_by_classification_l)
+obc <- outcomes_by_classification_l$regs |>
+   modelsummary(coef_map=outcomes_by_classification_l$names,
+               stars = c('*' = .1, '**' = .05, '***'=.01),
+                                   gof_map = c("nobs", "r.squared"),
+                                   output = "gt" ) |>
+  tab_spanner(label="All to winner", columns=2:3) |>
+  tab_spanner(label="Share to winner", columns=4:5) 
+obc
+obc |> gtsave(here::here("tables","P2025_outcomes_by_classification.tex"))
 ```
 
 

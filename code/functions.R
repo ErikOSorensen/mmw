@@ -1461,3 +1461,53 @@ lab_balance_l <- function(mmw2014) {
          tests = tests)
   
 }
+
+outcomes_by_classification <- function(mmw2025, classified_motivations) {
+  df <- mmw2025 |> dplyr::select(-motivation) |> 
+    right_join(classified_motivations)  |>
+    mutate(all_to_winner = as.numeric(y2==e2),
+           share_to_winner = y2/(y1+y2),
+           winning_margin = x2-x1,
+           republican = as.numeric(pol2==1),
+           college = as.numeric(education>4),
+           female = as.numeric(sex==2),
+           above_median_age = as.numeric(age > median(age)),
+           regionf = factor(region),
+           treatmentf = relevel(factor(treatment), ref = "baseline")) |>
+    mutate(label = case_when(
+      predicted_label == "compensate" ~ "Other",
+      predicted_label == "egalitarian" ~ "Egalitarian",
+      predicted_label == "fairness" ~ "Fairness",
+      predicted_label == "incentives" ~ "Other",
+      predicted_label == "libertarian" ~ "Libertarian",
+      predicted_label == "logic" ~ "Other",
+      predicted_label == "meritocrat - does not mention margin" ~ "Meritocrat - Margin Not Mentioned",
+      predicted_label == "meritocrat - does mention the margin" ~ "Meritocrat - Margin Mentioned",
+      predicted_label == "misunderstand" ~ "Other",
+      predicted_label == "no reason" ~ "Other")) |>
+    mutate(labelf = factor(label, levels=rev(c("Meritocrat - Margin Not Mentioned", 
+                                               "Meritocrat - Margin Mentioned",
+                                               "Libertarian", 
+                                               "Egalitarian",
+                                               "Fairness",
+                                               "Other")))) 
+  
+  k1 <- df |> feols(all_to_winner ~ labelf, data=_, vcov="hetero") 
+  k2 <- df |> feols(all_to_winner ~ labelf + republican + college + female + above_median_age | regionf, data=_, vcov="hetero") 
+  k3 <- df |> feols(share_to_winner ~ labelf, data=_, vcov="hetero") 
+  k4 <- df |> feols(share_to_winner ~ labelf + republican + college + female + above_median_age | regionf, data=_, vcov="hetero") 
+  
+  names <- c("labelfMeritocrat - Margin Not Mentioned" = "Meritocrat - Margin not mentioned",
+             "labelfMeritocrat - Margin Mentioned" = "Meritocrat - Margin mentioned",
+             "labelfLibertarian" = "Libertarian",
+             "labelfEgalitarian" = "Egalitarian",
+             "labelfFairness" = "Fairness",
+             "republican" = "Republican",
+             "college" = "College",
+             "female" = "Female",
+             "above_median_age" = "Above median age",
+             "(Intercept)"="Constant")
+  list("regs"=list(k1,k2,k3,k4), 
+       "names"=names)
+  
+}
