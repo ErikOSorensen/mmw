@@ -1,21 +1,50 @@
 services:
+  # =============================================================================
+  # Interactive RStudio for development
+  # Usage: docker compose up rstudio
+  # Access: http://localhost:8787 (user: rstudio, password: shirapur)
+  # =============================================================================
   rstudio:
-    build: .
-    image: mmwinner
-    container_name: mmwinner
+    build:
+      context: .
+      target: rstudio
+    image: mmwinner:rstudio
+    container_name: mmwinner-rstudio
     ports:
       - "8787:8787"
-    volumes: # - .:/home/rstudio/project  # mounts the full project directory
+    volumes:
+      # Mount project files for live editing
       - ./mmwinner.Rproj:/home/rstudio/project/mmwinner.Rproj
       - ./renv.lock:/home/rstudio/project/renv.lock
       - ./_targets.R:/home/rstudio/project/_targets.R
       - ./code:/home/rstudio/project/code
-      - ./html_reports:/home/rstudio/project/html_reports
       - ./data:/home/rstudio/project/data
+      - ./classification:/home/rstudio/project/classification
+      # Mount output directories for persistence
+      - ./html_reports:/home/rstudio/project/html_reports
       - ./graphs:/home/rstudio/project/graphs
       - ./tables:/home/rstudio/project/tables
-      - ./classification:/home/rstudio/project/classification
+      # Mount _targets cache for incremental builds
+      - ./_targets:/home/rstudio/project/_targets
     environment:
       - PASSWORD=shirapur
       - RSTUDIO_SESSION_INITIAL_WORKING_DIRECTORY=/home/rstudio/project
     restart: unless-stopped
+
+  # =============================================================================
+  # Pipeline runner - executes targets from scratch
+  # Usage: docker compose run --rm runner
+  # Outputs are copied into the container; use volume mount to extract results
+  # =============================================================================
+  runner:
+    build:
+      context: .
+      target: runner
+    image: mmwinner:runner
+    container_name: mmwinner-runner
+    volumes:
+      # Mount output directories to extract results
+      - ./html_reports:/home/rstudio/project/html_reports
+      - ./graphs:/home/rstudio/project/graphs
+      - ./tables:/home/rstudio/project/tables
+    # No restart - runs once and exits

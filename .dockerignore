@@ -1,16 +1,28 @@
-# Prevent big files from being sent to Docker build context
+# Prevent generated outputs from being sent to Docker build context
+# (runner creates these fresh; rstudio mounts them as volumes)
+html_reports/
+graphs/
+tables/
+_targets/
+
+# Exclude renv library (restored from renv.lock during build)
+renv/library/
+renv/staging/
+
+# Exclude large generated files
 *.html
 *.rds
 *.RData
 *.png
 *.pdf
-*.csv
-*.tsv
-*.zip
-*.gz
-data/
-graphs/
-tables/
-classification/
-_targets/
-renv/library/
+
+# Keep data files for runner (remove these lines if data is too large)
+# data/
+# classification/
+
+# Git and IDE files
+.git/
+.gitignore
+.Rhistory
+.RData
+*.Rproj.user/

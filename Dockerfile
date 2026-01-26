@@ -1,7 +1,7 @@
 # Use specific version of rocker/tidyverse for stability
-FROM rocker/tidyverse:4.5.1
+FROM rocker/tidyverse:4.5.1 AS base
 
-# Install system libraries needed for many R packages (adjust as needed)
+# Install system libraries needed for many R packages
 RUN apt-get update && apt-get install -y \
     libcurl4-openssl-dev \
     libssl-dev \
@@ -14,21 +14,33 @@ RUN apt-get update && apt-get install -y \
 # Set working directory inside container
 WORKDIR /home/rstudio/project
 
-# Install renv globally (restoration happens later)
+# Install renv globally and restore packages (cached layer)
 RUN R -e "install.packages('renv')"
 COPY renv.lock ./renv.lock
 COPY renv/activate.R ./renv/activate.R
 RUN R -e "renv::restore(confirm = FALSE)"
 
+# =============================================================================
+# Interactive RStudio target
+# =============================================================================
+FROM base AS rstudio
 
-# Copy only renv-related files first (to leverage Docker layer caching)
-# COPY renv.lock renv/activate.R ./renv.lock ./renv/activate.R
-# COPY renv.lock  ./renv.lock 
-# Restore package environment from renv.lock
-# RUN R -e "renv::restore(confirm = FALSE)"
-
-# Now copy the rest of your project files
-# COPY . .
-
-# Set default command to start R (useful for CLI script runs)
+# RStudio uses /init to start the server
 CMD ["/init"]
+
+# =============================================================================
+# Pipeline runner target
+# =============================================================================
+FROM base AS runner
+
+# Copy all project files for reproducible execution
+COPY _targets.R ./
+COPY code/ ./code/
+COPY data/ ./data/
+COPY classification/ ./classification/
+
+# Create output directories
+RUN mkdir -p html_reports graphs tables
+
+# Run the targets pipeline
+CMD ["R", "-e", "targets::tar_make()"]

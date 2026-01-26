@@ -48,19 +48,29 @@ The main source for the data is Harvard Dataverse at
 
 # 2. Computational requirements
 
-# 2.1 Software requirements. 
+# 2.1 Software requirements
 
-The analysis is written in R, relying on the targets for automation, and renv for controlling the version of
-packages. The exact version used of each included package is documented in the renv.lock file managed by the renv package. 
-For bootstrapping the renv.lock specified packages, the latest run used:
+The analysis is written in R, relying on targets for automation and renv for controlling the version of
+packages. The exact version used of each included package is documented in the `renv.lock` file.
 
-R, version 4.5.2 on Windows 11.
-renv, version 1.1.5.
+**Option A: Docker (recommended)**
+
+- Docker and Docker Compose
+
+The provided `Dockerfile` and `docker-compose.yml` create a fully configured environment
+based on `rocker/tidyverse:4.5.1` with all packages restored from `renv.lock`.
+
+**Option B: Local R installation**
+
+- R, version 4.5.x
+- renv, version 1.1.5 or later
+
+For bootstrapping the renv.lock specified packages, the latest run used R 4.5.2 on Windows 11.
 
 # 2.2 Controlled Randomness
 
-The only part of the analysis that relies on randomness is the classification of 
-free text motivations.
+The only part of the analysis that relies on randomness is the classification of
+free text motivations. See Section 2.4 for details on reproducibility of this step.
 
 # 2.3 Memory, Runtime, Storage Requirements
 
@@ -69,17 +79,94 @@ computational resources, and should only take a few minutes and require a few
 megabytes of storage and memory.
 
 The classification of free text motivations was done in the cloud using OpenAI
-servers, requiring an API key and in the low tens of US dollars. 
+servers, requiring an API key and in the low tens of US dollars.
+
+# 2.4 Classification of Free-Text Motivations
+
+The 2025 follow-up study collected free-text motivations from participants explaining
+their redistribution decisions. These motivations were classified into categories
+using a fine-tuned GPT model via the OpenAI API.
+
+**Training data for fine-tuning:**
+
+The GPT model was fine-tuned on manually coded training examples. The training data
+derives from two files containing human-coded classifications:
+
+- `classification/B1.csv` - First batch of manually coded motivations
+- `classification/B2.csv` - Second batch of manually coded motivations
+
+These files are combined with `classification/classifications_defs.csv` (category definitions)
+by `classification/normalize_data.R` to produce `classification/training_data.csv`, which is
+then converted to the JSONL format required by OpenAI's fine-tuning API.
+
+**Frozen classification output (used in analysis):**
+
+| Attribute | Value |
+|-----------|-------|
+| File | `classification/20250721_125758_classified_motivations.csv` |
+| Model | `ft:gpt-3.5-turbo-0125:fair::BvgCjJLB` (fine-tuned) |
+| System message | SYSTEM_MESSAGE_3 in `classification/systems.py` |
+| System message hash | `9a22828ecc90b0a2321239de64933606ae97f7e0c11d00f5bc3ca949d880e81e` |
+| Temperature | 0 (for reproducibility) |
+
+The classification output is included in this replication package as a frozen artifact.
+Replicators can verify all downstream R analyses without re-running the classification.
+
+**Re-running the classification (optional):**
+
+Re-running the classification requires an OpenAI API key and incurs costs. Due to the
+nature of LLM inference, results may differ slightly from the frozen output even with
+temperature=0, as OpenAI may update model weights or infrastructure over time.
+
+To re-run classification:
+
+1. Copy `classification/.env.example` to `classification/.env` and add your OpenAI API key
+2. Install Python dependencies: `cd classification && uv sync`
+3. Fine-tune a new model (see `classification/README.md` for detailed steps)
+4. Run inference: `uv run run_inference.py --model <model-name> --system 2`
+
+The classification scripts, training data, and system prompts are provided for
+transparency and to enable validation of this step.
 
 # 3. Instructions to replicators
 
-Replicators need to install renv and use the lock file to install other packages. 
-In R, a tar_make() command will then calculate all results and output all displays
+This replication package supports two levels of verification:
+
+- **Standard replication**: Run the R/targets pipeline using the provided classification
+  output. This verifies all statistical analyses and reproduces all tables and figures.
+- **Full replication**: Additionally re-run the OpenAI classification step (requires API
+  key and incurs costs; see Section 2.4).
+
+## 3.1 Using Docker (recommended)
+
+The simplest way to replicate the analysis is using Docker, which ensures an identical
+computational environment.
+
+**Run the full pipeline from scratch:**
+```bash
+docker compose build runner
+docker compose run --rm runner
+```
+
+This builds a container with all dependencies from `renv.lock`, copies the data and code,
+and executes `targets::tar_make()`. Outputs are saved to `html_reports/`, `graphs/`, and `tables/`.
+
+**Interactive development with RStudio:**
+```bash
+docker compose build rstudio
+docker compose up rstudio
+```
+Then open http://localhost:8787 in a browser (user: `rstudio`, password: `shirapur`).
+
+## 3.2 Without Docker
+
+Replicators need to install renv and use the lock file to install other packages.
+In R, a `tar_make()` command will then calculate all results and output all displays
 listed below. The displays are created as side-effects of creating the Vignettes,
 which also create html pages with narratives surrounding the displays.
 
 Sometimes it can be difficult to bootstrap renv and the packages. I've found
-that it can help to manually install renv, and then, in Rstudio's terminal do:
+that it can help to manually install renv, and then, in RStudio's terminal do:
 
 ```
 R --vanilla -q -e "renv::restore(prompt = FALSE)"
