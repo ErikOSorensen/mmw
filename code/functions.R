@@ -1374,8 +1374,8 @@ balance_table_2018 <- function(mmw2018) {
     mean(df$republican),
     mean(df$education),
     mean(df$att2),
-    mean(df$att3),
-    mean(df$att4),
+    mean(8-df$att3),
+    mean(8-df$att4),
     mean(df$area=="Midwest"),
     mean(df$area=="Northeast"),
     mean(df$area=="South"),
@@ -1391,8 +1391,8 @@ balance_table_2018 <- function(mmw2018) {
       mean(smpl$republican),
       mean(smpl$education),
       mean(smpl$att2),
-      mean(smpl$att3),
-      mean(smpl$att4),
+      mean(8-smpl$att3),
+      mean(8-smpl$att4),
       mean(smpl$area=="Midwest"),
       mean(smpl$area=="Northeast"),
       mean(smpl$area=="South"),
@@ -1442,8 +1442,8 @@ balance_table_2025 <- function(mmw2025) {
     mean(df$republican),
     mean(df$education),
     mean(df$att2),
-    mean(df$att3),
-    mean(df$att4),
+    mean(8-df$att3),
+    mean(8-df$att4),
     mean(df$region==1),
     mean(df$region==2),
     mean(df$region==3),
@@ -1459,8 +1459,8 @@ balance_table_2025 <- function(mmw2025) {
       mean(smpl$republican),
       mean(smpl$education),
       mean(smpl$att2),
-      mean(smpl$att3),
-      mean(smpl$att4),
+      mean(8-smpl$att3),
+      mean(8-smpl$att4),
       mean(smpl$region==1),
       mean(smpl$region==2),
       mean(smpl$region==3),
@@ -1556,10 +1556,11 @@ outcomes_by_classification <- function(mmw2025, classified_motivations) {
       predicted_label == "no reason" ~ "Other")) |>
     mutate(labelf = factor(label, levels=rev(c("Meritocrat - Margin Not Mentioned", 
                                                "Meritocrat - Margin Mentioned",
-                                               "Libertarian", 
-                                               "Egalitarian",
+                                               "Libertarian",
                                                "Fairness",
-                                               "Other")))) 
+                                               "Other",
+                                               "Egalitarian"
+    ))))
   
   k1 <- df |> feols(all_to_winner ~ labelf, data=_, vcov="hetero") 
   k2 <- df |> feols(all_to_winner ~ labelf + republican + college + female + above_median_age | regionf, data=_, vcov="hetero") 
@@ -1569,8 +1570,8 @@ outcomes_by_classification <- function(mmw2025, classified_motivations) {
   names <- c("labelfMeritocrat - Margin Not Mentioned" = "Meritocrat - Margin not mentioned",
              "labelfMeritocrat - Margin Mentioned" = "Meritocrat - Margin mentioned",
              "labelfLibertarian" = "Libertarian",
-             "labelfEgalitarian" = "Egalitarian",
              "labelfFairness" = "Fairness",
+             "labelfOther" = "Other",
              "republican" = "Republican",
              "college" = "College",
              "female" = "Female",

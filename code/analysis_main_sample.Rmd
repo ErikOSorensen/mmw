@@ -22,7 +22,8 @@ library(fixest)
 tar_load(balance_2018)
 btable <- balance_2018 |>
   gt() |> 
-  fmt_number(decimals = 3) |>
+  fmt_number(decimals = 3) |> 
+  fmt_number(decimals=1, rows=1, columns = 2:6) |>
   tab_spanner(label="Winner-Take-All treatments", columns=3:5)
 btable
 btable |> gtsave(here::here("tables","RN2018_balance.tex"))
