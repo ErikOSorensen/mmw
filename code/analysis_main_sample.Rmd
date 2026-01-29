@@ -56,6 +56,51 @@ mmw2018 |> group_by(treatment) |>
 
 
 
+# Share given to winner and loser
+
+
+Just overall share to winner in all WTA pooled:
+
+```{r}
+mmw2018 |> filter(treatment!="Base") |>
+  summarize(mean_share_to_winner_WTA_pooled = mean(y2/e2),
+            n = n()) |>
+  gt() |> fmt_number(decimals=3)
+```
+
+
+Sometimes, spectators gave the loser more than the winner. Here is a distribution
+of amounts to winner and loser in WTA and Luck treatments
+
+```{r}
+mmw2018 |>   mutate(wta = treatment!="Base",
+                    y_cat = if_else(y2==0,
+                                    "0",
+                                    as.character(cut(
+                                      y2/e2,
+                                      breaks = c(0, 0.5, Inf),
+                                      labels = c("(0,0.5)", "[0.5,1]"),
+                                      right = FALSE)
+                                      )),
+                    outcome = factor(y_cat, levels=c("0","(0,0.5)","[0.5,1]"))) |>
+  
+  count(treatment, outcome) %>%
+  group_by(treatment) %>%
+  mutate(share = n / sum(n)) %>%
+  ungroup() |> gt() |> fmt_number(decimals = 3, columns = 4)
+```
+
+Share in WTA that has $y_1\geq y_2+0.1$ and equality at $|y_1-y_2|<0.1$:
+```{r}
+mmw2018 |> mutate(y1_10c_or_more_than_winner = (y1 >= y2+1),
+                  equality = abs(y1-y2)<0.1) |>
+  group_by(treatment) |>
+  summarize(share_y1_10c_or_more_than_winner = mean(y1_10c_or_more_than_winner),
+            share_equality = mean(equality)) |>
+  gt() |> fmt_number(decimals = 3)
+
+```
+
 
 # Winner-take-all vs. Luck
 
@@ -266,10 +311,18 @@ t4_2018 <- ass_giving_all_attitudes$all_to_winner |>
   tab_spanner(label="Decrease tax on top 1\\%", columns=8:10)
 t4_2018
 t4_2018 |> gtsave(here::here("tables","RN2018_attitudes.tex"))
-
-
-
 ```
+
+What is the explained variation of taxes on the top 1% on
+just voting republicant?
+
+```{r}
+tar_load(mmw2018)
+df <- mmw2018 |> mutate(republican = as.numeric(pol2==1)) |> filter(treatment!="Base")
+lm(scale(att2) ~ republican, data=df) |> summary()
+```
+
+
 
 # Regression analysis: Association between share to the winner and general attitudes
 

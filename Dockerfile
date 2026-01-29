@@ -9,6 +9,7 @@ RUN apt-get update && apt-get install -y \
     libgit2-dev \
     libpng-dev \
     libglpk-dev \
+    libnode-dev \
     && apt-get clean
 
 # Set working directory inside container
@@ -17,12 +18,15 @@ WORKDIR /home/rstudio/project
 # Create renv library directory outside project (won't be overwritten by mounts)
 RUN mkdir -p /opt/renv/library && chown -R rstudio:rstudio /opt/renv
 ENV RENV_PATHS_LIBRARY=/opt/renv/library
+# Disable cache so packages are installed directly, not as symlinks
+ENV RENV_CONFIG_CACHE_ENABLED=FALSE
 
 # Install renv globally and restore packages to /opt/renv/library
 RUN R -e "install.packages('renv')"
+COPY .Rprofile ./
 COPY renv.lock ./renv.lock
 COPY renv/activate.R ./renv/activate.R
-RUN R -e "renv::restore(confirm = FALSE)"
+RUN R -e "source('.Rprofile'); renv::restore(confirm = FALSE)"
 
 # =============================================================================
 # Interactive RStudio target

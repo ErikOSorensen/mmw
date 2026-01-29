@@ -203,101 +203,88 @@ share_of_earnings_to_winner_g <- function(mmw2018) {
     facet_wrap(~treatment)
 }
 
-winner_take_all_vs_luck_lg <- function(mmw2018) {
-  t1 <- mmw2018 |> 
-    mutate(share_to_winner = floor( (y2/e2) / 0.05) * 0.05) 
-  t1_all_wta <-  t1 |> filter(treatment!="Base")
-  all_wta <- t1_all_wta |> filter(treatment!="Base")|>
-    group_by(share_to_winner) |> 
-    summarize(fraction_wta = n()/nrow(t1_all_wta))
-  t1_all_luck <-  t1 |> filter(treatment=="Base")
-  all_luck <- t1_all_luck |> filter(treatment=="Base")|>
-    group_by(share_to_winner) |> 
-    summarize(fraction_luck = n()/nrow(t1_all_luck))
-  left_df <- all_wta |> left_join(all_luck) 
+winner_take_all_vs_luck_lg <- function(mmw2018,
+                                       binwidth = 0.05,
+                                       alpha = 0.6,
+                                       wta_fill = "grey50",
+                                       luck_fill = "white") {
+  add_bins <- function(df) {
+    df |>
+      mutate(share_to_winner = floor((y2 / e2) / binwidth) * binwidth)
+  }
 
-  left <- left_df |>
-    ggplot(aes(x = share_to_winner)) +
-    geom_col(aes(y = fraction_wta, fill = "WTA"),
-             width = 0.05, colour = NA) +
-    geom_col(aes(y = fraction_luck, fill = "Luck"),
-             width = 0.05, colour = "black") +
-    scale_y_continuous(
-      limits = c(0, 0.5),
-      breaks = seq(0, 0.5, by = 0.1),
-      labels = number_format(accuracy = 0.1, decimal.mark = ".")
-    ) +
-    theme_minimal() +
-    scale_fill_manual(
-      name   = "Treatments",
-      values = c("WTA" = "grey", "Luck" = NA),
-      breaks = c("WTA", "Luck")
-    ) +
-    guides(
-      fill = guide_legend(
-        override.aes = list(
-          fill   = c("grey", NA),
-          colour = c(NA, "black"),
-          size   = c(NA, 0.6) 
-        )
+    wta_fractions <- function(df) {
+    df |>
+      filter(treatment != "Base") |>
+      count(share_to_winner, name = "n_wta") |>
+      mutate(fraction_wta = n_wta / sum(n_wta)) |>
+      select(share_to_winner, fraction_wta)
+  }
+
+    luck_fractions <- function(df_base_source, df_denominator_source = df_base_source) {
+    denom <- nrow(df_denominator_source |> filter(treatment == "Base"))
+    df_base_source |>
+      filter(treatment == "Base") |>
+      count(share_to_winner, name = "n_luck") |>
+      mutate(fraction_luck = n_luck / denom) |>
+      select(share_to_winner, fraction_luck)
+  }
+  
+  make_plot <- function(df_frac, title, subtitle) {
+    ggplot(df_frac, aes(x = share_to_winner)) +
+      geom_col(
+        aes(y = fraction_wta, fill = "WTA"),
+        width = binwidth,
+        alpha = alpha,
+        colour = NA,
+        na.rm = TRUE,
+        position = "identity"
+      ) +
+      geom_col(
+        aes(y = fraction_luck, fill = "Luck"),
+        width = binwidth,
+        alpha = alpha,
+        colour = "black",
+        linewidth = 0.4,
+        na.rm = TRUE,
+        position = "identity"
+      ) +
+      scale_fill_manual(
+        name = "Treatments",
+        values = c("WTA" = wta_fill, "Luck" = luck_fill),
+        breaks = c("WTA", "Luck")
+      ) +
+      scale_y_continuous(
+        limits = c(0, 0.5),
+        breaks = seq(0, 0.5, by = 0.1),
+        labels = number_format(accuracy = 0.1, decimal.mark = ".")
+      ) +
+      theme_minimal() +
+      labs(
+        x = "Share to winner",
+        y = "Share of spectators",
+        title = title,
+        subtitle = subtitle
       )
-    ) +
-    labs(
-      x = "Share to winner",
-      y = "Share of spectators",
-      title = "Full sample",
-      subtitle = "All winning margins"
-    )
-  
-  
-  
-  t2 <- t1 |> filter( x2-x1 == 1) 
-  t2_all_wta <-  t2 |> filter(treatment!="Base")
-  all_wta <- t2_all_wta |> filter(treatment!="Base")|>
-    group_by(share_to_winner) |> 
-    summarize(fraction_wta = n()/nrow(t2_all_wta))
-  nl <- nrow(t1 |> filter(treatment=="Base"))
-  t2_all_luck <-  t1 |> filter(treatment=="Base") |>
-    group_by(share_to_winner) |> 
-    summarize(fraction_luck = n()/nl)
-  right_df <- all_wta |> left_join(t2_all_luck) 
-  right <- right_df |>
-    ggplot(aes(x = share_to_winner)) +
-    geom_col(aes(y = fraction_wta, fill = "WTA"),
-             width = 0.05, colour = NA) +
-    geom_col(aes(y = fraction_luck, fill = "Luck"),
-             width = 0.05, colour = "black") +
-    scale_y_continuous(
-      limits = c(0, 0.5),
-      breaks = seq(0, 0.5, by = 0.1),
-      labels = number_format(accuracy = 0.1, decimal.mark = ".")
-    ) +
-    theme_minimal() +
-    scale_fill_manual(
-      name   = "Treatments",
-      values = c("WTA" = "grey", "Luck" = NA),
-      breaks = c("WTA", "Luck")
-    ) +
-    guides(
-      fill = guide_legend(
-        override.aes = list(
-          fill   = c("grey", NA),
-          colour = c(NA, "black"),
-          size   = c(NA, 0.6) 
-        )
-      )
-    ) +
-    labs(
-      x = "Share to winner",
-      y = "Share of spectators",
-      title = "Subsample",
-      subtitle = "Smallest winning margin"
-    )
-  x <- list( "left"=left, "right"=right)
-  
-  x
+  }
+  t1 <- add_bins(mmw2018)
+  t2 <- t1 |> filter(x2 - x1 == 1)
+  left_df <- full_join(
+    wta_fractions(t1),
+    luck_fractions(t1, t1),
+    by = "share_to_winner"
+  ) |>
+    arrange(share_to_winner)
+  left <- make_plot(left_df, "Full sample", "All winning margins")
+  right_df <- full_join(
+    wta_fractions(t2),
+    luck_fractions(t1, t1),
+    by = "share_to_winner"
+  ) |>
+    arrange(share_to_winner)
+  right <- make_plot(right_df, "Subsample", "Smallest winning margin")
+  list(left = left, right = right)
 }
-
 role_of_winning_margin_graph_lg <- function(mmw2018) {
   top_df <- mmw2018 |> mutate(all_to_winner = as.numeric(y2==e2),
                            winning_margin = x2-x1,
