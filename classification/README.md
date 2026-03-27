@@ -3,7 +3,15 @@
 The pipeline depends on 1) R for prepping and analysing data and 2) "uv" to
 manage python code for the classification.
 
-## Classes of files and flows
+## Table of Contents
+
+- [1. Classes of files and flows](#1-classes-of-files-and-flows)
+- [2. Preparing data](#2-preparing-data)
+- [3. Prepping the model](#3-prepping-the-model)
+- [4. Running inference](#4-running-inference)
+- [5. Analysis](#5-analysis)
+
+## 1. Classes of files and flows
 
 
 | Role of file | File name | Description |
@@ -30,13 +38,13 @@ manage python code for the classification.
 | Documentation | README.md | This file |
 
 
-## Preparing data
+## 2. Preparing data
 First, the `normalize_data.R` takes the `B1.csv` and `B2.csv` which contains 
 manual encodings, and combine it with `classifications_defs.csv`, the labels that
 should be used. The file `training_data.csv` is created.
 
 
-## Prepping the model
+## 3. Prepping the model
 
 The following command takes the `training_data.csv` and preps it into 
 the `.jsonl` format that the openai api expects. The second line
@@ -81,7 +89,7 @@ server. Here is an example:
 The key feature is the value of the "fine_tuned_model" key. This key
 needs to be used as a command line argument to the inference script.
 
-## Running inference
+## 4. Running inference
 
 When the fine tuned model is finished, the `run_inference.py` script needs
 to have the name of the trained model into it. This script also needs
@@ -99,7 +107,7 @@ called `TIMESTAMP_classified_motivations.csv` where
 specification of the parameters used for running the inference script.
 
 
-## Analysis 
+## 5. Analysis
 
 First unzip the `TIMESTAMPS_classified_motivations.zip` file.
 Running the `explore_classifications.Rmd` will now do the necessary

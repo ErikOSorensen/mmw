@@ -2,6 +2,25 @@
 
 This repository provides data and code to replicate the analysis of the paper.
 
+## Table of Contents
+
+- [Authors](#authors)
+- [Abstract](#abstract)
+- [1. Data Availability and Provenance Statement](#1-data-availability-and-provenance-statement)
+  - [1.1 Statement about rights](#11-statement-about-rights)
+  - [1.2 License for Data](#12-license-for-data)
+  - [1.3 Summary of availability](#13-summary-of-availability)
+  - [1.4 Details on each data source](#14-details-on-each-data-source)
+- [2. Computational requirements](#2-computational-requirements)
+  - [2.1 Software requirements](#21-software-requirements)
+  - [2.2 Controlled Randomness](#22-controlled-randomness)
+  - [2.3 Memory, Runtime, Storage Requirements](#23-memory-runtime-storage-requirements)
+  - [2.4 Classification of Free-Text Motivations](#24-classification-of-free-text-motivations)
+- [3. Instructions to replicators](#3-instructions-to-replicators)
+  - [3.1 Using Docker (recommended)](#31-using-docker-recommended)
+  - [3.2 Without Docker](#32-without-docker)
+- [4. List of Display Items and Programs](#4-list-of-display-items-and-programs)
+
 ## Authors
 
 - Björn Bartling
@@ -73,7 +92,6 @@ based on `rocker/tidyverse:4.5.1` with all packages restored from `renv.lock`.
 - R, version 4.5.x
 - renv, version 1.1.5 or later
 
-For bootstrapping the renv.lock specified packages, the latest run used R 4.5.2 on Windows 11.
 
 # 2.2 Controlled Randomness
 
