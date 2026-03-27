@@ -48,22 +48,6 @@ role_of_winning_margin_l <- function(mmw2018) {
   role_of_margin
 }
 
-rolef_of_winning_margin_vs_luck_l <- function(mmw2018) {
-  tabledf <- mmw2018 |>
-    filter(treatment!="Base") |>
-    mutate(all_to_winner = as.numeric(y2==e2),
-           share_to_winner = y2/(y1+y2),
-           winning_margin = x2-x1,
-           republican = as.numeric(pol2==1),
-           college = as.numeric(education>4),
-           female = as.numeric(sex==2),
-           above_median_age = as.numeric(age > median(age)),
-           regionf = factor(area),
-           performance_winner = x2)
-  
-  
-}
-
 
 ass_giving_all_attitudes_l <- function(mmw2018) {
   tabledf <- mmw2018 |>
@@ -1587,40 +1571,6 @@ outcomes_by_classification <- function(mmw2025, classified_motivations) {
   
 }
 
-
-imputed_x_in_luck_l <- function(mmw2018, n_dfs = 10) {
-  # Earnings were assigned in the Luck (Base) treatment mirroring 
-  # earnings in WTA treatment.
-  # The actual id (and performances) in the mirrored WTA situation
-  # is not preserved in the data. This function creates a list of 
-  # imputed datasets, where the x1,x2 are assigned as random draws
-  # from the WTA situations with the same earnings.
-  outputs <- list()
-  outputs <- vector("list", length = n_dfs)
-  mmw2018_extended <- mmw2018 |> 
-    group_by(treatment, e2) |>
-    mutate(e_id = row_number()) |>
-    ungroup() |>
-    arrange(treatment, e2, e_id)
-  for (i in 1:n_dfs) {
-    wta <- mmw2018 |> 
-      filter(treatment=="WTA") |>
-      dplyr::select(treatment,x1,x2,e1,e2) |>
-      mutate(u=runif(n())) |>
-      group_by(treatment, e2) |>
-      arrange(treatment, e2, u) |>
-      mutate(e_id = row_number()) |>
-      ungroup() |>
-      dplyr::select(e2, e_id, x1, x2) 
-    up <- mmw2018_extended |> 
-      left_join(wta, by=c("e2","e_id"), suffix = c("", "_new")) |>
-      mutate(x1 = if_else(treatment=="Base",x1_new, x1),
-             x2 = if_else(treatment=="Base",x2_new, x2)) |>
-      dplyr::select(-c("x1_new","x2_new","e_id"))
-    outputs[[i]] <- up
-  }
-  outputs
-}
 
 winning_margin_over_distribution <- function(mmw2018) {
   df_minimal <- mmw2018 |> filter(x2-x1==1) |>

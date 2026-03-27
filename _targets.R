@@ -179,10 +179,6 @@ list(
     outcomes_by_classification(mmw2025, classified_motivations)
   ),
   tar_target(
-    imputed_x_in_luck,
-    imputed_x_in_luck_l(mmw2018)
-  ),
-  tar_target(
     winning_margin_over_distribution_l,
     winning_margin_over_distribution(mmw2018)
   ),
