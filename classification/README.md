@@ -1,5 +1,35 @@
 # Running the main classification job
 
+The pipeline depends on 1) R for prepping and analysing data and 2) "uv" to
+manage python code for the classification.
+
+## Classes of files and flows
+
+
+| Role of file | File name | Description |
+|---|---|---|
+| Preparing data | normalize_data.R | Data from experiment to input for LLM |
+| Preparing data | classifications_defs.R | Unified names of categories |
+| Preparing data | B1.csv | Manual classifications I |
+| Preparing data | B2.csv | Manual classifications II |
+| Preparing data | motivations.csv | Full list of motivations from experiment |
+| Preparing data | training_data.csv | Output from normalization |
+| Preparing data | training_data.jsonl | Output from normalization adapted for fine tuning LLM |
+| Preparing data | training_data_preparation.py | Takes training_data.csv and outputs training_data.jsonl |
+| Running inference | run_inference.py | Python interaction with Open AI |
+| Running inference | systems.py | Instructions for LLM |
+| Running inference | upload_training_data.py | Uploading training_data.jsonl for finetuning |
+| Running inference | TIMESTAMPS_classified_motivations.zip | Output from inference (20 .csv files) |
+| Analysis | tvariants.tex | Output comparing models |
+| Analysis | explore_classifications.R | Analysing classifications |
+| Analysis | explore_classifications.html | Analysis of classifications (output) |
+| System config | classifications.Rproj | R project file |
+| System config | pyproject.toml | Project definition for Python programs |
+| System config | uv.lock | Specification of Python dependencies |
+| System config | .env.example  | Example for how Open AI API key is entered | 
+| Documentation | README.md | This file |
+
+
 ## Preparing data
 First, the `normalize_data.R` takes the `B1.csv` and `B2.csv` which contains 
 manual encodings, and combine it with `classifications_defs.csv`, the labels that
@@ -49,7 +79,7 @@ server. Here is an example:
 ```
 
 The key feature is the value of the "fine_tuned_model" key. This key
-needs to be entered into the script in the next step.
+needs to be used as a command line argument to the inference script.
 
 ## Running inference
 
@@ -63,5 +93,14 @@ network connection is necessary for the duration of the classification.
 ```sh
 uv run run_inference.py
 ```
+With the proper command line arguments, this will write a file 
+called `TIMESTAMP_classified_motivations.csv` where
+`TIMESTAMP` is the time the classification was run. This file contains 
+specification of the parameters used for running the inference script.
 
-This will write a file called `TIMESTAMP_classified_motivations.csv`. 
+
+## Analysis 
+
+First unzip the `TIMESTAMPS_classified_motivations.zip` file.
+Running the `explore_classifications.Rmd` will now do the necessary
+analysis. 

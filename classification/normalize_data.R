@@ -10,7 +10,7 @@ training_data <- list(B1,B2) |>
   left_join(classifications_defs) |>
   left_join(motivations) |> 
   dplyr::select(c("id","classification","motivation"))
-#write_csv(training_data,"training_data.csv")
+write_csv(training_data,"training_data.csv")
 
 
 create_examples_for_system <- function(data, max_examples = 10) {
