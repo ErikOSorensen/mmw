@@ -93,7 +93,8 @@ servers, requiring an API key and in the low tens of US dollars.
 
 The 2025 follow-up study collected free-text motivations from participants explaining
 their redistribution decisions. These motivations were classified into categories
-using a fine-tuned GPT model via the OpenAI API.
+using a fine-tuned GPT model via the OpenAI API. This subsection gives an overview
+of this process. More details are provided in `classification/README.md`.
 
 **Training data for fine-tuning:**
 
