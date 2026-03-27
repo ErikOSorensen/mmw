@@ -48,6 +48,23 @@ role_of_winning_margin_l <- function(mmw2018) {
   role_of_margin
 }
 
+rolef_of_winning_margin_vs_luck_l <- function(mmw2018) {
+  tabledf <- mmw2018 |>
+    filter(treatment!="Base") |>
+    mutate(all_to_winner = as.numeric(y2==e2),
+           share_to_winner = y2/(y1+y2),
+           winning_margin = x2-x1,
+           republican = as.numeric(pol2==1),
+           college = as.numeric(education>4),
+           female = as.numeric(sex==2),
+           above_median_age = as.numeric(age > median(age)),
+           regionf = factor(area),
+           performance_winner = x2)
+  
+  
+}
+
+
 ass_giving_all_attitudes_l <- function(mmw2018) {
   tabledf <- mmw2018 |>
     filter(treatment!="Base") |>
@@ -366,7 +383,7 @@ het11 <- function(mmw2018) {
     coord_flip() + 
     labs(y="Share of spectators \u00B1 SE", 
          x=element_blank(),
-         title="All to winner") +
+         title="All to winner (WTA comp.)") +
     theme(plot.title.position = "plot")
   rs1 <- f4df1 |> group_by(republican) |> summarize(maw = mean(share_to_winner),
                                                     maw_se = sd(all_to_winner)/sqrt(n())) |> rename(group=republican)
@@ -384,7 +401,7 @@ het11 <- function(mmw2018) {
     coord_flip() + 
     labs(y="Share to winner \u00B1 SE", 
          x=element_blank(),
-         title="Share to winner") +
+         title="Share to winner (WTA comp.)") +
     theme(plot.title.position = "plot")
   list("all"=g11, "share"=h11,
        "all_data"=g11df, "share_data"=h11df)
@@ -419,7 +436,7 @@ het12 <- function(mmw2018) {
     scale_y_continuous(limits = c(-0.1, 0.3)) +
     coord_flip() +
     theme_minimal() +
-    labs(title="WTA competition vs. Luck",
+    labs(title="WTA comp. vs. Luck",
          y = "Estimate \u00B1 SE",
          x = element_blank()) +
     theme(plot.title.position = "plot")
@@ -440,7 +457,7 @@ het12 <- function(mmw2018) {
     scale_y_continuous(limits = c(-0.1, 0.3)) +
     coord_flip() +
     theme_minimal() +
-    labs(title="WTA competition vs. Luck",
+    labs(title="WTA comp. vs. Luck",
          y = "Estimate \u00B1 SE",
          x = element_blank()) +
     theme(plot.title.position = "plot")
@@ -1567,5 +1584,71 @@ outcomes_by_classification <- function(mmw2025, classified_motivations) {
              "(Intercept)"="Constant")
   list("regs"=list(k1,k2,k3,k4), 
        "names"=names)
+  
+}
+
+
+imputed_x_in_luck_l <- function(mmw2018, n_dfs = 10) {
+  # Earnings were assigned in the Luck (Base) treatment mirroring 
+  # earnings in WTA treatment.
+  # The actual id (and performances) in the mirrored WTA situation
+  # is not preserved in the data. This function creates a list of 
+  # imputed datasets, where the x1,x2 are assigned as random draws
+  # from the WTA situations with the same earnings.
+  outputs <- list()
+  outputs <- vector("list", length = n_dfs)
+  mmw2018_extended <- mmw2018 |> 
+    group_by(treatment, e2) |>
+    mutate(e_id = row_number()) |>
+    ungroup() |>
+    arrange(treatment, e2, e_id)
+  for (i in 1:n_dfs) {
+    wta <- mmw2018 |> 
+      filter(treatment=="WTA") |>
+      dplyr::select(treatment,x1,x2,e1,e2) |>
+      mutate(u=runif(n())) |>
+      group_by(treatment, e2) |>
+      arrange(treatment, e2, u) |>
+      mutate(e_id = row_number()) |>
+      ungroup() |>
+      dplyr::select(e2, e_id, x1, x2) 
+    up <- mmw2018_extended |> 
+      left_join(wta, by=c("e2","e_id"), suffix = c("", "_new")) |>
+      mutate(x1 = if_else(treatment=="Base",x1_new, x1),
+             x2 = if_else(treatment=="Base",x2_new, x2)) |>
+      dplyr::select(-c("x1_new","x2_new","e_id"))
+    outputs[[i]] <- up
+  }
+  outputs
+}
+
+winning_margin_over_distribution <- function(mmw2018) {
+  df_minimal <- mmw2018 |> filter(x2-x1==1) |>
+    mutate(all_to_winner = as.numeric(y2==e2),
+           share_to_winner = y2/(y1+y2),
+           competition = as.numeric(treatment!="Base"),
+           winning_margin = x2-x1,
+           republican = as.numeric(pol2==1),
+           college = as.numeric(education>4),
+           female = as.numeric(sex==2),
+           above_median_age = as.numeric(age > median(age)),
+           below_median_x2 = as.numeric(x2<median(x2)),
+           regionf = factor(area),
+           performance_winner = x2,
+           treatment = fct_relevel(treatment, "WTA"))
+  
+  h1 <- df_minimal |> feols(all_to_winner ~ x2, data=_, vcov="hetero")
+  h2 <- df_minimal |> feols(all_to_winner ~ below_median_x2, data=_, vcov="hetero")
+  h3 <- df_minimal |> feols(all_to_winner ~ x2*below_median_x2, data=_, vcov="hetero")
+  k1 <- df_minimal |> feols(share_to_winner ~ x2, data=_, vcov="hetero")
+  k2 <- df_minimal |> feols(share_to_winner ~below_median_x2, data=_, vcov="hetero")
+  k3 <- df_minimal |> feols(share_to_winner ~ x2*below_median_x2, data=_, vcov="hetero")
+
+  regs <- list(h1,h2,h3,k1,k2,k3) 
+  names <- c("x2"="Performance of winner",
+             "below_median_x2"="Winner performance below median",
+             "x2:below_median_x2"="Winnner Perf. X Perf. below median",
+             "(Intercept)"="Constant")
+  list("regs"=regs, "names"=names)
   
 }

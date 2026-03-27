@@ -11,7 +11,7 @@
 
 <meta name="author" content="Erik Ø. Sørensen" />
 
-<meta name="date" content="2025-09-19" />
+<meta name="date" content="2026-03-27" />
 
 <title>Summarizing classifications</title>
 
@@ -352,7 +352,7 @@ display: none;
 
 <h1 class="title toc-ignore">Summarizing classifications</h1>
 <h4 class="author">Erik Ø. Sørensen</h4>
-<h4 class="date">2025-09-19</h4>
+<h4 class="date">2026-03-27</h4>
 
 </div>
 
@@ -366,15 +366,11 @@ training (“fine-tuning”).
 <li>With fine-tuning, on the full set of categories that Bertil
 outlined. 10 runs.</li>
 <li>Without fine-tuning, on the full set of categories.</li>
-<li>Without fine-tuning, on a restricted set of categories (bundling
-some up in “other”)</li>
 </ul></li>
 <li>gpt-4o: More advanced language, larger capacity, but we cannot train
 it.
 <ul>
 <li>Without fine-tuning, on the full set of categories.</li>
-<li>Without fine-tuning, on a restricted set of categories (bundling
-some up in “other”).</li>
 <li>Without fine-tuning, but with all training data used, full set of
 categories. 5 runs of this for evaluating role of noise in the gpt.</li>
 </ul></li>
@@ -394,569 +390,6 @@ categories. 5 runs of this for evaluating role of noise in the gpt.</li>
   &quot;other&quot; = &quot;OTR&quot;
 )</code></pre>
 <p>Looking at how the models agree on statements.</p>
-<div id="older-model-gpt-3.5-turbo-with-and-without-using-training-data" class="section level2">
-<h2>Older model (GPT-3.5-turbo) with and without using training
-data</h2>
-<p>Here the rows (x) are classifications <em>using</em> the training
-data, and columns (y) use only the definitions of groups.</p>
-<pre><code>##                   predicted_labels.y
-## predicted_labels.x    C    E    F    I    L   LG  MDM MDNM   MS   NR  Sum
-##               C      13    0    0    0    0    0    0    0    0    0   13
-##               E       4   79    0    0    0    0    0    0    0    0   83
-##               F       6   69   61    0    0    0    1    0    0    0  137
-##               I      10    1    0   18    1    2    1    0    1    0   34
-##               L       6    6   13    0  508    8   26   21    8    4  600
-##               LG      0    0    1    0    0    3    0    0    0    0    4
-##               MDM   305  127    3    0    2    0  360    7    3    0  807
-##               MDNM  639  148    8    1   39    3   78  155    4    1 1076
-##               MS      0    1    0    0    0    0    0    0    5    0    6
-##               NR     87   50    7    2    5   12    7    0   21   46  237
-##               Sum  1070  481   93   21  555   28  473  183   42   51 2997</code></pre>
-<p>We see that there are many more “compensate” without using the
-training data.</p>
-</div>
-<div id="newer-model-gpt-4o-vs-trained-old-model" class="section level2">
-<h2>Newer model (GPT-4o) vs trained old model</h2>
-<p>Here I use the full set of categories with the trained older model as
-x and the modern model with large set of categories as columns (y).</p>
-<pre><code>##                   predicted_labels.y
-## predicted_labels.x    C    E    F    I    L   LG  MDM MDNM   MS   NR  Sum
-##               C      12    1    0    0    0    0    0    0    0    0   13
-##               E       1   81    1    0    0    0    0    0    0    0   83
-##               F       2   26  106    0    2    0    1    0    0    0  137
-##               I       5    0    1   25    1    0    0    0    2    0   34
-##               L       0    2    8   10  538    1   13   19    5    4  600
-##               LG      0    0    1    0    0    3    0    0    0    0    4
-##               MDM    56   51   26    2    9    1  557   74   30    1  807
-##               MDNM  415  107  110   14   48    0   38  320   20    4 1076
-##               MS      0    1    0    0    0    0    0    0    5    0    6
-##               NR     40   55    8    3   11    8    6    3   15   89  238
-##               Sum   531  324  261   54  609   13  615  416   77   98 2998</code></pre>
-<p>We see that the more modern model (4o) also allocate a lot of people
-to “compensate”.</p>
-</div>
-<div id="newer-model-gpt-4o-with-small-and-large-set-of-categories" class="section level2">
-<h2>Newer model (GPT-4o) with small and large set of categories</h2>
-<p>Let’s try putting “compensate” and others in an “others”
-category.</p>
-<pre><code>##                   predicted_labels.y
-## predicted_labels.x    C    E    F    I    L   LG  MDM MDNM   MS   NR  Sum
-##               E     124  275    1    0    1    0    0    0    3    2  406
-##               F      91   20  227    3    1    0    3   10    2    2  359
-##               L      11    0    3    9  595    1    3   10   11    6  649
-##               MDM    32   12   13    3    1    2  587   12   26    2  690
-##               MDNM  219   11   10   19    7    0   22  381   13    2  684
-##               OTR    54    6    7   20    4   10    0    3   22   84  210
-##               Sum   531  324  261   54  609   13  615  416   77   98 2998</code></pre>
-<p>The new model now has a much smaller set of “others” than the
-previous compensate.</p>
-</div>
-<div id="restricting-categories-i" class="section level2">
-<h2>Restricting categories I</h2>
-<p>Now, let’s restrict the categories post classification on the trained
-older model (x) and compare this to the modern (non-trained) model using
-the smaller set of categories (y).</p>
-<pre><code>##                   predicted_labels.y
-## predicted_labels.x    E    F    L  MDM MDNM  OTR  Sum
-##               E      81    2    0    0    0    0   83
-##               F      20  111    3    0    0    3  137
-##               L       1    7  555   13   21    3  600
-##               MDM    45   28    7  615  105    7  807
-##               MDNM  190  194   63   46  548   35 1076
-##               OTR    69   17   21   16   10  162  295
-##               Sum   406  359  649  690  684  210 2998</code></pre>
-<p>The trained model has fewer “egalitarian” and “fairness”.</p>
-</div>
-<div id="restricting-categories-ii" class="section level2">
-<h2>Restricting categories II</h2>
-<p>Let’s compare the old (x) and the new (y) model, no fine-tuning for
-either, on the restricted set of categories for both.</p>
-<pre><code>##                   predicted_labels.y
-## predicted_labels.x    E    F    L  MDM MDNM  OTR  Sum
-##               E     396  203   31  157  248   71 1106
-##               F       1  132   13   38   11    8  203
-##               L       1    0  525    3   20    6  555
-##               MDM     4   15   38  487  234   15  793
-##               MDNM    0    5   35    3  168   15  226
-##               OTR     4    4    7    2    3   95  115
-##               Sum   406  359  649  690  684  210 2998</code></pre>
-<p>We see that the old model creates many, many more egalitarians and
-not much agreement about the meritocrats.</p>
-</div>
-<div id="what-are-the-compensate-about" class="section level1">
-<h1>What are the “Compensate” about?</h1>
-<p>Here is a subset of people classified as “compensate” by the 4o
-(untrained) model on the large set of categories:</p>
-<div id="pokgrntocv" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#pokgrntocv table {
-font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
--webkit-font-smoothing: antialiased;
--moz-osx-font-smoothing: grayscale;
-}
-#pokgrntocv thead, #pokgrntocv tbody, #pokgrntocv tfoot, #pokgrntocv tr, #pokgrntocv td, #pokgrntocv th {
-border-style: none;
-}
-#pokgrntocv p {
-margin: 0;
-padding: 0;
-}
-#pokgrntocv .gt_table {
-display: table;
-border-collapse: collapse;
-line-height: normal;
-margin-left: auto;
-margin-right: auto;
-color: #333333;
-font-size: 16px;
-font-weight: normal;
-font-style: normal;
-background-color: #FFFFFF;
-width: auto;
-border-top-style: solid;
-border-top-width: 2px;
-border-top-color: #A8A8A8;
-border-right-style: none;
-border-right-width: 2px;
-border-right-color: #D3D3D3;
-border-bottom-style: solid;
-border-bottom-width: 2px;
-border-bottom-color: #A8A8A8;
-border-left-style: none;
-border-left-width: 2px;
-border-left-color: #D3D3D3;
-}
-#pokgrntocv .gt_caption {
-padding-top: 4px;
-padding-bottom: 4px;
-}
-#pokgrntocv .gt_title {
-color: #333333;
-font-size: 125%;
-font-weight: initial;
-padding-top: 4px;
-padding-bottom: 4px;
-padding-left: 5px;
-padding-right: 5px;
-border-bottom-color: #FFFFFF;
-border-bottom-width: 0;
-}
-#pokgrntocv .gt_subtitle {
-color: #333333;
-font-size: 85%;
-font-weight: initial;
-padding-top: 3px;
-padding-bottom: 5px;
-padding-left: 5px;
-padding-right: 5px;
-border-top-color: #FFFFFF;
-border-top-width: 0;
-}
-#pokgrntocv .gt_heading {
-background-color: #FFFFFF;
-text-align: center;
-border-bottom-color: #FFFFFF;
-border-left-style: none;
-border-left-width: 1px;
-border-left-color: #D3D3D3;
-border-right-style: none;
-border-right-width: 1px;
-border-right-color: #D3D3D3;
-}
-#pokgrntocv .gt_bottom_border {
-border-bottom-style: solid;
-border-bottom-width: 2px;
-border-bottom-color: #D3D3D3;
-}
-#pokgrntocv .gt_col_headings {
-border-top-style: solid;
-border-top-width: 2px;
-border-top-color: #D3D3D3;
-border-bottom-style: solid;
-border-bottom-width: 2px;
-border-bottom-color: #D3D3D3;
-border-left-style: none;
-border-left-width: 1px;
-border-left-color: #D3D3D3;
-border-right-style: none;
-border-right-width: 1px;
-border-right-color: #D3D3D3;
-}
-#pokgrntocv .gt_col_heading {
-color: #333333;
-background-color: #FFFFFF;
-font-size: 100%;
-font-weight: normal;
-text-transform: inherit;
-border-left-style: none;
-border-left-width: 1px;
-border-left-color: #D3D3D3;
-border-right-style: none;
-border-right-width: 1px;
-border-right-color: #D3D3D3;
-vertical-align: bottom;
-padding-top: 5px;
-padding-bottom: 6px;
-padding-left: 5px;
-padding-right: 5px;
-overflow-x: hidden;
-}
-#pokgrntocv .gt_column_spanner_outer {
-color: #333333;
-background-color: #FFFFFF;
-font-size: 100%;
-font-weight: normal;
-text-transform: inherit;
-padding-top: 0;
-padding-bottom: 0;
-padding-left: 4px;
-padding-right: 4px;
-}
-#pokgrntocv .gt_column_spanner_outer:first-child {
-padding-left: 0;
-}
-#pokgrntocv .gt_column_spanner_outer:last-child {
-padding-right: 0;
-}
-#pokgrntocv .gt_column_spanner {
-border-bottom-style: solid;
-border-bottom-width: 2px;
-border-bottom-color: #D3D3D3;
-vertical-align: bottom;
-padding-top: 5px;
-padding-bottom: 5px;
-overflow-x: hidden;
-display: inline-block;
-width: 100%;
-}
-#pokgrntocv .gt_spanner_row {
-border-bottom-style: hidden;
-}
-#pokgrntocv .gt_group_heading {
-padding-top: 8px;
-padding-bottom: 8px;
-padding-left: 5px;
-padding-right: 5px;
-color: #333333;
-background-color: #FFFFFF;
-font-size: 100%;
-font-weight: initial;
-text-transform: inherit;
-border-top-style: solid;
-border-top-width: 2px;
-border-top-color: #D3D3D3;
-border-bottom-style: solid;
-border-bottom-width: 2px;
-border-bottom-color: #D3D3D3;
-border-left-style: none;
-border-left-width: 1px;
-border-left-color: #D3D3D3;
-border-right-style: none;
-border-right-width: 1px;
-border-right-color: #D3D3D3;
-vertical-align: middle;
-text-align: left;
-}
-#pokgrntocv .gt_empty_group_heading {
-padding: 0.5px;
-color: #333333;
-background-color: #FFFFFF;
-font-size: 100%;
-font-weight: initial;
-border-top-style: solid;
-border-top-width: 2px;
-border-top-color: #D3D3D3;
-border-bottom-style: solid;
-border-bottom-width: 2px;
-border-bottom-color: #D3D3D3;
-vertical-align: middle;
-}
-#pokgrntocv .gt_from_md > :first-child {
-margin-top: 0;
-}
-#pokgrntocv .gt_from_md > :last-child {
-margin-bottom: 0;
-}
-#pokgrntocv .gt_row {
-padding-top: 8px;
-padding-bottom: 8px;
-padding-left: 5px;
-padding-right: 5px;
-margin: 10px;
-border-top-style: solid;
-border-top-width: 1px;
-border-top-color: #D3D3D3;
-border-left-style: none;
-border-left-width: 1px;
-border-left-color: #D3D3D3;
-border-right-style: none;
-border-right-width: 1px;
-border-right-color: #D3D3D3;
-vertical-align: middle;
-overflow-x: hidden;
-}
-#pokgrntocv .gt_stub {
-color: #333333;
-background-color: #FFFFFF;
-font-size: 100%;
-font-weight: initial;
-text-transform: inherit;
-border-right-style: solid;
-border-right-width: 2px;
-border-right-color: #D3D3D3;
-padding-left: 5px;
-padding-right: 5px;
-}
-#pokgrntocv .gt_stub_row_group {
-color: #333333;
-background-color: #FFFFFF;
-font-size: 100%;
-font-weight: initial;
-text-transform: inherit;
-border-right-style: solid;
-border-right-width: 2px;
-border-right-color: #D3D3D3;
-padding-left: 5px;
-padding-right: 5px;
-vertical-align: top;
-}
-#pokgrntocv .gt_row_group_first td {
-border-top-width: 2px;
-}
-#pokgrntocv .gt_row_group_first th {
-border-top-width: 2px;
-}
-#pokgrntocv .gt_summary_row {
-color: #333333;
-background-color: #FFFFFF;
-text-transform: inherit;
-padding-top: 8px;
-padding-bottom: 8px;
-padding-left: 5px;
-padding-right: 5px;
-}
-#pokgrntocv .gt_first_summary_row {
-border-top-style: solid;
-border-top-color: #D3D3D3;
-}
-#pokgrntocv .gt_first_summary_row.thick {
-border-top-width: 2px;
-}
-#pokgrntocv .gt_last_summary_row {
-padding-top: 8px;
-padding-bottom: 8px;
-padding-left: 5px;
-padding-right: 5px;
-border-bottom-style: solid;
-border-bottom-width: 2px;
-border-bottom-color: #D3D3D3;
-}
-#pokgrntocv .gt_grand_summary_row {
-color: #333333;
-background-color: #FFFFFF;
-text-transform: inherit;
-padding-top: 8px;
-padding-bottom: 8px;
-padding-left: 5px;
-padding-right: 5px;
-}
-#pokgrntocv .gt_first_grand_summary_row {
-padding-top: 8px;
-padding-bottom: 8px;
-padding-left: 5px;
-padding-right: 5px;
-border-top-style: double;
-border-top-width: 6px;
-border-top-color: #D3D3D3;
-}
-#pokgrntocv .gt_last_grand_summary_row_top {
-padding-top: 8px;
-padding-bottom: 8px;
-padding-left: 5px;
-padding-right: 5px;
-border-bottom-style: double;
-border-bottom-width: 6px;
-border-bottom-color: #D3D3D3;
-}
-#pokgrntocv .gt_striped {
-background-color: rgba(128, 128, 128, 0.05);
-}
-#pokgrntocv .gt_table_body {
-border-top-style: solid;
-border-top-width: 2px;
-border-top-color: #D3D3D3;
-border-bottom-style: solid;
-border-bottom-width: 2px;
-border-bottom-color: #D3D3D3;
-}
-#pokgrntocv .gt_footnotes {
-color: #333333;
-background-color: #FFFFFF;
-border-bottom-style: none;
-border-bottom-width: 2px;
-border-bottom-color: #D3D3D3;
-border-left-style: none;
-border-left-width: 2px;
-border-left-color: #D3D3D3;
-border-right-style: none;
-border-right-width: 2px;
-border-right-color: #D3D3D3;
-}
-#pokgrntocv .gt_footnote {
-margin: 0px;
-font-size: 90%;
-padding-top: 4px;
-padding-bottom: 4px;
-padding-left: 5px;
-padding-right: 5px;
-}
-#pokgrntocv .gt_sourcenotes {
-color: #333333;
-background-color: #FFFFFF;
-border-bottom-style: none;
-border-bottom-width: 2px;
-border-bottom-color: #D3D3D3;
-border-left-style: none;
-border-left-width: 2px;
-border-left-color: #D3D3D3;
-border-right-style: none;
-border-right-width: 2px;
-border-right-color: #D3D3D3;
-}
-#pokgrntocv .gt_sourcenote {
-font-size: 90%;
-padding-top: 4px;
-padding-bottom: 4px;
-padding-left: 5px;
-padding-right: 5px;
-}
-#pokgrntocv .gt_left {
-text-align: left;
-}
-#pokgrntocv .gt_center {
-text-align: center;
-}
-#pokgrntocv .gt_right {
-text-align: right;
-font-variant-numeric: tabular-nums;
-}
-#pokgrntocv .gt_font_normal {
-font-weight: normal;
-}
-#pokgrntocv .gt_font_bold {
-font-weight: bold;
-}
-#pokgrntocv .gt_font_italic {
-font-style: italic;
-}
-#pokgrntocv .gt_super {
-font-size: 65%;
-}
-#pokgrntocv .gt_footnote_marks {
-font-size: 75%;
-vertical-align: 0.4em;
-position: initial;
-}
-#pokgrntocv .gt_asterisk {
-font-size: 100%;
-vertical-align: 0;
-}
-#pokgrntocv .gt_indent_1 {
-text-indent: 5px;
-}
-#pokgrntocv .gt_indent_2 {
-text-indent: 10px;
-}
-#pokgrntocv .gt_indent_3 {
-text-indent: 15px;
-}
-#pokgrntocv .gt_indent_4 {
-text-indent: 20px;
-}
-#pokgrntocv .gt_indent_5 {
-text-indent: 25px;
-}
-#pokgrntocv .katex-display {
-display: inline-flex !important;
-margin-bottom: 0.75em !important;
-}
-#pokgrntocv div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
-height: 0px !important;
-}
-</style>
-<table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
-  <thead>
-    <tr class="gt_col_headings">
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="id">id</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="predicted_label">predicted_label</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="motivation">motivation</th>
-    </tr>
-  </thead>
-  <tbody class="gt_table_body">
-    <tr><td headers="id" class="gt_row gt_right">2410</td>
-<td headers="predicted_label" class="gt_row gt_left">compensate</td>
-<td headers="motivation" class="gt_row gt_left">Not getting paid seems a bit harsh for missing some questions.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">3289</td>
-<td headers="predicted_label" class="gt_row gt_left">compensate</td>
-<td headers="motivation" class="gt_row gt_left">Participant X deserves to be paid at least a minimal amount for taking the time to participate, and for having a reasonable number of correct responses.  Meanwhile, participant Y still retains the lion&#39;s share of the reward, so their motivation would still be high.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">1460</td>
-<td headers="predicted_label" class="gt_row gt_left">compensate</td>
-<td headers="motivation" class="gt_row gt_left">Anyone who spends 10 minutes doing a task should receive SOME compensation. so I gave participant X the amount to the right of the decimal point of participant Y&#39;s earnings.  This gave X some compensation, while Y received a much larger share.  The text did not say these were bonuses, so I assumed these were the only earnings.  Had the text stated that these were bonuses, to be paid in addition to other compensation, I would have given participant X nothing.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">2948</td>
-<td headers="predicted_label" class="gt_row gt_left">compensate</td>
-<td headers="motivation" class="gt_row gt_left">So the participant that didnt receive anything received a little</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">3272</td>
-<td headers="predicted_label" class="gt_row gt_left">compensate</td>
-<td headers="motivation" class="gt_row gt_left">It sucks when you don&#39;t get part of the bonus. It did say there may be a redistribution. So I  decided to redistribute half of the .15 per the 7 completed. Person X will get .52 for effort and participation</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">1631</td>
-<td headers="predicted_label" class="gt_row gt_left">compensate</td>
-<td headers="motivation" class="gt_row gt_left">Even though it doesn&#39;t follow the stated rules, it seemed fair to compensate the person for answering 15 questions.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">981</td>
-<td headers="predicted_label" class="gt_row gt_left">compensate</td>
-<td headers="motivation" class="gt_row gt_left">He still did some tasks, so they deserve some share.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">2811</td>
-<td headers="predicted_label" class="gt_row gt_left">compensate</td>
-<td headers="motivation" class="gt_row gt_left">they probably tried hard, but its not his fault he didnt know the answers.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">1898</td>
-<td headers="predicted_label" class="gt_row gt_left">compensate</td>
-<td headers="motivation" class="gt_row gt_left">I felt bad for the participant who didn&#39;t get any money despite solving 10 problems. I didn&#39;t want to take too much from the other participant, so that&#39;s why I only took 20 cents from them.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">791</td>
-<td headers="predicted_label" class="gt_row gt_left">compensate</td>
-<td headers="motivation" class="gt_row gt_left">even though they did not do as well as the other person, they tried</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">2040</td>
-<td headers="predicted_label" class="gt_row gt_left">compensate</td>
-<td headers="motivation" class="gt_row gt_left">It&#39;s not fair to pay someone nothing at all for doing work. So I gave the lesser cent amount to player X and left Y with 2.00 since they won. People who do work  expect to be paid something and if you do not pay them you are shady period.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">2282</td>
-<td headers="predicted_label" class="gt_row gt_left">compensate</td>
-<td headers="motivation" class="gt_row gt_left">That seems like a fair amount. Participant X should receive some compensation for their problem solving.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">2101</td>
-<td headers="predicted_label" class="gt_row gt_left">compensate</td>
-<td headers="motivation" class="gt_row gt_left">Even though Y got more answers correct, X also did well and should receive some compensation.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">944</td>
-<td headers="predicted_label" class="gt_row gt_left">compensate</td>
-<td headers="motivation" class="gt_row gt_left">I gave participant x a small bonus for their effort.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">166</td>
-<td headers="predicted_label" class="gt_row gt_left">compensate</td>
-<td headers="motivation" class="gt_row gt_left">want to give them at least a little</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">2944</td>
-<td headers="predicted_label" class="gt_row gt_left">compensate</td>
-<td headers="motivation" class="gt_row gt_left">Give x some credit for work done</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">1088</td>
-<td headers="predicted_label" class="gt_row gt_left">compensate</td>
-<td headers="motivation" class="gt_row gt_left">I believe that participant X also deserved to earn as they also completed the task despite the punitive guidelines, thus I decided to share participant Y&#39;s earnings to ensure the other also got something even if not equally shared.</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">305</td>
-<td headers="predicted_label" class="gt_row gt_left">compensate</td>
-<td headers="motivation" class="gt_row gt_left">participant x deserves to be compensated for the right answers and for participating</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">2995</td>
-<td headers="predicted_label" class="gt_row gt_left">compensate</td>
-<td headers="motivation" class="gt_row gt_left">Participate x did solve 11 problems and deserves some sort of compensation</td></tr>
-    <tr><td headers="id" class="gt_row gt_right">2106</td>
-<td headers="predicted_label" class="gt_row gt_left">compensate</td>
-<td headers="motivation" class="gt_row gt_left">Be because X tried. So I thought they deserve at least a little of the money.</td></tr>
-  </tbody>
-  
-  
-</table>
-</div>
 <div id="two-runs-of-the-same-model" class="section level2">
 <h2>Two runs of the same model</h2>
 <pre><code>##                   predicted_labels.y
@@ -968,7 +401,6 @@ height: 0px !important;
 ##               MDNM    5   15    6    7  645    6  684
 ##               OTR     8    1    5    1    5  190  210
 ##               Sum   423  351  650  673  694  207 2998</code></pre>
-</div>
 </div>
 <div id="reading-all-data" class="section level1">
 <h1>Reading all data</h1>
@@ -1021,7 +453,9 @@ has been censored in the</p>
 ##               MDNM   30    5   63   68  867   43 1076
 ##               OTR    29    2    7   14   15  228  295
 ##               Sum   160   93  665  725 1040  315 2998</code></pre>
-<p>## How much variation in few-shot example gpt-4o</p>
+</div>
+<div id="how-much-variation-in-few-shot-example-gpt-4o" class="section level2">
+<h2>How much variation in few-shot example gpt-4o</h2>
 <pre class="r"><code>alld_fewshot  &lt;- alld |&gt; 
   filter(str_starts(system_message_hash, &quot;4ba830&quot;))
 alld_fewshot  |&gt; group_by(predicted_label, timestamp) |&gt;
@@ -1047,32 +481,20 @@ alld_fewshot  |&gt; group_by(predicted_label, timestamp) |&gt;
 </div>
 <div id="summary-table-of-different-models" class="section level2">
 <h2>Summary table of different models</h2>
-<pre class="r"><code>d3_sum &lt;- cdf3s |&gt; group_by(predicted_labels) |&gt; summarize( `3.5 turbo FT` = n()/nrow(cdf3s))
-d7_sum &lt;- cdf7s |&gt; group_by(predicted_labels) |&gt; summarize( `4o OS` = n()/nrow(cdf7s))
-d5_sum &lt;- cdf5 |&gt; group_by(predicted_labels) |&gt; summarize(`3.5 turbo` = n()/nrow(cdf5))
-d2_sum &lt;- cdf2 |&gt; group_by(predicted_labels) |&gt; summarize(`4o` = n() / nrow(cdf2))
-tbl_df &lt;- list(d3_sum,d7_sum,d5_sum,d2_sum) |&gt; reduce(left_join, by=&quot;predicted_labels&quot;) |&gt; mutate(`predicted label` = factor(predicted_labels, levels=c(&quot;MDNM&quot;,&quot;MDM&quot;,&quot;L&quot;,&quot;F&quot;,&quot;E&quot;,&quot;OTR&quot;)))
-tvariants &lt;- tbl_df |&gt; dplyr::select(c(`predicted label`, `3.5 turbo FT`, `4o OS`, `3.5 turbo`, `4o`)) |&gt;
-  arrange(`predicted label`) |&gt;
-  gt::gt() |&gt; 
-  tab_spanner(label=&quot;With training data&quot;, columns=2:3) |&gt; 
-  tab_spanner(label=&quot;Without training data&quot;, columns=4:5) |&gt; 
-  fmt_number(decimals = 3)
-tvariants</code></pre>
-<div id="rswmnzhpgl" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#rswmnzhpgl table {
+<div id="vizhlcbgdn" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#vizhlcbgdn table {
 font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 -webkit-font-smoothing: antialiased;
 -moz-osx-font-smoothing: grayscale;
 }
-#rswmnzhpgl thead, #rswmnzhpgl tbody, #rswmnzhpgl tfoot, #rswmnzhpgl tr, #rswmnzhpgl td, #rswmnzhpgl th {
+#vizhlcbgdn thead, #vizhlcbgdn tbody, #vizhlcbgdn tfoot, #vizhlcbgdn tr, #vizhlcbgdn td, #vizhlcbgdn th {
 border-style: none;
 }
-#rswmnzhpgl p {
+#vizhlcbgdn p {
 margin: 0;
 padding: 0;
 }
-#rswmnzhpgl .gt_table {
+#vizhlcbgdn .gt_table {
 display: table;
 border-collapse: collapse;
 line-height: normal;
@@ -1097,11 +519,11 @@ border-left-style: none;
 border-left-width: 2px;
 border-left-color: #D3D3D3;
 }
-#rswmnzhpgl .gt_caption {
+#vizhlcbgdn .gt_caption {
 padding-top: 4px;
 padding-bottom: 4px;
 }
-#rswmnzhpgl .gt_title {
+#vizhlcbgdn .gt_title {
 color: #333333;
 font-size: 125%;
 font-weight: initial;
@@ -1112,7 +534,7 @@ padding-right: 5px;
 border-bottom-color: #FFFFFF;
 border-bottom-width: 0;
 }
-#rswmnzhpgl .gt_subtitle {
+#vizhlcbgdn .gt_subtitle {
 color: #333333;
 font-size: 85%;
 font-weight: initial;
@@ -1123,7 +545,7 @@ padding-right: 5px;
 border-top-color: #FFFFFF;
 border-top-width: 0;
 }
-#rswmnzhpgl .gt_heading {
+#vizhlcbgdn .gt_heading {
 background-color: #FFFFFF;
 text-align: center;
 border-bottom-color: #FFFFFF;
@@ -1134,12 +556,12 @@ border-right-style: none;
 border-right-width: 1px;
 border-right-color: #D3D3D3;
 }
-#rswmnzhpgl .gt_bottom_border {
+#vizhlcbgdn .gt_bottom_border {
 border-bottom-style: solid;
 border-bottom-width: 2px;
 border-bottom-color: #D3D3D3;
 }
-#rswmnzhpgl .gt_col_headings {
+#vizhlcbgdn .gt_col_headings {
 border-top-style: solid;
 border-top-width: 2px;
 border-top-color: #D3D3D3;
@@ -1153,7 +575,7 @@ border-right-style: none;
 border-right-width: 1px;
 border-right-color: #D3D3D3;
 }
-#rswmnzhpgl .gt_col_heading {
+#vizhlcbgdn .gt_col_heading {
 color: #333333;
 background-color: #FFFFFF;
 font-size: 100%;
@@ -1172,7 +594,7 @@ padding-left: 5px;
 padding-right: 5px;
 overflow-x: hidden;
 }
-#rswmnzhpgl .gt_column_spanner_outer {
+#vizhlcbgdn .gt_column_spanner_outer {
 color: #333333;
 background-color: #FFFFFF;
 font-size: 100%;
@@ -1183,13 +605,13 @@ padding-bottom: 0;
 padding-left: 4px;
 padding-right: 4px;
 }
-#rswmnzhpgl .gt_column_spanner_outer:first-child {
+#vizhlcbgdn .gt_column_spanner_outer:first-child {
 padding-left: 0;
 }
-#rswmnzhpgl .gt_column_spanner_outer:last-child {
+#vizhlcbgdn .gt_column_spanner_outer:last-child {
 padding-right: 0;
 }
-#rswmnzhpgl .gt_column_spanner {
+#vizhlcbgdn .gt_column_spanner {
 border-bottom-style: solid;
 border-bottom-width: 2px;
 border-bottom-color: #D3D3D3;
@@ -1200,10 +622,10 @@ overflow-x: hidden;
 display: inline-block;
 width: 100%;
 }
-#rswmnzhpgl .gt_spanner_row {
+#vizhlcbgdn .gt_spanner_row {
 border-bottom-style: hidden;
 }
-#rswmnzhpgl .gt_group_heading {
+#vizhlcbgdn .gt_group_heading {
 padding-top: 8px;
 padding-bottom: 8px;
 padding-left: 5px;
@@ -1228,7 +650,7 @@ border-right-color: #D3D3D3;
 vertical-align: middle;
 text-align: left;
 }
-#rswmnzhpgl .gt_empty_group_heading {
+#vizhlcbgdn .gt_empty_group_heading {
 padding: 0.5px;
 color: #333333;
 background-color: #FFFFFF;
@@ -1242,13 +664,13 @@ border-bottom-width: 2px;
 border-bottom-color: #D3D3D3;
 vertical-align: middle;
 }
-#rswmnzhpgl .gt_from_md > :first-child {
+#vizhlcbgdn .gt_from_md > :first-child {
 margin-top: 0;
 }
-#rswmnzhpgl .gt_from_md > :last-child {
+#vizhlcbgdn .gt_from_md > :last-child {
 margin-bottom: 0;
 }
-#rswmnzhpgl .gt_row {
+#vizhlcbgdn .gt_row {
 padding-top: 8px;
 padding-bottom: 8px;
 padding-left: 5px;
@@ -1266,7 +688,7 @@ border-right-color: #D3D3D3;
 vertical-align: middle;
 overflow-x: hidden;
 }
-#rswmnzhpgl .gt_stub {
+#vizhlcbgdn .gt_stub {
 color: #333333;
 background-color: #FFFFFF;
 font-size: 100%;
@@ -1278,7 +700,7 @@ border-right-color: #D3D3D3;
 padding-left: 5px;
 padding-right: 5px;
 }
-#rswmnzhpgl .gt_stub_row_group {
+#vizhlcbgdn .gt_stub_row_group {
 color: #333333;
 background-color: #FFFFFF;
 font-size: 100%;
@@ -1291,13 +713,13 @@ padding-left: 5px;
 padding-right: 5px;
 vertical-align: top;
 }
-#rswmnzhpgl .gt_row_group_first td {
+#vizhlcbgdn .gt_row_group_first td {
 border-top-width: 2px;
 }
-#rswmnzhpgl .gt_row_group_first th {
+#vizhlcbgdn .gt_row_group_first th {
 border-top-width: 2px;
 }
-#rswmnzhpgl .gt_summary_row {
+#vizhlcbgdn .gt_summary_row {
 color: #333333;
 background-color: #FFFFFF;
 text-transform: inherit;
@@ -1306,14 +728,14 @@ padding-bottom: 8px;
 padding-left: 5px;
 padding-right: 5px;
 }
-#rswmnzhpgl .gt_first_summary_row {
+#vizhlcbgdn .gt_first_summary_row {
 border-top-style: solid;
 border-top-color: #D3D3D3;
 }
-#rswmnzhpgl .gt_first_summary_row.thick {
+#vizhlcbgdn .gt_first_summary_row.thick {
 border-top-width: 2px;
 }
-#rswmnzhpgl .gt_last_summary_row {
+#vizhlcbgdn .gt_last_summary_row {
 padding-top: 8px;
 padding-bottom: 8px;
 padding-left: 5px;
@@ -1322,7 +744,7 @@ border-bottom-style: solid;
 border-bottom-width: 2px;
 border-bottom-color: #D3D3D3;
 }
-#rswmnzhpgl .gt_grand_summary_row {
+#vizhlcbgdn .gt_grand_summary_row {
 color: #333333;
 background-color: #FFFFFF;
 text-transform: inherit;
@@ -1331,7 +753,7 @@ padding-bottom: 8px;
 padding-left: 5px;
 padding-right: 5px;
 }
-#rswmnzhpgl .gt_first_grand_summary_row {
+#vizhlcbgdn .gt_first_grand_summary_row {
 padding-top: 8px;
 padding-bottom: 8px;
 padding-left: 5px;
@@ -1340,7 +762,7 @@ border-top-style: double;
 border-top-width: 6px;
 border-top-color: #D3D3D3;
 }
-#rswmnzhpgl .gt_last_grand_summary_row_top {
+#vizhlcbgdn .gt_last_grand_summary_row_top {
 padding-top: 8px;
 padding-bottom: 8px;
 padding-left: 5px;
@@ -1349,10 +771,10 @@ border-bottom-style: double;
 border-bottom-width: 6px;
 border-bottom-color: #D3D3D3;
 }
-#rswmnzhpgl .gt_striped {
+#vizhlcbgdn .gt_striped {
 background-color: rgba(128, 128, 128, 0.05);
 }
-#rswmnzhpgl .gt_table_body {
+#vizhlcbgdn .gt_table_body {
 border-top-style: solid;
 border-top-width: 2px;
 border-top-color: #D3D3D3;
@@ -1360,7 +782,7 @@ border-bottom-style: solid;
 border-bottom-width: 2px;
 border-bottom-color: #D3D3D3;
 }
-#rswmnzhpgl .gt_footnotes {
+#vizhlcbgdn .gt_footnotes {
 color: #333333;
 background-color: #FFFFFF;
 border-bottom-style: none;
@@ -1373,7 +795,7 @@ border-right-style: none;
 border-right-width: 2px;
 border-right-color: #D3D3D3;
 }
-#rswmnzhpgl .gt_footnote {
+#vizhlcbgdn .gt_footnote {
 margin: 0px;
 font-size: 90%;
 padding-top: 4px;
@@ -1381,7 +803,7 @@ padding-bottom: 4px;
 padding-left: 5px;
 padding-right: 5px;
 }
-#rswmnzhpgl .gt_sourcenotes {
+#vizhlcbgdn .gt_sourcenotes {
 color: #333333;
 background-color: #FFFFFF;
 border-bottom-style: none;
@@ -1394,64 +816,64 @@ border-right-style: none;
 border-right-width: 2px;
 border-right-color: #D3D3D3;
 }
-#rswmnzhpgl .gt_sourcenote {
+#vizhlcbgdn .gt_sourcenote {
 font-size: 90%;
 padding-top: 4px;
 padding-bottom: 4px;
 padding-left: 5px;
 padding-right: 5px;
 }
-#rswmnzhpgl .gt_left {
+#vizhlcbgdn .gt_left {
 text-align: left;
 }
-#rswmnzhpgl .gt_center {
+#vizhlcbgdn .gt_center {
 text-align: center;
 }
-#rswmnzhpgl .gt_right {
+#vizhlcbgdn .gt_right {
 text-align: right;
 font-variant-numeric: tabular-nums;
 }
-#rswmnzhpgl .gt_font_normal {
+#vizhlcbgdn .gt_font_normal {
 font-weight: normal;
 }
-#rswmnzhpgl .gt_font_bold {
+#vizhlcbgdn .gt_font_bold {
 font-weight: bold;
 }
-#rswmnzhpgl .gt_font_italic {
+#vizhlcbgdn .gt_font_italic {
 font-style: italic;
 }
-#rswmnzhpgl .gt_super {
+#vizhlcbgdn .gt_super {
 font-size: 65%;
 }
-#rswmnzhpgl .gt_footnote_marks {
+#vizhlcbgdn .gt_footnote_marks {
 font-size: 75%;
 vertical-align: 0.4em;
 position: initial;
 }
-#rswmnzhpgl .gt_asterisk {
+#vizhlcbgdn .gt_asterisk {
 font-size: 100%;
 vertical-align: 0;
 }
-#rswmnzhpgl .gt_indent_1 {
+#vizhlcbgdn .gt_indent_1 {
 text-indent: 5px;
 }
-#rswmnzhpgl .gt_indent_2 {
+#vizhlcbgdn .gt_indent_2 {
 text-indent: 10px;
 }
-#rswmnzhpgl .gt_indent_3 {
+#vizhlcbgdn .gt_indent_3 {
 text-indent: 15px;
 }
-#rswmnzhpgl .gt_indent_4 {
+#vizhlcbgdn .gt_indent_4 {
 text-indent: 20px;
 }
-#rswmnzhpgl .gt_indent_5 {
+#vizhlcbgdn .gt_indent_5 {
 text-indent: 25px;
 }
-#rswmnzhpgl .katex-display {
+#vizhlcbgdn .katex-display {
 display: inline-flex !important;
 margin-bottom: 0.75em !important;
 }
-#rswmnzhpgl div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+#vizhlcbgdn div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
 height: 0px !important;
 }
 </style>
@@ -1509,7 +931,6 @@ height: 0px !important;
   
 </table>
 </div>
-<pre class="r"><code>gtsave(tvariants, filename=&quot;tvariants.tex&quot;)</code></pre>
 </div>
 </div>
 

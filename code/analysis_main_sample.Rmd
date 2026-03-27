@@ -36,7 +36,7 @@ btable |> gtsave(here::here("tables","RN2018_balance.tex"))
 ```{r Share of earnings given to winner, echo=FALSE}
 tar_load(share_of_earnings_to_winner)
 share_of_earnings_to_winner
-ggsave("graphs/RN2018_hist_shareY_wta.pdf",width=16, height = 10, units = "cm")
+ggsave("graphs/MS31587_Figure-1.pdf",width=16, height = 10, units = "cm", device=cairo_pdf)
 ```
 
 
@@ -107,7 +107,7 @@ mmw2018 |> mutate(y1_10c_or_more_than_winner = (y1 >= y2+1),
 ```{r Winner-take-all vs luck, echo=FALSE}
 tar_load(winner_take_all_vs_luck)
 winner_take_all_vs_luck$left + winner_take_all_vs_luck$right + plot_annotation(tag_levels = "a") + plot_layout(guides = "collect")
-ggsave("graphs/RN2018_wta_luck.pdf", width=16, height = 10, units="cm")
+ggsave("graphs/MS31587_Figure-2.pdf", width=16, height = 10, units="cm", device=cairo_pdf)
 ```
 
 
@@ -116,7 +116,7 @@ ggsave("graphs/RN2018_wta_luck.pdf", width=16, height = 10, units="cm")
 ```{r Role of winning margin, echo=FALSE}
 tar_load(role_of_winning_margin_graph)
 role_of_winning_margin_graph$top / role_of_winning_margin_graph$bottom + plot_annotation(tag_levels = "a")
-ggsave("graphs/RN2018_flatness1_version2.pdf", width=16, height = 12, units="cm", device=cairo_pdf)
+ggsave("graphs/MS31587_Figure-3.pdf", width=16, height = 12, units="cm", device=cairo_pdf)
 ```
 
 
@@ -508,4 +508,24 @@ ta5 |> gtsave(here::here("tables","RN2018_hetmerit_margin.tex"))
 tar_load(mmw2018)
 median(mmw2018$age)
 ```
+
+# Minimal winning margin across the distribution of winner performance
+
+This analysis is restricted to the 400 observations in which $x_2 - x_1==1$. 
+A regression table approach:
+
+```{r winning_margin_over_distribution, echo=FALSE}
+tar_load(winning_margin_over_distribution_l)
+
+tX <- winning_margin_over_distribution_l$regs |>
+  modelsummary(coef_map=winning_margin_over_distribution_l$names,
+               stars = c('*' = .1, '**' = .05, '***'=.01),
+                                   gof_map = c("nobs", "r.squared"),
+                                   output = "gt") |>
+  tab_spanner(label="All to Winner", columns=2:4) |>
+  tab_spanner(label="Share to Winner", columns=5:7)
+tX
+tX |> gtsave(here::here("tables","RN2018_winning_margin_over_distribution.tex"))
+```
+
 

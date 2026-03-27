@@ -13,15 +13,17 @@ This repository provides data and code to replicate the analysis of the paper.
 
 
 ## Abstract
-This paper investigates fairness perceptions of extreme income inequality generated in winner-take-all competitions. 
-In two large-scale experimental studies with more than 7,000 participants from the general population of the U.S., we find that 
-extreme earnings inequality in winner-take-all competitions is commonly accepted, even when the winner outperforms the runner-up by 
-the smallest possible margin. The effect of the winning margin is modest, being small compared to the effect of moving from luck as 
-the source of inequality to winning by the smallest possible margin. Finally, we show that spectators' behavior in the experiment is closely related to their fairness views in broader societal and policy contexts---those 
-who implement less redistribution in the winner-take-all competition are less likely to support higher taxes on the top one percent. The 
-results advance our understanding of public attitudes toward fairness and redistributive policies in winner-take-all competitions marked 
-by extreme earnings inequality.
 
+This paper investigates fairness perceptions of extreme income inequality
+generated in winner-take-all competitions. Two large-scale experiments with
+more than 7,000 participants from the general population of the U.S. show
+that extreme earnings inequality is widely accepted, even when the winner
+only slightly outperforms the runner-up. The effect of the winning margin
+on inequality acceptance is modest compared to the effect of shifting the
+source of inequality from luck to winning by the smallest possible margin.
+The experimental choices are systematically associated with broader fairness
+attitudes and policy preferences, including support for higher taxation
+of top earners and redistributive economic policy.
 
 
 # 1. Data Availability and Provenance Statement
@@ -117,6 +119,9 @@ then converted to the JSONL format required by OpenAI's fine-tuning API.
 
 The classification output is included in this replication package as a frozen artifact.
 Replicators can verify all downstream R analyses without re-running the classification.
+Replicators need to unzip the `TIMESTAMPS_classified_motivations.zip` in the 
+`./classifications/` directory in order for the `classification/20250721_125758_classified_motivations.csv` 
+to be available.
 
 **Re-running the classification (optional):**
 
@@ -199,9 +204,9 @@ For the main paper:
 
 | Display item        | File name           | Vignette         | Chunk name       |
 |---------------------|---------------------|------------------|------------------|
-| Figure 1            | RN2018_hist_shareY_wta.pdf      |   analysis_main_sample.Rmd   |  Share of earnings given to winner |
-| Figure 2            | RN2018_wta_luck.pdf             |   analysis_main_sample.Rmd   |  Winner-take-all vs luck           |
-| Figure 3            | RN2018_flatness1_version2.pdf   |   analysis_main_sample.Rmd   |  Role of winning margin            |
+| Figure 1            | MS31587_Figure-1.pdf      |   analysis_main_sample.Rmd   |  Share of earnings given to winner |
+| Figure 2            | MS31587_Figure-2.pdf             |   analysis_main_sample.Rmd   |  Winner-take-all vs luck           |
+| Figure 3            | MS31587_Figure-3.pdf   |   analysis_main_sample.Rmd   |  Role of winning margin            |
 | Table 1             | RN2018_role_of_merit.tex        |   analysis_main_sample.Rmd   |  role of merit for inequality acceptance |
 | Table 2             | RN2018_role_of_margin.tex       |   analysis_main_sample.Rmd   |  role of margin for inequality acceptance |
 | Table 3             | RN2018_attitudes.tex            |   analysis_main_sample.Rmd   |  general attitudes                |
@@ -224,17 +229,18 @@ For the supplementary material:
 | Table A.1           | Not applicable: No data                |                             |                      |
 | Table A.2           | RN2018_balance.tex                     |   analysis_main_sample.Rmd   | balance |            
 | Table A.3           | RN2018_T_comparisons.tex               |   analysis_main_sample.Rmd   |  comparisons of treatments |
-| Table A.4           | RN2018_outcomes_on_background.tex      |   analysis_main_sample.Rmd   |  outcomes on background |
-| Table A.5           | RN2018_hetmerit_all.tex                |   analysis_main_sample.Rmd   |  heterogeneous merit all   |
-| Table A.6           | RN2018_hetmerit_share.tex              |   analysis_main_sample.Rmd   |  heterogeneous merit share |
-| Table A.7           | RN2018_hetmerit_margin.tex             |   analysis_main_sample.Rmd   |  heterogeneous merit margin|
-| Table A.8           | RN2018_attitudes_share.tex             |   analysis_main_sample.Rmd   |  general attitudes share   |
-| Table A.9           | P2025_balance.tex                      |   follow_up_2025.Rmd         | balance |
-| Table A.10          | P2025_ntab.tex                         |   follow_up_2025.Rmd         | by place in distribution |
-| Table A.11          | classification/tvariants.tex           |   classification/explore_classifications.Rmd | different models |
-| Table A.12          | P2025_outcomes_by_classification.tex   |   follow_up_2025.Rmd         | classifications and decisions |
-| Table A.13          | P2025_attitudes.tex                    |   follow_up_2025.Rmd         | general attitudes all |
-| Table A.14          | P2025_attitudes_share.tex              |   follow_up_2025.Rmd         | general attitudes share |
+| Table A.4           | RN2018_winning_margin_over_distribution.tex | analysis_main_sample.Rmd | winning_margin_over_distribution |
+| Table A.5           | RN2018_outcomes_on_background.tex      |   analysis_main_sample.Rmd   |  outcomes on background |
+| Table A.6           | RN2018_hetmerit_all.tex                |   analysis_main_sample.Rmd   |  heterogeneous merit all   |
+| Table A.7           | RN2018_hetmerit_share.tex              |   analysis_main_sample.Rmd   |  heterogeneous merit share |
+| Table A.8           | RN2018_hetmerit_margin.tex             |   analysis_main_sample.Rmd   |  heterogeneous merit margin|
+| Table A.9           | RN2018_attitudes_share.tex             |   analysis_main_sample.Rmd   |  general attitudes share   |
+| Table A.10           | P2025_balance.tex                      |   follow_up_2025.Rmd         | balance |
+| Table A.11          | P2025_ntab.tex                         |   follow_up_2025.Rmd         | by place in distribution |
+| Table A.12          | classification/tvariants.tex           |   classification/explore_classifications.Rmd | different models |
+| Table A.13          | P2025_outcomes_by_classification.tex   |   follow_up_2025.Rmd         | classifications and decisions |
+| Table A.14          | P2025_attitudes.tex                    |   follow_up_2025.Rmd         | general attitudes all |
+| Table A.15          | P2025_attitudes_share.tex              |   follow_up_2025.Rmd         | general attitudes share |
 | Table B.1           | RN2018_main_restricted.tex             |   restricted_sample_2018.Rmd |  main_restricted           |
 | Table B.2           | RN2018_hetmerit_all_restricted.tex     |   restricted_sample_2018.Rmd | heterogeneous merit all restricted |
 | Table B.3           | RN2018_hetmerit_share_restricted.tex   |   restricted_sample_2018.Rmd | heterogeneous merit share restricted |

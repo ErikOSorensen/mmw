@@ -16,10 +16,8 @@ I have experimented with two different GPT models from openAI, and have run 6 cl
 - gpt-3.5-turbo: Most advanced model we can access that allows training ("fine-tuning"). 
   - With fine-tuning, on the full set of categories that Bertil outlined. 10 runs.
   - Without fine-tuning, on the full set of categories.
-  - Without fine-tuning, on a restricted set of categories (bundling some up in "other")
 - gpt-4o: More advanced language, larger capacity, but we cannot train it.
   - Without fine-tuning, on the full set of categories.
-  - Without fine-tuning, on a restricted set of categories (bundling some up in "other"). 
   - Without fine-tuning, but with all training data used, full set of categories. 5 runs of this for evaluating role of noise in the gpt.
 
 
@@ -28,7 +26,6 @@ strip_stars_quotes <- function(x) {
   gsub('^[*"*]+|[*"*]+$', '', x)
 }
 
-cmdf <- read_csv("classified_motivations.csv")
 cdf1 <- read_csv("20250721_125504_classified_motivations.csv") |> mutate(predicted_label = strip_stars_quotes(predicted_label))
 cdf2 <- read_csv("20250721_125532_classified_motivations.csv") |> mutate(predicted_label = strip_stars_quotes(predicted_label))
 cdf3 <- read_csv("20250721_125758_classified_motivations.csv") |> mutate(predicted_label = strip_stars_quotes(predicted_label))
@@ -71,94 +68,6 @@ cdf6$predicted_labels <- short_names[cdf6$predicted_label]
 cdf7$predicted_labels <- short_names[cdf7$predicted_label] 
 
 ```
-
-## Older model (GPT-3.5-turbo) with and without using training data
-
-Here the rows (x) are classifications *using* the training data, and columns (y) use
-only the definitions of groups.
-
-```{r echo=FALSE, message=FALSE, warning=FALSE}
-cdf3 |> left_join(cdf4, by="id") |> 
-  with(table(predicted_labels.x, predicted_labels.y)) |> 
-  addmargins()
-```
-
-We see that there are many more "compensate" without 
-using the training data.
-
-
-## Newer model (GPT-4o) vs trained old model
-
-Here I use the full set of categories with the trained older model
-as x and the modern model with large set of categories as columns (y).
-
-```{r echo=FALSE, message=FALSE, warning=FALSE}
-cdf3 |> left_join(cdf1, by="id") |> 
-  with(table(predicted_labels.x, predicted_labels.y)) |> 
-  addmargins()
-```
-
-We see that the more modern model (4o) also allocate a lot of people to "compensate".
-
-
-## Newer model (GPT-4o) with small and large set of categories
-
-Let's try putting "compensate" and others in an "others" category.
-
-```{r echo=FALSE, message=FALSE, warning=FALSE}
-cdf2 |> left_join(cdf1, by="id") |> 
-  with(table(predicted_labels.x, predicted_labels.y)) |> 
-  addmargins()
-```
-
-The new model now has a much smaller set of "others" than the previous 
-compensate.
-
-
-## Restricting categories I
-
-Now, let's restrict the categories post classification on the trained older
-model (x) and compare this to the modern (non-trained) model using the smaller
-set of categories (y). 
-
-```{r echo=FALSE, message=FALSE, warning=FALSE}
-cdf3 |> mutate(predicted_labels = ifelse(predicted_labels %in% c("C","I","LG","MS","NR"),"OTR",predicted_labels)) |>
-  left_join(cdf2, by="id") |>
-  with(table(predicted_labels.x, predicted_labels.y)) |> 
-  addmargins()
-```
-
-The trained model has fewer "egalitarian" and "fairness". 
-
-
-## Restricting categories II
-
-Let's compare the old (x) and the new (y) model, no fine-tuning for either,
-on the restricted set of categories for both. 
-
-```{r echo=FALSE}
-cdf5 |> left_join(cdf2, by="id") |>
-  with(table(predicted_labels.x, predicted_labels.y)) |> 
-  addmargins()
-```
-
-We see that the old model creates many, many more egalitarians and not much
-agreement about the meritocrats.
-
-
-# What are the "Compensate" about?
-
-Here is a subset of people classified as "compensate" by the 4o (untrained) 
-model on the large set of categories:
-
-```{r echo=FALSE}
-cdf1 |> filter(predicted_labels=="C") |>
-  slice_sample(n=20) |>
-  dplyr::select(c("id","predicted_label","motivation")) |>
-  gt::gt()
-
-```
-
 
 ## Two runs of the same model
 
@@ -210,7 +119,7 @@ cdf3s |>
   addmargins()
 ```
  
- ## How much variation in few-shot example gpt-4o
+## How much variation in few-shot example gpt-4o
  
 ```{r}
 alld_fewshot  <- alld |> 

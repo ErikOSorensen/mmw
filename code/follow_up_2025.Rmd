@@ -28,6 +28,27 @@ btable
 btable |> gtsave(here::here("tables","P2025_balance.tex"))
 ```
 
+# Distribution of outcomes
+```{r}
+tar_load(mmw2025)
+mmw2025 |>   mutate(y_cat = if_else(y2==0,
+                                    "0",
+                                    as.character(cut(
+                                      y2/e2,
+                                      breaks = c(0, 0.5, Inf),
+                                      labels = c("(0,0.5)", "[0.5,1]"),
+                                      right = FALSE)
+                                      )),
+                    outcome = factor(y_cat, levels=c("0","(0,0.5)","[0.5,1]"))) |>
+  
+  count(treatment, outcome) %>%
+  group_by(treatment) %>%
+  mutate(share = n / sum(n)) %>%
+  ungroup() |> gt() |> fmt_number(decimals = 3, columns = 4)
+```
+
+
+
 # The winning margin
 
 The reference case we used for power calculations was columns 1 and 4 of
