@@ -74,6 +74,10 @@ The main source for the data is Harvard Dataverse at
 | classification/TIMESTAMPS_classified_motivations.zip | 20 LLM-made classifications | CC0 |
 | classification/motivations.csv | Collected motivations | CC0|
 
+A codebook of the three primary datasources is available as
+mmwinner_codebook.pdf and in DDI XML source form as
+mmwinner_codebook.xml.
+
 We are providing a zip files with the 20-LLM classifications we
 experimented with. These files are derived, and are provided as a
 single archive because they are intended for reproducibility and audit
@@ -224,6 +228,12 @@ that it can help to manually install renv, and then, in RStudio's terminal do:
 ```
 R --vanilla -q -e "renv::restore(prompt = FALSE)"
 ```
+
+The package `targets` is used for defining dependencies in the generation of
+output. Many of the calculations are done by targets using functions
+defined in `code/functions.R`, while the `code/*.Rmd` uses the calculated
+targets to display output. 
+
 # 4. List of Display Items and Programs
 
 All the Figures are output in the `graphs` subdirectory, while latex versions of
