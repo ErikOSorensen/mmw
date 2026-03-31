@@ -1,0 +1,2519 @@
+<?xml version='1.0' encoding='utf-8'?>
+<codeBook xmlns="http://www.icpsr.umich.edu/DDI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="ddi:codebook:2_5 http://www.ddialliance.org/Specification/DDI-Codebook/2.5/XMLSchema/codebook.xsd" version="2.5">
+  <docDscr>
+    <citation>
+      <titlStmt>
+        <titl>Fairness in Winner-Take-All Competitions</titl>
+      </titlStmt>
+    </citation>
+  </docDscr>
+  <stdyDscr ID="S1">
+    <citation>
+      <titlStmt>
+        <titl>Fairness in Winner-Take-All Competitions</titl>
+      </titlStmt>
+      <serStmt>
+        <serName>mmwinner</serName>
+      </serStmt>
+      <IDNo agency="FAIR - Centre for Experimental Research on Fairness, Inequality and Rationality (NHH Norwegian School of Economics)">mmwinner</IDNo>
+      <rspStmt>
+        <AuthEnty affiliation="FAIR - Centre for Experimental Research on Fairness, Inequality and Rationality (NHH Norwegian School of Economics)">Björn Bartling (University of Zurich)</AuthEnty>
+        <AuthEnty affiliation="FAIR - Centre for Experimental Research on Fairness, Inequality and Rationality (NHH Norwegian School of Economics)">Alexander W. Cappelen (NHH Norwegian School of Economics)</AuthEnty>
+        <AuthEnty affiliation="FAIR - Centre for Experimental Research on Fairness, Inequality and Rationality (NHH Norwegian School of Economics)">Mathias Ekström (NHH Norwegian School of Economics)</AuthEnty>
+        <AuthEnty affiliation="FAIR - Centre for Experimental Research on Fairness, Inequality and Rationality (NHH Norwegian School of Economics)">Erik Ø. Sørensen (NHH Norwegian School of Economics)</AuthEnty>
+        <AuthEnty affiliation="FAIR - Centre for Experimental Research on Fairness, Inequality and Rationality (NHH Norwegian School of Economics)">Bertil Tungodden (NHH Norwegian School of Economics)</AuthEnty>
+        <othId role="Project Manager">Bertil Tungodden (NHH Norwegian School of Economics)</othId>
+      </rspStmt>
+      <prodStmt>
+        <producer affiliation="FAIR - Centre for Experimental Research on Fairness, Inequality and Rationality (NHH Norwegian School of Economics)">FAIR - Centre for Experimental Research on Fairness, Inequality and Rationality (NHH Norwegian School of Economics)</producer>
+        <fundAg>Centre of Excellence funding from the Research Council of Norway (2017–2026)</fundAg>
+        <prodDate date="2026-03-31T11:08:36.683167">2026-03-31</prodDate>
+      </prodStmt>
+      <distStmt>
+        <distrbtr>FAIR - Centre for Experimental Research on Fairness, Inequality and Rationality (NHH Norwegian School of Economics)</distrbtr>
+      </distStmt>
+    </citation>
+    <stdyInfo>
+      <subject>
+        <keyword>Winner-take-all competitions</keyword>
+        <keyword>winning margin</keyword>
+        <keyword>merit</keyword>
+        <keyword>fairness</keyword>
+        <keyword>income inequality</keyword>
+        <keyword>redistributive policies</keyword>
+      </subject>
+      <abstract>
+        <p>This paper investigates fairness perceptions of extreme income inequality generated in winner-take-all competitions. Two large-scale experiments with more than 7,000 participants from the general population of the U.S. show that extreme earnings inequality is widely accepted, even when the winner only slightly outperforms the runner-up. The effect of the winning margin on inequality acceptance is modest compared to the effect of shifting the source of inequality from luck to winning by the smallest possible margin. The experimental choices are systematically associated with broader fairness attitudes and policy preferences, including support for higher taxation of top earners and redistributive economic policy.</p>
+      </abstract>
+      <sumDscr>
+        <geogCover>United States</geogCover>
+        <anlyUnit>Individual participant (spectator)</anlyUnit>
+        <universe>General population of the United States</universe>
+      </sumDscr>
+    </stdyInfo>
+    <method>
+      <dataColl>
+        <timeMeth>2018–2025</timeMeth>
+        <sampProc>Three separate experiments totalling more than 7,000 participants. (1) mmwinner: 349 participants recruited from the student population at NHH Norwegian School of Economics, 2014. (2) mmwinner_RN2018: 4,000 participants from a representative national sample, 2018. (3) mmwinner_Prolific2025: 3,005 participants recruited online via Prolific, 2025.</sampProc>
+        <collMode>Incentivized spectator experiment across three studies using different recruitment modes. (1) Laboratory sessions with in-person participants; (2) Representative national online survey panel; (3) Online experiment via Prolific. In all studies, two workers competed in a problem-solving task; spectators observed performance and earnings and made allocation decisions with actual monetary stakes.</collMode>
+      </dataColl>
+    </method>
+    <othrStdyMat>
+      <relMat>Replication code and data<citation>
+          <titlStmt>
+            <titl>GitHub Repository</titl>
+          </titlStmt>
+          <holdings URI="https://github.com/ErikOSorensen/mmw" />
+        </citation>
+      </relMat>
+    </othrStdyMat>
+    <notes subject="Active">False</notes>
+  </stdyDscr>
+  <fileDscr ID="mmwinner">
+    <fileTxt>
+      <fileName>mmwinner.dta</fileName>
+      <dimensns>
+        <caseQnty>349</caseQnty>
+      </dimensns>
+    </fileTxt>
+    <notes subject="StudyName">mmwinner</notes>
+  </fileDscr>
+  <fileDscr ID="mmwinner_RN2018">
+    <fileTxt>
+      <fileName>mmwinner_RN2018.dta</fileName>
+      <dimensns>
+        <caseQnty>4000</caseQnty>
+      </dimensns>
+    </fileTxt>
+    <notes subject="StudyName">mmwinner_RN2018</notes>
+  </fileDscr>
+  <fileDscr ID="mmwinner_Prolific2025">
+    <fileTxt>
+      <fileName>mmwinner_Prolific2025.dta</fileName>
+      <dimensns>
+        <caseQnty>3005</caseQnty>
+      </dimensns>
+    </fileTxt>
+    <notes subject="StudyName">mmwinner_Prolific2025</notes>
+  </fileDscr>
+  <dataDscr>
+    <var ID="mmwinner_id" name="id" intrvl="contin" files="mmwinner">
+      <labl>Id in experimentd</labl>
+      <qstn>
+        <litQ>Id in experimentd</litQ>
+      </qstn>
+      <sumStat type="vald">349</sumStat>
+      <sumStat type="invd">0</sumStat>
+      <sumStat type="min">1.0</sumStat>
+      <sumStat type="max">353.0</sumStat>
+      <sumStat type="mean">177.60744985673352</sumStat>
+      <sumStat type="stdev">102.23515293706117</sumStat>
+      <notes type="graphic">charts/id_hist.png</notes>
+    </var>
+    <var ID="mmwinner_sessionid" name="sessionid" intrvl="discrete" files="mmwinner">
+      <qstn>
+        <litQ>sessionid</litQ>
+      </qstn>
+      <catgry>
+        <catValu>CELBZ</catValu>
+        <catStat type="freq">69</catStat>
+      </catgry>
+      <catgry>
+        <catValu>EXNFO</catValu>
+        <catStat type="freq">70</catStat>
+      </catgry>
+      <catgry>
+        <catValu>JMTHA</catValu>
+        <catStat type="freq">70</catStat>
+      </catgry>
+      <catgry>
+        <catValu>LMDOH</catValu>
+        <catStat type="freq">70</catStat>
+      </catgry>
+      <catgry>
+        <catValu>YGNEO</catValu>
+        <catStat type="freq">70</catStat>
+      </catgry>
+      <sumStat type="vald">349</sumStat>
+      <sumStat type="invd">0</sumStat>
+    </var>
+    <var ID="mmwinner_T" name="T" intrvl="nominal" files="mmwinner">
+      <labl>Treatment</labl>
+      <qstn>
+        <litQ>Treatment</litQ>
+      </qstn>
+      <catgry>
+        <catValu>1</catValu>
+        <labl>1:full info</labl>
+        <catStat type="freq">100</catStat>
+      </catgry>
+      <catgry>
+        <catValu>2</catValu>
+        <labl>2:choice</labl>
+        <catStat type="freq">100</catStat>
+      </catgry>
+      <catgry>
+        <catValu>3</catValu>
+        <labl>3:no info</labl>
+        <catStat type="freq">99</catStat>
+      </catgry>
+      <catgry>
+        <catValu>4</catValu>
+        <labl>4:luck</labl>
+        <catStat type="freq">50</catStat>
+      </catgry>
+      <sumStat type="vald">349</sumStat>
+      <sumStat type="invd">0</sumStat>
+      <sumStat type="min">1.0</sumStat>
+      <sumStat type="max">4.0</sumStat>
+      <sumStat type="mean">2.2836676217765044</sumStat>
+      <sumStat type="stdev">1.0324016546691412</sumStat>
+    </var>
+    <var ID="mmwinner_sex" name="sex" intrvl="nominal" files="mmwinner">
+      <labl>Gender</labl>
+      <qstn>
+        <litQ>Gender</litQ>
+      </qstn>
+      <catgry>
+        <catValu>1</catValu>
+        <labl>1:male</labl>
+        <catStat type="freq">205</catStat>
+      </catgry>
+      <catgry>
+        <catValu>2</catValu>
+        <labl>2:female</labl>
+        <catStat type="freq">144</catStat>
+      </catgry>
+      <sumStat type="vald">349</sumStat>
+      <sumStat type="invd">0</sumStat>
+      <sumStat type="min">1.0</sumStat>
+      <sumStat type="max">2.0</sumStat>
+      <sumStat type="mean">1.4126074498567336</sumStat>
+      <sumStat type="stdev">0.49301012795497334</sumStat>
+    </var>
+    <var ID="mmwinner_age" name="age" intrvl="contin" files="mmwinner">
+      <labl>Age (in years)</labl>
+      <qstn>
+        <litQ>Age (in years)</litQ>
+      </qstn>
+      <catgry>
+        <catValu>18.939393997192383</catValu>
+        <catStat type="freq">33</catStat>
+      </catgry>
+      <catgry>
+        <catValu>20</catValu>
+        <catStat type="freq">61</catStat>
+      </catgry>
+      <catgry>
+        <catValu>21</catValu>
+        <catStat type="freq">70</catStat>
+      </catgry>
+      <catgry>
+        <catValu>22</catValu>
+        <catStat type="freq">61</catStat>
+      </catgry>
+      <catgry>
+        <catValu>23</catValu>
+        <catStat type="freq">52</catStat>
+      </catgry>
+      <catgry>
+        <catValu>25.33333396911621</catValu>
+        <catStat type="freq">72</catStat>
+      </catgry>
+      <sumStat type="vald">349</sumStat>
+      <sumStat type="invd">0</sumStat>
+      <sumStat type="min">18.939393997192383</sumStat>
+      <sumStat type="max">25.33333396911621</sumStat>
+      <sumStat type="mean">21.997134807116666</sumStat>
+      <sumStat type="stdev">2.05884595545456</sumStat>
+    </var>
+    <var ID="mmwinner_political" name="political" intrvl="nominal" files="mmwinner">
+      <labl>Would you describe yourself as politically on the 'left-wing' or on the 'right-w</labl>
+      <qstn>
+        <litQ>Would you describe yourself as politically on the 'left-wing' or on the 'right-w</litQ>
+      </qstn>
+      <catgry>
+        <catValu>1</catValu>
+        <labl>1:very left-wing</labl>
+        <catStat type="freq">4</catStat>
+      </catgry>
+      <catgry>
+        <catValu>2</catValu>
+        <labl>2:somewhat left-wing</labl>
+        <catStat type="freq">56</catStat>
+      </catgry>
+      <catgry>
+        <catValu>3</catValu>
+        <labl>3:neutral</labl>
+        <catStat type="freq">76</catStat>
+      </catgry>
+      <catgry>
+        <catValu>4</catValu>
+        <labl>4:somewhat right-wing</labl>
+        <catStat type="freq">187</catStat>
+      </catgry>
+      <catgry>
+        <catValu>5</catValu>
+        <labl>5:very right-wing</labl>
+        <catStat type="freq">26</catStat>
+      </catgry>
+      <sumStat type="vald">349</sumStat>
+      <sumStat type="invd">0</sumStat>
+      <sumStat type="min">1.0</sumStat>
+      <sumStat type="max">5.0</sumStat>
+      <sumStat type="mean">3.501432664756447</sumStat>
+      <sumStat type="stdev">0.8893515713348095</sumStat>
+    </var>
+    <var ID="mmwinner_x1" name="x1" intrvl="contin" files="mmwinner">
+      <labl>Problems solved by X</labl>
+      <qstn>
+        <litQ>Problems solved by X</litQ>
+      </qstn>
+      <catgry>
+        <catValu>0</catValu>
+        <catStat type="freq">2</catStat>
+      </catgry>
+      <catgry>
+        <catValu>3</catValu>
+        <catStat type="freq">2</catStat>
+      </catgry>
+      <catgry>
+        <catValu>4</catValu>
+        <catStat type="freq">1</catStat>
+      </catgry>
+      <catgry>
+        <catValu>5</catValu>
+        <catStat type="freq">3</catStat>
+      </catgry>
+      <catgry>
+        <catValu>6</catValu>
+        <catStat type="freq">5</catStat>
+      </catgry>
+      <catgry>
+        <catValu>7</catValu>
+        <catStat type="freq">6</catStat>
+      </catgry>
+      <catgry>
+        <catValu>8</catValu>
+        <catStat type="freq">9</catStat>
+      </catgry>
+      <catgry>
+        <catValu>9</catValu>
+        <catStat type="freq">12</catStat>
+      </catgry>
+      <catgry>
+        <catValu>10</catValu>
+        <catStat type="freq">15</catStat>
+      </catgry>
+      <catgry>
+        <catValu>11</catValu>
+        <catStat type="freq">19</catStat>
+      </catgry>
+      <catgry>
+        <catValu>12</catValu>
+        <catStat type="freq">18</catStat>
+      </catgry>
+      <catgry>
+        <catValu>13</catValu>
+        <catStat type="freq">27</catStat>
+      </catgry>
+      <catgry>
+        <catValu>14</catValu>
+        <catStat type="freq">43</catStat>
+      </catgry>
+      <catgry>
+        <catValu>15</catValu>
+        <catStat type="freq">29</catStat>
+      </catgry>
+      <catgry>
+        <catValu>16</catValu>
+        <catStat type="freq">39</catStat>
+      </catgry>
+      <catgry>
+        <catValu>17</catValu>
+        <catStat type="freq">31</catStat>
+      </catgry>
+      <catgry>
+        <catValu>18</catValu>
+        <catStat type="freq">30</catStat>
+      </catgry>
+      <catgry>
+        <catValu>19</catValu>
+        <catStat type="freq">21</catStat>
+      </catgry>
+      <catgry>
+        <catValu>20</catValu>
+        <catStat type="freq">16</catStat>
+      </catgry>
+      <catgry>
+        <catValu>21</catValu>
+        <catStat type="freq">9</catStat>
+      </catgry>
+      <catgry>
+        <catValu>22</catValu>
+        <catStat type="freq">9</catStat>
+      </catgry>
+      <catgry>
+        <catValu>23</catValu>
+        <catStat type="freq">2</catStat>
+      </catgry>
+      <catgry>
+        <catValu>24</catValu>
+        <catStat type="freq">1</catStat>
+      </catgry>
+      <sumStat type="vald">349</sumStat>
+      <sumStat type="invd">0</sumStat>
+      <sumStat type="min">0.0</sumStat>
+      <sumStat type="max">24.0</sumStat>
+      <sumStat type="mean">14.633237822349571</sumStat>
+      <sumStat type="stdev">4.120684590923662</sumStat>
+    </var>
+    <var ID="mmwinner_x2" name="x2" intrvl="contin" files="mmwinner">
+      <labl>Problems solved by Y</labl>
+      <qstn>
+        <litQ>Problems solved by Y</litQ>
+      </qstn>
+      <catgry>
+        <catValu>0</catValu>
+        <catStat type="freq">1</catStat>
+      </catgry>
+      <catgry>
+        <catValu>5</catValu>
+        <catStat type="freq">1</catStat>
+      </catgry>
+      <catgry>
+        <catValu>6</catValu>
+        <catStat type="freq">1</catStat>
+      </catgry>
+      <catgry>
+        <catValu>7</catValu>
+        <catStat type="freq">1</catStat>
+      </catgry>
+      <catgry>
+        <catValu>8</catValu>
+        <catStat type="freq">3</catStat>
+      </catgry>
+      <catgry>
+        <catValu>9</catValu>
+        <catStat type="freq">2</catStat>
+      </catgry>
+      <catgry>
+        <catValu>10</catValu>
+        <catStat type="freq">2</catStat>
+      </catgry>
+      <catgry>
+        <catValu>11</catValu>
+        <catStat type="freq">2</catStat>
+      </catgry>
+      <catgry>
+        <catValu>12</catValu>
+        <catStat type="freq">9</catStat>
+      </catgry>
+      <catgry>
+        <catValu>13</catValu>
+        <catStat type="freq">6</catStat>
+      </catgry>
+      <catgry>
+        <catValu>14</catValu>
+        <catStat type="freq">17</catStat>
+      </catgry>
+      <catgry>
+        <catValu>15</catValu>
+        <catStat type="freq">25</catStat>
+      </catgry>
+      <catgry>
+        <catValu>16</catValu>
+        <catStat type="freq">25</catStat>
+      </catgry>
+      <catgry>
+        <catValu>17</catValu>
+        <catStat type="freq">28</catStat>
+      </catgry>
+      <catgry>
+        <catValu>18</catValu>
+        <catStat type="freq">40</catStat>
+      </catgry>
+      <catgry>
+        <catValu>19</catValu>
+        <catStat type="freq">38</catStat>
+      </catgry>
+      <catgry>
+        <catValu>20</catValu>
+        <catStat type="freq">40</catStat>
+      </catgry>
+      <catgry>
+        <catValu>21</catValu>
+        <catStat type="freq">39</catStat>
+      </catgry>
+      <catgry>
+        <catValu>22</catValu>
+        <catStat type="freq">32</catStat>
+      </catgry>
+      <catgry>
+        <catValu>23</catValu>
+        <catStat type="freq">16</catStat>
+      </catgry>
+      <catgry>
+        <catValu>24</catValu>
+        <catStat type="freq">21</catStat>
+      </catgry>
+      <sumStat type="vald">349</sumStat>
+      <sumStat type="invd">0</sumStat>
+      <sumStat type="min">0.0</sumStat>
+      <sumStat type="max">24.0</sumStat>
+      <sumStat type="mean">18.378223495702006</sumStat>
+      <sumStat type="stdev">3.6797342242885405</sumStat>
+    </var>
+    <var ID="mmwinner_e1" name="e1" intrvl="contin" files="mmwinner">
+      <labl>Earnings by X</labl>
+      <qstn>
+        <litQ>Earnings by X</litQ>
+      </qstn>
+      <catgry>
+        <catValu>0</catValu>
+        <catStat type="freq">308</catStat>
+      </catgry>
+      <catgry>
+        <catValu>1.2000000476837158</catValu>
+        <catStat type="freq">2</catStat>
+      </catgry>
+      <catgry>
+        <catValu>1.7999999523162842</catValu>
+        <catStat type="freq">2</catStat>
+      </catgry>
+      <catgry>
+        <catValu>1.9500000476837158</catValu>
+        <catStat type="freq">2</catStat>
+      </catgry>
+      <catgry>
+        <catValu>2.0999999046325684</catValu>
+        <catStat type="freq">2</catStat>
+      </catgry>
+      <catgry>
+        <catValu>2.25</catValu>
+        <catStat type="freq">3</catStat>
+      </catgry>
+      <catgry>
+        <catValu>2.4000000953674316</catValu>
+        <catStat type="freq">5</catStat>
+      </catgry>
+      <catgry>
+        <catValu>2.549999952316284</catValu>
+        <catStat type="freq">7</catStat>
+      </catgry>
+      <catgry>
+        <catValu>2.700000047683716</catValu>
+        <catStat type="freq">3</catStat>
+      </catgry>
+      <catgry>
+        <catValu>2.8499999046325684</catValu>
+        <catStat type="freq">5</catStat>
+      </catgry>
+      <catgry>
+        <catValu>3</catValu>
+        <catStat type="freq">5</catStat>
+      </catgry>
+      <catgry>
+        <catValu>3.1500000953674316</catValu>
+        <catStat type="freq">3</catStat>
+      </catgry>
+      <catgry>
+        <catValu>3.299999952316284</catValu>
+        <catStat type="freq">1</catStat>
+      </catgry>
+      <catgry>
+        <catValu>3.5999999046325684</catValu>
+        <catStat type="freq">1</catStat>
+      </catgry>
+      <sumStat type="vald">349</sumStat>
+      <sumStat type="invd">0</sumStat>
+      <sumStat type="min">0.0</sumStat>
+      <sumStat type="max">3.5999999046325684</sumStat>
+      <sumStat type="mean">0.29914040073624315</sumStat>
+      <sumStat type="stdev">0.839334268732021</sumStat>
+    </var>
+    <var ID="mmwinner_e2" name="e2" intrvl="contin" files="mmwinner">
+      <labl>Earnings by Y</labl>
+      <qstn>
+        <litQ>Earnings by Y</litQ>
+      </qstn>
+      <catgry>
+        <catValu>0.8999999761581421</catValu>
+        <catStat type="freq">1</catStat>
+      </catgry>
+      <catgry>
+        <catValu>1.2000000476837158</catValu>
+        <catStat type="freq">2</catStat>
+      </catgry>
+      <catgry>
+        <catValu>1.350000023841858</catValu>
+        <catStat type="freq">2</catStat>
+      </catgry>
+      <catgry>
+        <catValu>1.649999976158142</catValu>
+        <catStat type="freq">1</catStat>
+      </catgry>
+      <catgry>
+        <catValu>1.7999999523162842</catValu>
+        <catStat type="freq">8</catStat>
+      </catgry>
+      <catgry>
+        <catValu>1.9500000476837158</catValu>
+        <catStat type="freq">5</catStat>
+      </catgry>
+      <catgry>
+        <catValu>2.0999999046325684</catValu>
+        <catStat type="freq">13</catStat>
+      </catgry>
+      <catgry>
+        <catValu>2.25</catValu>
+        <catStat type="freq">19</catStat>
+      </catgry>
+      <catgry>
+        <catValu>2.4000000953674316</catValu>
+        <catStat type="freq">25</catStat>
+      </catgry>
+      <catgry>
+        <catValu>2.549999952316284</catValu>
+        <catStat type="freq">33</catStat>
+      </catgry>
+      <catgry>
+        <catValu>2.700000047683716</catValu>
+        <catStat type="freq">37</catStat>
+      </catgry>
+      <catgry>
+        <catValu>2.8499999046325684</catValu>
+        <catStat type="freq">43</catStat>
+      </catgry>
+      <catgry>
+        <catValu>3</catValu>
+        <catStat type="freq">39</catStat>
+      </catgry>
+      <catgry>
+        <catValu>3.1500000953674316</catValu>
+        <catStat type="freq">47</catStat>
+      </catgry>
+      <catgry>
+        <catValu>3.299999952316284</catValu>
+        <catStat type="freq">30</catStat>
+      </catgry>
+      <catgry>
+        <catValu>3.450000047683716</catValu>
+        <catStat type="freq">17</catStat>
+      </catgry>
+      <catgry>
+        <catValu>3.5999999046325684</catValu>
+        <catStat type="freq">27</catStat>
+      </catgry>
+      <sumStat type="vald">349</sumStat>
+      <sumStat type="invd">0</sumStat>
+      <sumStat type="min">0.8999999761581421</sumStat>
+      <sumStat type="max">3.5999999046325684</sumStat>
+      <sumStat type="mean">2.831948419696622</sumStat>
+      <sumStat type="stdev">0.4896963453970326</sumStat>
+    </var>
+    <var ID="mmwinner_y1" name="y1" intrvl="contin" files="mmwinner">
+      <labl>Allocation to X</labl>
+      <qstn>
+        <litQ>Allocation to X</litQ>
+      </qstn>
+      <sumStat type="vald">349</sumStat>
+      <sumStat type="invd">0</sumStat>
+      <sumStat type="min">0.0</sumStat>
+      <sumStat type="max">6.150000095367432</sumStat>
+      <sumStat type="mean">0.9067478515527994</sumStat>
+      <sumStat type="stdev">0.9737535275865008</sumStat>
+      <notes type="graphic">charts/y1_hist.png</notes>
+    </var>
+    <var ID="mmwinner_y2" name="y2" intrvl="contin" files="mmwinner">
+      <labl>Allocation to Y</labl>
+      <qstn>
+        <litQ>Allocation to Y</litQ>
+      </qstn>
+      <sumStat type="vald">349</sumStat>
+      <sumStat type="invd">0</sumStat>
+      <sumStat type="min">0.0</sumStat>
+      <sumStat type="max">3.5999999046325684</sumStat>
+      <sumStat type="mean">2.224340968538492</sumStat>
+      <sumStat type="stdev">0.7386114240410503</sumStat>
+      <notes type="graphic">charts/y2_hist.png</notes>
+    </var>
+    <var ID="mmwinner_shareX" name="shareX" intrvl="contin" files="mmwinner">
+      <labl>Share allocated to X</labl>
+      <qstn>
+        <litQ>Share allocated to X</litQ>
+      </qstn>
+      <sumStat type="vald">349</sumStat>
+      <sumStat type="invd">0</sumStat>
+      <sumStat type="min">0.0</sumStat>
+      <sumStat type="max">1.0</sumStat>
+      <sumStat type="mean">0.2651606703545354</sumStat>
+      <sumStat type="stdev">0.23256328500652643</sumStat>
+      <notes type="graphic">charts/shareX_hist.png</notes>
+    </var>
+    <var ID="mmwinner_RN2018_id" name="id" intrvl="contin" files="mmwinner_RN2018">
+      <qstn>
+        <litQ>id</litQ>
+      </qstn>
+      <sumStat type="vald">4000</sumStat>
+      <sumStat type="invd">0</sumStat>
+      <sumStat type="min">1.0</sumStat>
+      <sumStat type="max">13941.0</sumStat>
+      <sumStat type="mean">3984.48425</sumStat>
+      <sumStat type="stdev">3540.188280941858</sumStat>
+      <notes type="graphic">charts/id_hist.png</notes>
+    </var>
+    <var ID="mmwinner_RN2018_treatment" name="treatment" intrvl="discrete" files="mmwinner_RN2018">
+      <qstn>
+        <litQ>treatment</litQ>
+      </qstn>
+      <catgry>
+        <catValu>Base</catValu>
+        <catStat type="freq">1000</catStat>
+      </catgry>
+      <catgry>
+        <catValu>WTA</catValu>
+        <catStat type="freq">1000</catStat>
+      </catgry>
+      <catgry>
+        <catValu>WTA: No Choice</catValu>
+        <catStat type="freq">1000</catStat>
+      </catgry>
+      <catgry>
+        <catValu>WTA: No Exp</catValu>
+        <catStat type="freq">1000</catStat>
+      </catgry>
+      <sumStat type="vald">4000</sumStat>
+      <sumStat type="invd">0</sumStat>
+    </var>
+    <var ID="mmwinner_RN2018_treatment_affirmative_action" name="treatment_affirmative_action" intrvl="nominal" files="mmwinner_RN2018">
+      <qstn>
+        <litQ>treatment_affirmative_action</litQ>
+      </qstn>
+      <catgry>
+        <catValu>0</catValu>
+        <labl>Control</labl>
+        <catStat type="freq">1978</catStat>
+      </catgry>
+      <catgry>
+        <catValu>1</catValu>
+        <labl>Democrat/republican framing</labl>
+        <catStat type="freq">2022</catStat>
+      </catgry>
+      <sumStat type="vald">4000</sumStat>
+      <sumStat type="invd">0</sumStat>
+      <sumStat type="min">0.0</sumStat>
+      <sumStat type="max">1.0</sumStat>
+      <sumStat type="mean">0.5055</sumStat>
+      <sumStat type="stdev">0.5000322570240006</sumStat>
+    </var>
+    <var ID="mmwinner_RN2018_age" name="age" intrvl="contin" files="mmwinner_RN2018">
+      <labl>Age (in years)</labl>
+      <qstn>
+        <litQ>Age (in years)</litQ>
+      </qstn>
+      <sumStat type="vald">4000</sumStat>
+      <sumStat type="invd">0</sumStat>
+      <sumStat type="min">18.0</sumStat>
+      <sumStat type="max">101.0</sumStat>
+      <sumStat type="mean">46.56025</sumStat>
+      <sumStat type="stdev">17.168155297718553</sumStat>
+      <notes type="graphic">charts/age_hist.png</notes>
+    </var>
+    <var ID="mmwinner_RN2018_sex" name="sex" intrvl="nominal" files="mmwinner_RN2018">
+      <qstn>
+        <litQ>sex</litQ>
+      </qstn>
+      <catgry>
+        <catValu>1</catValu>
+        <labl>Male</labl>
+        <catStat type="freq">1944</catStat>
+      </catgry>
+      <catgry>
+        <catValu>2</catValu>
+        <labl>Female</labl>
+        <catStat type="freq">2056</catStat>
+      </catgry>
+      <sumStat type="vald">4000</sumStat>
+      <sumStat type="invd">0</sumStat>
+      <sumStat type="min">1.0</sumStat>
+      <sumStat type="max">2.0</sumStat>
+      <sumStat type="mean">1.514</sumStat>
+      <sumStat type="stdev">0.49986644878072606</sumStat>
+    </var>
+    <var ID="mmwinner_RN2018_area" name="area" intrvl="discrete" files="mmwinner_RN2018">
+      <labl>Census area</labl>
+      <qstn>
+        <litQ>Census area</litQ>
+      </qstn>
+      <catgry>
+        <catValu>Midwest</catValu>
+        <catStat type="freq">840</catStat>
+      </catgry>
+      <catgry>
+        <catValu>Northeast</catValu>
+        <catStat type="freq">712</catStat>
+      </catgry>
+      <catgry>
+        <catValu>South</catValu>
+        <catStat type="freq">1508</catStat>
+      </catgry>
+      <catgry>
+        <catValu>West</catValu>
+        <catStat type="freq">940</catStat>
+      </catgry>
+      <sumStat type="vald">4000</sumStat>
+      <sumStat type="invd">0</sumStat>
+    </var>
+    <var ID="mmwinner_RN2018_x1" name="x1" intrvl="discrete" files="mmwinner_RN2018">
+      <labl>Performance of 1</labl>
+      <qstn>
+        <litQ>Performance of 1</litQ>
+      </qstn>
+      <catgry>
+        <catValu>1</catValu>
+        <catStat type="freq">5</catStat>
+      </catgry>
+      <catgry>
+        <catValu>2</catValu>
+        <catStat type="freq">25</catStat>
+      </catgry>
+      <catgry>
+        <catValu>3</catValu>
+        <catStat type="freq">35</catStat>
+      </catgry>
+      <catgry>
+        <catValu>4</catValu>
+        <catStat type="freq">70</catStat>
+      </catgry>
+      <catgry>
+        <catValu>5</catValu>
+        <catStat type="freq">95</catStat>
+      </catgry>
+      <catgry>
+        <catValu>6</catValu>
+        <catStat type="freq">155</catStat>
+      </catgry>
+      <catgry>
+        <catValu>7</catValu>
+        <catStat type="freq">130</catStat>
+      </catgry>
+      <catgry>
+        <catValu>8</catValu>
+        <catStat type="freq">110</catStat>
+      </catgry>
+      <catgry>
+        <catValu>9</catValu>
+        <catStat type="freq">80</catStat>
+      </catgry>
+      <catgry>
+        <catValu>10</catValu>
+        <catStat type="freq">160</catStat>
+      </catgry>
+      <catgry>
+        <catValu>11</catValu>
+        <catStat type="freq">195</catStat>
+      </catgry>
+      <catgry>
+        <catValu>12</catValu>
+        <catStat type="freq">170</catStat>
+      </catgry>
+      <catgry>
+        <catValu>13</catValu>
+        <catStat type="freq">240</catStat>
+      </catgry>
+      <catgry>
+        <catValu>14</catValu>
+        <catStat type="freq">210</catStat>
+      </catgry>
+      <catgry>
+        <catValu>15</catValu>
+        <catStat type="freq">280</catStat>
+      </catgry>
+      <catgry>
+        <catValu>16</catValu>
+        <catStat type="freq">270</catStat>
+      </catgry>
+      <catgry>
+        <catValu>17</catValu>
+        <catStat type="freq">215</catStat>
+      </catgry>
+      <catgry>
+        <catValu>18</catValu>
+        <catStat type="freq">210</catStat>
+      </catgry>
+      <catgry>
+        <catValu>19</catValu>
+        <catStat type="freq">165</catStat>
+      </catgry>
+      <catgry>
+        <catValu>20</catValu>
+        <catStat type="freq">95</catStat>
+      </catgry>
+      <catgry>
+        <catValu>21</catValu>
+        <catStat type="freq">50</catStat>
+      </catgry>
+      <catgry>
+        <catValu>22</catValu>
+        <catStat type="freq">20</catStat>
+      </catgry>
+      <catgry>
+        <catValu>23</catValu>
+        <catStat type="freq">15</catStat>
+      </catgry>
+      <sumStat type="vald">3000</sumStat>
+      <sumStat type="invd">1000</sumStat>
+    </var>
+    <var ID="mmwinner_RN2018_x2" name="x2" intrvl="discrete" files="mmwinner_RN2018">
+      <labl>Performance of 2</labl>
+      <qstn>
+        <litQ>Performance of 2</litQ>
+      </qstn>
+      <catgry>
+        <catValu>7</catValu>
+        <catStat type="freq">5</catStat>
+      </catgry>
+      <catgry>
+        <catValu>8</catValu>
+        <catStat type="freq">15</catStat>
+      </catgry>
+      <catgry>
+        <catValu>9</catValu>
+        <catStat type="freq">10</catStat>
+      </catgry>
+      <catgry>
+        <catValu>10</catValu>
+        <catStat type="freq">20</catStat>
+      </catgry>
+      <catgry>
+        <catValu>11</catValu>
+        <catStat type="freq">40</catStat>
+      </catgry>
+      <catgry>
+        <catValu>12</catValu>
+        <catStat type="freq">65</catStat>
+      </catgry>
+      <catgry>
+        <catValu>13</catValu>
+        <catStat type="freq">55</catStat>
+      </catgry>
+      <catgry>
+        <catValu>14</catValu>
+        <catStat type="freq">110</catStat>
+      </catgry>
+      <catgry>
+        <catValu>15</catValu>
+        <catStat type="freq">180</catStat>
+      </catgry>
+      <catgry>
+        <catValu>16</catValu>
+        <catStat type="freq">155</catStat>
+      </catgry>
+      <catgry>
+        <catValu>17</catValu>
+        <catStat type="freq">290</catStat>
+      </catgry>
+      <catgry>
+        <catValu>18</catValu>
+        <catStat type="freq">370</catStat>
+      </catgry>
+      <catgry>
+        <catValu>19</catValu>
+        <catStat type="freq">385</catStat>
+      </catgry>
+      <catgry>
+        <catValu>20</catValu>
+        <catStat type="freq">355</catStat>
+      </catgry>
+      <catgry>
+        <catValu>21</catValu>
+        <catStat type="freq">300</catStat>
+      </catgry>
+      <catgry>
+        <catValu>22</catValu>
+        <catStat type="freq">285</catStat>
+      </catgry>
+      <catgry>
+        <catValu>23</catValu>
+        <catStat type="freq">200</catStat>
+      </catgry>
+      <catgry>
+        <catValu>24</catValu>
+        <catStat type="freq">160</catStat>
+      </catgry>
+      <sumStat type="vald">3000</sumStat>
+      <sumStat type="invd">1000</sumStat>
+    </var>
+    <var ID="mmwinner_RN2018_e1" name="e1" intrvl="contin" files="mmwinner_RN2018">
+      <labl>Pre-distribution earnings of 1</labl>
+      <qstn>
+        <litQ>Pre-distribution earnings of 1</litQ>
+      </qstn>
+      <catgry>
+        <catValu>0</catValu>
+        <catStat type="freq">4000</catStat>
+      </catgry>
+      <sumStat type="vald">4000</sumStat>
+      <sumStat type="invd">0</sumStat>
+      <sumStat type="min">0.0</sumStat>
+      <sumStat type="max">0.0</sumStat>
+      <sumStat type="mean">0.0</sumStat>
+      <sumStat type="stdev">0.0</sumStat>
+    </var>
+    <var ID="mmwinner_RN2018_e2" name="e2" intrvl="contin" files="mmwinner_RN2018">
+      <labl>Pre-distribution earnings of 2</labl>
+      <qstn>
+        <litQ>Pre-distribution earnings of 2</litQ>
+      </qstn>
+      <catgry>
+        <catValu>1.0499999523162842</catValu>
+        <catStat type="freq">5</catStat>
+      </catgry>
+      <catgry>
+        <catValu>1.2000000476837158</catValu>
+        <catStat type="freq">20</catStat>
+      </catgry>
+      <catgry>
+        <catValu>1.350000023841858</catValu>
+        <catStat type="freq">15</catStat>
+      </catgry>
+      <catgry>
+        <catValu>1.5</catValu>
+        <catStat type="freq">25</catStat>
+      </catgry>
+      <catgry>
+        <catValu>1.649999976158142</catValu>
+        <catStat type="freq">45</catStat>
+      </catgry>
+      <catgry>
+        <catValu>1.7999999523162842</catValu>
+        <catStat type="freq">75</catStat>
+      </catgry>
+      <catgry>
+        <catValu>1.9500000476837158</catValu>
+        <catStat type="freq">65</catStat>
+      </catgry>
+      <catgry>
+        <catValu>2.0999999046325684</catValu>
+        <catStat type="freq">145</catStat>
+      </catgry>
+      <catgry>
+        <catValu>2.25</catValu>
+        <catStat type="freq">205</catStat>
+      </catgry>
+      <catgry>
+        <catValu>2.4000000953674316</catValu>
+        <catStat type="freq">195</catStat>
+      </catgry>
+      <catgry>
+        <catValu>2.549999952316284</catValu>
+        <catStat type="freq">350</catStat>
+      </catgry>
+      <catgry>
+        <catValu>2.700000047683716</catValu>
+        <catStat type="freq">450</catStat>
+      </catgry>
+      <catgry>
+        <catValu>2.8499999046325684</catValu>
+        <catStat type="freq">520</catStat>
+      </catgry>
+      <catgry>
+        <catValu>3</catValu>
+        <catStat type="freq">515</catStat>
+      </catgry>
+      <catgry>
+        <catValu>3.1500000953674316</catValu>
+        <catStat type="freq">380</catStat>
+      </catgry>
+      <catgry>
+        <catValu>3.299999952316284</catValu>
+        <catStat type="freq">415</catStat>
+      </catgry>
+      <catgry>
+        <catValu>3.450000047683716</catValu>
+        <catStat type="freq">315</catStat>
+      </catgry>
+      <catgry>
+        <catValu>3.5999999046325684</catValu>
+        <catStat type="freq">260</catStat>
+      </catgry>
+      <sumStat type="vald">4000</sumStat>
+      <sumStat type="invd">0</sumStat>
+      <sumStat type="min">1.0499999523162842</sumStat>
+      <sumStat type="max">3.5999999046325684</sumStat>
+      <sumStat type="mean">2.8451249915361405</sumStat>
+      <sumStat type="stdev">0.49401391185021326</sumStat>
+    </var>
+    <var ID="mmwinner_RN2018_y1" name="y1" intrvl="contin" files="mmwinner_RN2018">
+      <labl>Post-distribution income of 1</labl>
+      <qstn>
+        <litQ>Post-distribution income of 1</litQ>
+      </qstn>
+      <sumStat type="vald">4000</sumStat>
+      <sumStat type="invd">0</sumStat>
+      <sumStat type="min">0.0</sumStat>
+      <sumStat type="max">3.5999999046325684</sumStat>
+      <sumStat type="mean">1.019774999050889</sumStat>
+      <sumStat type="stdev">0.895547931916545</sumStat>
+      <notes type="graphic">charts/y1_hist.png</notes>
+    </var>
+    <var ID="mmwinner_RN2018_y2" name="y2" intrvl="contin" files="mmwinner_RN2018">
+      <labl>Post-distribution income of 2</labl>
+      <qstn>
+        <litQ>Post-distribution income of 2</litQ>
+      </qstn>
+      <sumStat type="vald">4000</sumStat>
+      <sumStat type="invd">0</sumStat>
+      <sumStat type="min">0.0</sumStat>
+      <sumStat type="max">3.5999999046325684</sumStat>
+      <sumStat type="mean">1.8253399969446473</sumStat>
+      <sumStat type="stdev">0.9307824494990624</sumStat>
+      <notes type="graphic">charts/y2_hist.png</notes>
+    </var>
+    <var ID="mmwinner_RN2018_education" name="education" intrvl="nominal" files="mmwinner_RN2018">
+      <labl>Education category</labl>
+      <qstn>
+        <litQ>Education category</litQ>
+      </qstn>
+      <catgry>
+        <catValu>1</catValu>
+        <labl>Less than high school</labl>
+        <catStat type="freq">73</catStat>
+      </catgry>
+      <catgry>
+        <catValu>2</catValu>
+        <labl>High school</labl>
+        <catStat type="freq">834</catStat>
+      </catgry>
+      <catgry>
+        <catValu>3</catValu>
+        <labl>Some college</labl>
+        <catStat type="freq">955</catStat>
+      </catgry>
+      <catgry>
+        <catValu>4</catValu>
+        <labl>2-year college degree</labl>
+        <catStat type="freq">492</catStat>
+      </catgry>
+      <catgry>
+        <catValu>5</catValu>
+        <labl>4-year college degree</labl>
+        <catStat type="freq">1029</catStat>
+      </catgry>
+      <catgry>
+        <catValu>6</catValu>
+        <labl>Masters degree</labl>
+        <catStat type="freq">437</catStat>
+      </catgry>
+      <catgry>
+        <catValu>7</catValu>
+        <labl>Doctoral degree</labl>
+        <catStat type="freq">52</catStat>
+      </catgry>
+      <catgry>
+        <catValu>8</catValu>
+        <labl>Professional degree (JD, MD)</labl>
+        <catStat type="freq">128</catStat>
+      </catgry>
+      <sumStat type="vald">4000</sumStat>
+      <sumStat type="invd">0</sumStat>
+      <sumStat type="min">1.0</sumStat>
+      <sumStat type="max">8.0</sumStat>
+      <sumStat type="mean">3.93225</sumStat>
+      <sumStat type="stdev">1.5988430230179145</sumStat>
+    </var>
+    <var ID="mmwinner_RN2018_pol1" name="pol1" intrvl="nominal" files="mmwinner_RN2018">
+      <labl>Liberal or conservative</labl>
+      <qstn>
+        <litQ>Liberal or conservative</litQ>
+      </qstn>
+      <catgry>
+        <catValu>1</catValu>
+        <labl>Very liberal</labl>
+        <catStat type="freq">389</catStat>
+      </catgry>
+      <catgry>
+        <catValu>2</catValu>
+        <labl>Liberal</labl>
+        <catStat type="freq">431</catStat>
+      </catgry>
+      <catgry>
+        <catValu>3</catValu>
+        <labl>Somewhat liberal</labl>
+        <catStat type="freq">558</catStat>
+      </catgry>
+      <catgry>
+        <catValu>4</catValu>
+        <labl>Neither liberal nor conservative</labl>
+        <catStat type="freq">1098</catStat>
+      </catgry>
+      <catgry>
+        <catValu>5</catValu>
+        <labl>Somewhat conservative</labl>
+        <catStat type="freq">634</catStat>
+      </catgry>
+      <catgry>
+        <catValu>6</catValu>
+        <labl>Conservative</labl>
+        <catStat type="freq">548</catStat>
+      </catgry>
+      <catgry>
+        <catValu>7</catValu>
+        <labl>Very conservative</labl>
+        <catStat type="freq">342</catStat>
+      </catgry>
+      <sumStat type="vald">4000</sumStat>
+      <sumStat type="invd">0</sumStat>
+      <sumStat type="min">1.0</sumStat>
+      <sumStat type="max">7.0</sumStat>
+      <sumStat type="mean">4.04225</sumStat>
+      <sumStat type="stdev">1.7090041285139774</sumStat>
+    </var>
+    <var ID="mmwinner_RN2018_pol2" name="pol2" intrvl="nominal" files="mmwinner_RN2018">
+      <labl>Party affiliation</labl>
+      <qstn>
+        <litQ>Party affiliation</litQ>
+      </qstn>
+      <catgry>
+        <catValu>1</catValu>
+        <labl>Republican</labl>
+        <catStat type="freq">1362</catStat>
+      </catgry>
+      <catgry>
+        <catValu>2</catValu>
+        <labl>Democrat</labl>
+        <catStat type="freq">1375</catStat>
+      </catgry>
+      <catgry>
+        <catValu>3</catValu>
+        <labl>Independent</labl>
+        <catStat type="freq">1263</catStat>
+      </catgry>
+      <sumStat type="vald">4000</sumStat>
+      <sumStat type="invd">0</sumStat>
+      <sumStat type="min">1.0</sumStat>
+      <sumStat type="max">3.0</sumStat>
+      <sumStat type="mean">1.97525</sumStat>
+      <sumStat type="stdev">0.8098156505322441</sumStat>
+    </var>
+    <var ID="mmwinner_RN2018_att1" name="att1" intrvl="nominal" files="mmwinner_RN2018">
+      <labl>Do you think that a society should equalize incomes?</labl>
+      <qstn>
+        <litQ>Do you think that a society should equalize incomes?</litQ>
+      </qstn>
+      <catgry>
+        <catValu>1</catValu>
+        <labl>Strongly believe that a society  should aim to equalize incomes</labl>
+        <catStat type="freq">662</catStat>
+      </catgry>
+      <catgry>
+        <catValu>2</catValu>
+        <labl>Believe that a society should aim to equalize incomes</labl>
+        <catStat type="freq">874</catStat>
+      </catgry>
+      <catgry>
+        <catValu>3</catValu>
+        <labl>Neutral</labl>
+        <catStat type="freq">1033</catStat>
+      </catgry>
+      <catgry>
+        <catValu>4</catValu>
+        <labl>Believe that a society should not aim to equalize incomes</labl>
+        <catStat type="freq">883</catStat>
+      </catgry>
+      <catgry>
+        <catValu>5</catValu>
+        <labl>Strongly believe that a society should not aim to equalize incomes</labl>
+        <catStat type="freq">548</catStat>
+      </catgry>
+      <sumStat type="vald">4000</sumStat>
+      <sumStat type="invd">0</sumStat>
+      <sumStat type="min">1.0</sumStat>
+      <sumStat type="max">5.0</sumStat>
+      <sumStat type="mean">2.94525</sumStat>
+      <sumStat type="stdev">1.2832241049504491</sumStat>
+    </var>
+    <var ID="mmwinner_RN2018_att2" name="att2" intrvl="nominal" files="mmwinner_RN2018">
+      <labl>Do you think income taxes on the top 1 percent income earners should be increase</labl>
+      <qstn>
+        <litQ>Do you think income taxes on the top 1 percent income earners should be increase</litQ>
+      </qstn>
+      <catgry>
+        <catValu>1</catValu>
+        <labl>Increased</labl>
+        <catStat type="freq">2289</catStat>
+      </catgry>
+      <catgry>
+        <catValu>2</catValu>
+        <labl>Stay the same</labl>
+        <catStat type="freq">1312</catStat>
+      </catgry>
+      <catgry>
+        <catValu>3</catValu>
+        <labl>Decreased</labl>
+        <catStat type="freq">399</catStat>
+      </catgry>
+      <sumStat type="vald">4000</sumStat>
+      <sumStat type="invd">0</sumStat>
+      <sumStat type="min">1.0</sumStat>
+      <sumStat type="max">3.0</sumStat>
+      <sumStat type="mean">1.5275</sumStat>
+      <sumStat type="stdev">0.6699671365007375</sumStat>
+    </var>
+    <var ID="mmwinner_RN2018_att3" name="att3" intrvl="nominal" files="mmwinner_RN2018">
+      <labl>Olympic gold medalists...</labl>
+      <qstn>
+        <litQ>Olympic gold medalists...</litQ>
+      </qstn>
+      <catgry>
+        <catValu>1</catValu>
+        <labl>Entirely fair</labl>
+        <catStat type="freq">356</catStat>
+      </catgry>
+      <catgry>
+        <catValu>2</catValu>
+        <labl>Fair</labl>
+        <catStat type="freq">515</catStat>
+      </catgry>
+      <catgry>
+        <catValu>3</catValu>
+        <labl>Somewhat fair</labl>
+        <catStat type="freq">597</catStat>
+      </catgry>
+      <catgry>
+        <catValu>4</catValu>
+        <labl>Neither fair nor unfair</labl>
+        <catStat type="freq">868</catStat>
+      </catgry>
+      <catgry>
+        <catValu>5</catValu>
+        <labl>Somewhat unfair</labl>
+        <catStat type="freq">952</catStat>
+      </catgry>
+      <catgry>
+        <catValu>6</catValu>
+        <labl>Unair</labl>
+        <catStat type="freq">470</catStat>
+      </catgry>
+      <catgry>
+        <catValu>7</catValu>
+        <labl>Entirely unfair</labl>
+        <catStat type="freq">242</catStat>
+      </catgry>
+      <sumStat type="vald">4000</sumStat>
+      <sumStat type="invd">0</sumStat>
+      <sumStat type="min">1.0</sumStat>
+      <sumStat type="max">7.0</sumStat>
+      <sumStat type="mean">3.98075</sumStat>
+      <sumStat type="stdev">1.6486536786839314</sumStat>
+    </var>
+    <var ID="mmwinner_RN2018_att4" name="att4" intrvl="nominal" files="mmwinner_RN2018">
+      <labl>Steven Spielberg ...</labl>
+      <qstn>
+        <litQ>Steven Spielberg ...</litQ>
+      </qstn>
+      <catgry>
+        <catValu>1</catValu>
+        <labl>Fully agree</labl>
+        <catStat type="freq">901</catStat>
+      </catgry>
+      <catgry>
+        <catValu>2</catValu>
+        <labl>Agree</labl>
+        <catStat type="freq">1129</catStat>
+      </catgry>
+      <catgry>
+        <catValu>3</catValu>
+        <labl>Agree somewhat</labl>
+        <catStat type="freq">749</catStat>
+      </catgry>
+      <catgry>
+        <catValu>4</catValu>
+        <labl>Neither agree nor disagree</labl>
+        <catStat type="freq">729</catStat>
+      </catgry>
+      <catgry>
+        <catValu>5</catValu>
+        <labl>Disagree somewhat</labl>
+        <catStat type="freq">313</catStat>
+      </catgry>
+      <catgry>
+        <catValu>6</catValu>
+        <labl>Disagree</labl>
+        <catStat type="freq">123</catStat>
+      </catgry>
+      <catgry>
+        <catValu>7</catValu>
+        <labl>Fully disagree</labl>
+        <catStat type="freq">56</catStat>
+      </catgry>
+      <sumStat type="vald">4000</sumStat>
+      <sumStat type="invd">0</sumStat>
+      <sumStat type="min">1.0</sumStat>
+      <sumStat type="max">7.0</sumStat>
+      <sumStat type="mean">2.75425</sumStat>
+      <sumStat type="stdev">1.455811383454618</sumStat>
+    </var>
+    <var ID="mmwinner_RN2018_work1" name="work1" intrvl="nominal" files="mmwinner_RN2018">
+      <labl>If you could choose freely, would you prefer to work in the private sector or th</labl>
+      <qstn>
+        <litQ>If you could choose freely, would you prefer to work in the private sector or th</litQ>
+      </qstn>
+      <catgry>
+        <catValu>1</catValu>
+        <labl>Strongly prefer public sector</labl>
+        <catStat type="freq">326</catStat>
+      </catgry>
+      <catgry>
+        <catValu>2</catValu>
+        <labl>Prefer public sector</labl>
+        <catStat type="freq">465</catStat>
+      </catgry>
+      <catgry>
+        <catValu>3</catValu>
+        <labl>Somewhat prefer public sector</labl>
+        <catStat type="freq">376</catStat>
+      </catgry>
+      <catgry>
+        <catValu>4</catValu>
+        <labl>No preference</labl>
+        <catStat type="freq">1331</catStat>
+      </catgry>
+      <catgry>
+        <catValu>5</catValu>
+        <labl>Somewhat prefer private sector</labl>
+        <catStat type="freq">506</catStat>
+      </catgry>
+      <catgry>
+        <catValu>6</catValu>
+        <labl>Prefer private sector</labl>
+        <catStat type="freq">593</catStat>
+      </catgry>
+      <catgry>
+        <catValu>7</catValu>
+        <labl>Strongly prefer private sector</labl>
+        <catStat type="freq">403</catStat>
+      </catgry>
+      <sumStat type="vald">4000</sumStat>
+      <sumStat type="invd">0</sumStat>
+      <sumStat type="min">1.0</sumStat>
+      <sumStat type="max">7.0</sumStat>
+      <sumStat type="mean">4.15425</sumStat>
+      <sumStat type="stdev">1.7016700202196748</sumStat>
+    </var>
+    <var ID="mmwinner_RN2018_work2" name="work2" intrvl="nominal" files="mmwinner_RN2018">
+      <labl>Support for affirmative action programmes</labl>
+      <qstn>
+        <litQ>Support for affirmative action programmes</litQ>
+      </qstn>
+      <catgry>
+        <catValu>1</catValu>
+        <labl>Strongly support</labl>
+        <catStat type="freq">425</catStat>
+      </catgry>
+      <catgry>
+        <catValu>2</catValu>
+        <labl>Support</labl>
+        <catStat type="freq">527</catStat>
+      </catgry>
+      <catgry>
+        <catValu>3</catValu>
+        <labl>Neither support nor oppose</labl>
+        <catStat type="freq">1118</catStat>
+      </catgry>
+      <catgry>
+        <catValu>4</catValu>
+        <labl>Oppose</labl>
+        <catStat type="freq">1040</catStat>
+      </catgry>
+      <catgry>
+        <catValu>5</catValu>
+        <labl>Strongly oppose</labl>
+        <catStat type="freq">890</catStat>
+      </catgry>
+      <sumStat type="vald">4000</sumStat>
+      <sumStat type="invd">0</sumStat>
+      <sumStat type="min">1.0</sumStat>
+      <sumStat type="max">5.0</sumStat>
+      <sumStat type="mean">3.36075</sumStat>
+      <sumStat type="stdev">1.255788074645601</sumStat>
+    </var>
+    <var ID="mmwinner_Prolific2025_id" name="id" intrvl="contin" files="mmwinner_Prolific2025">
+      <labl>participant.id_in_session</labl>
+      <qstn>
+        <litQ>participant.id_in_session</litQ>
+      </qstn>
+      <sumStat type="vald">3005</sumStat>
+      <sumStat type="invd">0</sumStat>
+      <sumStat type="min">1.0</sumStat>
+      <sumStat type="max">3394.0</sumStat>
+      <sumStat type="mean">1717.5151414309485</sumStat>
+      <sumStat type="stdev">986.3054109666465</sumStat>
+      <notes type="graphic">charts/id_hist.png</notes>
+    </var>
+    <var ID="mmwinner_Prolific2025_sex" name="sex" intrvl="nominal" files="mmwinner_Prolific2025">
+      <labl>What is your gender?</labl>
+      <qstn>
+        <litQ>What is your gender?</litQ>
+      </qstn>
+      <catgry>
+        <catValu>1</catValu>
+        <labl>Male</labl>
+        <catStat type="freq">1461</catStat>
+      </catgry>
+      <catgry>
+        <catValu>2</catValu>
+        <labl>Female</labl>
+        <catStat type="freq">1502</catStat>
+      </catgry>
+      <catgry>
+        <catValu>3</catValu>
+        <labl>Other</labl>
+        <catStat type="freq">37</catStat>
+      </catgry>
+      <catgry>
+        <catValu>4</catValu>
+        <labl>Prefer not to say</labl>
+        <catStat type="freq">5</catStat>
+      </catgry>
+      <sumStat type="vald">3005</sumStat>
+      <sumStat type="invd">0</sumStat>
+      <sumStat type="min">1.0</sumStat>
+      <sumStat type="max">4.0</sumStat>
+      <sumStat type="mean">1.529450915141431</sumStat>
+      <sumStat type="stdev">0.5327626894084209</sumStat>
+    </var>
+    <var ID="mmwinner_Prolific2025_age" name="age" intrvl="contin" files="mmwinner_Prolific2025">
+      <labl>How old are you?</labl>
+      <qstn>
+        <litQ>How old are you?</litQ>
+      </qstn>
+      <sumStat type="vald">3005</sumStat>
+      <sumStat type="invd">0</sumStat>
+      <sumStat type="min">15.0</sumStat>
+      <sumStat type="max">88.0</sumStat>
+      <sumStat type="mean">46.13710482529118</sumStat>
+      <sumStat type="stdev">16.0299892969868</sumStat>
+      <notes type="graphic">charts/age_hist.png</notes>
+    </var>
+    <var ID="mmwinner_Prolific2025_region" name="region" intrvl="nominal" files="mmwinner_Prolific2025">
+      <labl>Where do you live?</labl>
+      <qstn>
+        <litQ>Where do you live?</litQ>
+      </qstn>
+      <catgry>
+        <catValu>1</catValu>
+        <labl>Midwest</labl>
+        <catStat type="freq">612</catStat>
+      </catgry>
+      <catgry>
+        <catValu>2</catValu>
+        <labl>Northeast</labl>
+        <catStat type="freq">584</catStat>
+      </catgry>
+      <catgry>
+        <catValu>3</catValu>
+        <labl>South</labl>
+        <catStat type="freq">1294</catStat>
+      </catgry>
+      <catgry>
+        <catValu>4</catValu>
+        <labl>West</labl>
+        <catStat type="freq">515</catStat>
+      </catgry>
+      <sumStat type="vald">3005</sumStat>
+      <sumStat type="invd">0</sumStat>
+      <sumStat type="min">1.0</sumStat>
+      <sumStat type="max">4.0</sumStat>
+      <sumStat type="mean">2.5697171381031616</sumStat>
+      <sumStat type="stdev">0.9977745308951942</sumStat>
+    </var>
+    <var ID="mmwinner_Prolific2025_treatment" name="treatment" intrvl="discrete" files="mmwinner_Prolific2025">
+      <labl>Assigned treatment</labl>
+      <qstn>
+        <litQ>Assigned treatment</litQ>
+      </qstn>
+      <catgry>
+        <catValu>attention</catValu>
+        <catStat type="freq">981</catStat>
+      </catgry>
+      <catgry>
+        <catValu>baseline</catValu>
+        <catStat type="freq">1032</catStat>
+      </catgry>
+      <catgry>
+        <catValu>show_distribution</catValu>
+        <catStat type="freq">992</catStat>
+      </catgry>
+      <sumStat type="vald">3005</sumStat>
+      <sumStat type="invd">0</sumStat>
+    </var>
+    <var ID="mmwinner_Prolific2025_pairid" name="pairid" intrvl="discrete" files="mmwinner_Prolific2025">
+      <labl>Unique id for pair of workers</labl>
+      <qstn>
+        <litQ>Unique id for pair of workers</litQ>
+      </qstn>
+      <sumStat type="vald">3005</sumStat>
+      <sumStat type="invd">0</sumStat>
+    </var>
+    <var ID="mmwinner_Prolific2025_x1" name="x1" intrvl="contin" files="mmwinner_Prolific2025">
+      <labl>Performance of 1</labl>
+      <qstn>
+        <litQ>Performance of 1</litQ>
+      </qstn>
+      <catgry>
+        <catValu>1</catValu>
+        <catStat type="freq">4</catStat>
+      </catgry>
+      <catgry>
+        <catValu>2</catValu>
+        <catStat type="freq">37</catStat>
+      </catgry>
+      <catgry>
+        <catValu>3</catValu>
+        <catStat type="freq">46</catStat>
+      </catgry>
+      <catgry>
+        <catValu>4</catValu>
+        <catStat type="freq">104</catStat>
+      </catgry>
+      <catgry>
+        <catValu>5</catValu>
+        <catStat type="freq">115</catStat>
+      </catgry>
+      <catgry>
+        <catValu>6</catValu>
+        <catStat type="freq">160</catStat>
+      </catgry>
+      <catgry>
+        <catValu>7</catValu>
+        <catStat type="freq">198</catStat>
+      </catgry>
+      <catgry>
+        <catValu>8</catValu>
+        <catStat type="freq">234</catStat>
+      </catgry>
+      <catgry>
+        <catValu>9</catValu>
+        <catStat type="freq">236</catStat>
+      </catgry>
+      <catgry>
+        <catValu>10</catValu>
+        <catStat type="freq">225</catStat>
+      </catgry>
+      <catgry>
+        <catValu>11</catValu>
+        <catStat type="freq">295</catStat>
+      </catgry>
+      <catgry>
+        <catValu>12</catValu>
+        <catStat type="freq">243</catStat>
+      </catgry>
+      <catgry>
+        <catValu>13</catValu>
+        <catStat type="freq">285</catStat>
+      </catgry>
+      <catgry>
+        <catValu>14</catValu>
+        <catStat type="freq">250</catStat>
+      </catgry>
+      <catgry>
+        <catValu>15</catValu>
+        <catStat type="freq">200</catStat>
+      </catgry>
+      <catgry>
+        <catValu>16</catValu>
+        <catStat type="freq">159</catStat>
+      </catgry>
+      <catgry>
+        <catValu>17</catValu>
+        <catStat type="freq">78</catStat>
+      </catgry>
+      <catgry>
+        <catValu>18</catValu>
+        <catStat type="freq">74</catStat>
+      </catgry>
+      <catgry>
+        <catValu>19</catValu>
+        <catStat type="freq">26</catStat>
+      </catgry>
+      <catgry>
+        <catValu>20</catValu>
+        <catStat type="freq">11</catStat>
+      </catgry>
+      <catgry>
+        <catValu>21</catValu>
+        <catStat type="freq">25</catStat>
+      </catgry>
+      <sumStat type="vald">3005</sumStat>
+      <sumStat type="invd">0</sumStat>
+      <sumStat type="min">1.0</sumStat>
+      <sumStat type="max">21.0</sumStat>
+      <sumStat type="mean">10.850582362728785</sumStat>
+      <sumStat type="stdev">4.007728530766522</sumStat>
+    </var>
+    <var ID="mmwinner_Prolific2025_x2" name="x2" intrvl="contin" files="mmwinner_Prolific2025">
+      <labl>Performance of 2</labl>
+      <qstn>
+        <litQ>Performance of 2</litQ>
+      </qstn>
+      <catgry>
+        <catValu>6</catValu>
+        <catStat type="freq">15</catStat>
+      </catgry>
+      <catgry>
+        <catValu>7</catValu>
+        <catStat type="freq">15</catStat>
+      </catgry>
+      <catgry>
+        <catValu>8</catValu>
+        <catStat type="freq">11</catStat>
+      </catgry>
+      <catgry>
+        <catValu>9</catValu>
+        <catStat type="freq">28</catStat>
+      </catgry>
+      <catgry>
+        <catValu>10</catValu>
+        <catStat type="freq">62</catStat>
+      </catgry>
+      <catgry>
+        <catValu>11</catValu>
+        <catStat type="freq">85</catStat>
+      </catgry>
+      <catgry>
+        <catValu>12</catValu>
+        <catStat type="freq">147</catStat>
+      </catgry>
+      <catgry>
+        <catValu>13</catValu>
+        <catStat type="freq">168</catStat>
+      </catgry>
+      <catgry>
+        <catValu>14</catValu>
+        <catStat type="freq">267</catStat>
+      </catgry>
+      <catgry>
+        <catValu>15</catValu>
+        <catStat type="freq">323</catStat>
+      </catgry>
+      <catgry>
+        <catValu>16</catValu>
+        <catStat type="freq">293</catStat>
+      </catgry>
+      <catgry>
+        <catValu>17</catValu>
+        <catStat type="freq">353</catStat>
+      </catgry>
+      <catgry>
+        <catValu>18</catValu>
+        <catStat type="freq">358</catStat>
+      </catgry>
+      <catgry>
+        <catValu>19</catValu>
+        <catStat type="freq">291</catStat>
+      </catgry>
+      <catgry>
+        <catValu>20</catValu>
+        <catStat type="freq">202</catStat>
+      </catgry>
+      <catgry>
+        <catValu>21</catValu>
+        <catStat type="freq">156</catStat>
+      </catgry>
+      <catgry>
+        <catValu>22</catValu>
+        <catStat type="freq">110</catStat>
+      </catgry>
+      <catgry>
+        <catValu>23</catValu>
+        <catStat type="freq">84</catStat>
+      </catgry>
+      <catgry>
+        <catValu>24</catValu>
+        <catStat type="freq">37</catStat>
+      </catgry>
+      <sumStat type="vald">3005</sumStat>
+      <sumStat type="invd">0</sumStat>
+      <sumStat type="min">6.0</sumStat>
+      <sumStat type="max">24.0</sumStat>
+      <sumStat type="mean">16.585357737104825</sumStat>
+      <sumStat type="stdev">3.430562670053799</sumStat>
+    </var>
+    <var ID="mmwinner_Prolific2025_e1" name="e1" intrvl="contin" files="mmwinner_Prolific2025">
+      <labl>Pre-distribution earnings of 1</labl>
+      <qstn>
+        <litQ>Pre-distribution earnings of 1</litQ>
+      </qstn>
+      <catgry>
+        <catValu>0</catValu>
+        <catStat type="freq">3005</catStat>
+      </catgry>
+      <sumStat type="vald">3005</sumStat>
+      <sumStat type="invd">0</sumStat>
+      <sumStat type="min">0.0</sumStat>
+      <sumStat type="max">0.0</sumStat>
+      <sumStat type="mean">0.0</sumStat>
+      <sumStat type="stdev">0.0</sumStat>
+    </var>
+    <var ID="mmwinner_Prolific2025_e2" name="e2" intrvl="contin" files="mmwinner_Prolific2025">
+      <labl>Pre-distribution earnings of 2</labl>
+      <qstn>
+        <litQ>Pre-distribution earnings of 2</litQ>
+      </qstn>
+      <catgry>
+        <catValu>0.8999999761581421</catValu>
+        <catStat type="freq">15</catStat>
+      </catgry>
+      <catgry>
+        <catValu>1.0499999523162842</catValu>
+        <catStat type="freq">15</catStat>
+      </catgry>
+      <catgry>
+        <catValu>1.2000000476837158</catValu>
+        <catStat type="freq">11</catStat>
+      </catgry>
+      <catgry>
+        <catValu>1.350000023841858</catValu>
+        <catStat type="freq">28</catStat>
+      </catgry>
+      <catgry>
+        <catValu>1.5</catValu>
+        <catStat type="freq">62</catStat>
+      </catgry>
+      <catgry>
+        <catValu>1.649999976158142</catValu>
+        <catStat type="freq">85</catStat>
+      </catgry>
+      <catgry>
+        <catValu>1.7999999523162842</catValu>
+        <catStat type="freq">147</catStat>
+      </catgry>
+      <catgry>
+        <catValu>1.9500000476837158</catValu>
+        <catStat type="freq">168</catStat>
+      </catgry>
+      <catgry>
+        <catValu>2.0999999046325684</catValu>
+        <catStat type="freq">267</catStat>
+      </catgry>
+      <catgry>
+        <catValu>2.25</catValu>
+        <catStat type="freq">323</catStat>
+      </catgry>
+      <catgry>
+        <catValu>2.4000000953674316</catValu>
+        <catStat type="freq">293</catStat>
+      </catgry>
+      <catgry>
+        <catValu>2.549999952316284</catValu>
+        <catStat type="freq">353</catStat>
+      </catgry>
+      <catgry>
+        <catValu>2.700000047683716</catValu>
+        <catStat type="freq">358</catStat>
+      </catgry>
+      <catgry>
+        <catValu>2.8499999046325684</catValu>
+        <catStat type="freq">291</catStat>
+      </catgry>
+      <catgry>
+        <catValu>3</catValu>
+        <catStat type="freq">202</catStat>
+      </catgry>
+      <catgry>
+        <catValu>3.1500000953674316</catValu>
+        <catStat type="freq">156</catStat>
+      </catgry>
+      <catgry>
+        <catValu>3.299999952316284</catValu>
+        <catStat type="freq">110</catStat>
+      </catgry>
+      <catgry>
+        <catValu>3.450000047683716</catValu>
+        <catStat type="freq">84</catStat>
+      </catgry>
+      <catgry>
+        <catValu>3.5999999046325684</catValu>
+        <catStat type="freq">37</catStat>
+      </catgry>
+      <sumStat type="vald">3005</sumStat>
+      <sumStat type="invd">0</sumStat>
+      <sumStat type="min">0.8999999761581421</sumStat>
+      <sumStat type="max">3.5999999046325684</sumStat>
+      <sumStat type="mean">2.4878036552975065</sumStat>
+      <sumStat type="stdev">0.5145844055785816</sumStat>
+    </var>
+    <var ID="mmwinner_Prolific2025_y1" name="y1" intrvl="contin" files="mmwinner_Prolific2025">
+      <labl>Post-distribution income of 1</labl>
+      <qstn>
+        <litQ>Post-distribution income of 1</litQ>
+      </qstn>
+      <sumStat type="vald">3005</sumStat>
+      <sumStat type="invd">0</sumStat>
+      <sumStat type="min">0.0</sumStat>
+      <sumStat type="max">3.299999952316284</sumStat>
+      <sumStat type="mean">0.5843142069949027</sumStat>
+      <sumStat type="stdev">0.5591600773591798</sumStat>
+      <notes type="graphic">charts/y1_hist.png</notes>
+    </var>
+    <var ID="mmwinner_Prolific2025_y2" name="y2" intrvl="contin" files="mmwinner_Prolific2025">
+      <labl>Post-distribution income of 2</labl>
+      <qstn>
+        <litQ>Post-distribution income of 2</litQ>
+      </qstn>
+      <sumStat type="vald">3005</sumStat>
+      <sumStat type="invd">0</sumStat>
+      <sumStat type="min">0.0</sumStat>
+      <sumStat type="max">3.5999999046325684</sumStat>
+      <sumStat type="mean">1.90348945251978</sumStat>
+      <sumStat type="stdev">0.677970288222531</sumStat>
+      <notes type="graphic">charts/y2_hist.png</notes>
+    </var>
+    <var ID="mmwinner_Prolific2025_ax1" name="ax1" intrvl="discrete" files="mmwinner_Prolific2025">
+      <labl>Attention check: What is x1?</labl>
+      <qstn>
+        <litQ>Attention check: What is x1?</litQ>
+      </qstn>
+      <catgry>
+        <catValu>0</catValu>
+        <catStat type="freq">1</catStat>
+      </catgry>
+      <catgry>
+        <catValu>1</catValu>
+        <catStat type="freq">1</catStat>
+      </catgry>
+      <catgry>
+        <catValu>2</catValu>
+        <catStat type="freq">10</catStat>
+      </catgry>
+      <catgry>
+        <catValu>3</catValu>
+        <catStat type="freq">16</catStat>
+      </catgry>
+      <catgry>
+        <catValu>4</catValu>
+        <catStat type="freq">35</catStat>
+      </catgry>
+      <catgry>
+        <catValu>5</catValu>
+        <catStat type="freq">34</catStat>
+      </catgry>
+      <catgry>
+        <catValu>6</catValu>
+        <catStat type="freq">50</catStat>
+      </catgry>
+      <catgry>
+        <catValu>7</catValu>
+        <catStat type="freq">63</catStat>
+      </catgry>
+      <catgry>
+        <catValu>8</catValu>
+        <catStat type="freq">77</catStat>
+      </catgry>
+      <catgry>
+        <catValu>9</catValu>
+        <catStat type="freq">76</catStat>
+      </catgry>
+      <catgry>
+        <catValu>10</catValu>
+        <catStat type="freq">76</catStat>
+      </catgry>
+      <catgry>
+        <catValu>11</catValu>
+        <catStat type="freq">94</catStat>
+      </catgry>
+      <catgry>
+        <catValu>12</catValu>
+        <catStat type="freq">81</catStat>
+      </catgry>
+      <catgry>
+        <catValu>13</catValu>
+        <catStat type="freq">93</catStat>
+      </catgry>
+      <catgry>
+        <catValu>14</catValu>
+        <catStat type="freq">83</catStat>
+      </catgry>
+      <catgry>
+        <catValu>15</catValu>
+        <catStat type="freq">67</catStat>
+      </catgry>
+      <catgry>
+        <catValu>16</catValu>
+        <catStat type="freq">54</catStat>
+      </catgry>
+      <catgry>
+        <catValu>17</catValu>
+        <catStat type="freq">25</catStat>
+      </catgry>
+      <catgry>
+        <catValu>18</catValu>
+        <catStat type="freq">24</catStat>
+      </catgry>
+      <catgry>
+        <catValu>19</catValu>
+        <catStat type="freq">9</catStat>
+      </catgry>
+      <catgry>
+        <catValu>20</catValu>
+        <catStat type="freq">4</catStat>
+      </catgry>
+      <catgry>
+        <catValu>21</catValu>
+        <catStat type="freq">8</catStat>
+      </catgry>
+      <sumStat type="vald">981</sumStat>
+      <sumStat type="invd">2024</sumStat>
+    </var>
+    <var ID="mmwinner_Prolific2025_ax2" name="ax2" intrvl="discrete" files="mmwinner_Prolific2025">
+      <labl>Attention check: What is x2?</labl>
+      <qstn>
+        <litQ>Attention check: What is x2?</litQ>
+      </qstn>
+      <catgry>
+        <catValu>0</catValu>
+        <catStat type="freq">17</catStat>
+      </catgry>
+      <catgry>
+        <catValu>1</catValu>
+        <catStat type="freq">2</catStat>
+      </catgry>
+      <catgry>
+        <catValu>6</catValu>
+        <catStat type="freq">4</catStat>
+      </catgry>
+      <catgry>
+        <catValu>7</catValu>
+        <catStat type="freq">5</catStat>
+      </catgry>
+      <catgry>
+        <catValu>8</catValu>
+        <catStat type="freq">5</catStat>
+      </catgry>
+      <catgry>
+        <catValu>9</catValu>
+        <catStat type="freq">9</catStat>
+      </catgry>
+      <catgry>
+        <catValu>10</catValu>
+        <catStat type="freq">20</catStat>
+      </catgry>
+      <catgry>
+        <catValu>11</catValu>
+        <catStat type="freq">24</catStat>
+      </catgry>
+      <catgry>
+        <catValu>12</catValu>
+        <catStat type="freq">42</catStat>
+      </catgry>
+      <catgry>
+        <catValu>13</catValu>
+        <catStat type="freq">56</catStat>
+      </catgry>
+      <catgry>
+        <catValu>14</catValu>
+        <catStat type="freq">85</catStat>
+      </catgry>
+      <catgry>
+        <catValu>15</catValu>
+        <catStat type="freq">108</catStat>
+      </catgry>
+      <catgry>
+        <catValu>16</catValu>
+        <catStat type="freq">87</catStat>
+      </catgry>
+      <catgry>
+        <catValu>17</catValu>
+        <catStat type="freq">112</catStat>
+      </catgry>
+      <catgry>
+        <catValu>18</catValu>
+        <catStat type="freq">113</catStat>
+      </catgry>
+      <catgry>
+        <catValu>19</catValu>
+        <catStat type="freq">96</catStat>
+      </catgry>
+      <catgry>
+        <catValu>20</catValu>
+        <catStat type="freq">68</catStat>
+      </catgry>
+      <catgry>
+        <catValu>21</catValu>
+        <catStat type="freq">50</catStat>
+      </catgry>
+      <catgry>
+        <catValu>22</catValu>
+        <catStat type="freq">38</catStat>
+      </catgry>
+      <catgry>
+        <catValu>23</catValu>
+        <catStat type="freq">27</catStat>
+      </catgry>
+      <catgry>
+        <catValu>24</catValu>
+        <catStat type="freq">11</catStat>
+      </catgry>
+      <catgry>
+        <catValu>120</catValu>
+        <catStat type="freq">1</catStat>
+      </catgry>
+      <catgry>
+        <catValu>1171</catValu>
+        <catStat type="freq">1</catStat>
+      </catgry>
+      <sumStat type="vald">981</sumStat>
+      <sumStat type="invd">2024</sumStat>
+    </var>
+    <var ID="mmwinner_Prolific2025_ae1" name="ae1" intrvl="contin" files="mmwinner_Prolific2025">
+      <labl>Attention check: What is e1?</labl>
+      <qstn>
+        <litQ>Attention check: What is e1?</litQ>
+      </qstn>
+      <catgry>
+        <catValu>0</catValu>
+        <catStat type="freq">956</catStat>
+      </catgry>
+      <catgry>
+        <catValu>0.6000000238418579</catValu>
+        <catStat type="freq">1</catStat>
+      </catgry>
+      <catgry>
+        <catValu>0.8999999761581421</catValu>
+        <catStat type="freq">1</catStat>
+      </catgry>
+      <catgry>
+        <catValu>1.350000023841858</catValu>
+        <catStat type="freq">1</catStat>
+      </catgry>
+      <catgry>
+        <catValu>2.549999952316284</catValu>
+        <catStat type="freq">1</catStat>
+      </catgry>
+      <catgry>
+        <catValu>2.700000047683716</catValu>
+        <catStat type="freq">1</catStat>
+      </catgry>
+      <catgry>
+        <catValu>2.8499999046325684</catValu>
+        <catStat type="freq">1</catStat>
+      </catgry>
+      <catgry>
+        <catValu>3</catValu>
+        <catStat type="freq">1</catStat>
+      </catgry>
+      <catgry>
+        <catValu>5</catValu>
+        <catStat type="freq">1</catStat>
+      </catgry>
+      <catgry>
+        <catValu>11</catValu>
+        <catStat type="freq">1</catStat>
+      </catgry>
+      <catgry>
+        <catValu>12</catValu>
+        <catStat type="freq">1</catStat>
+      </catgry>
+      <catgry>
+        <catValu>13</catValu>
+        <catStat type="freq">1</catStat>
+      </catgry>
+      <catgry>
+        <catValu>14</catValu>
+        <catStat type="freq">2</catStat>
+      </catgry>
+      <catgry>
+        <catValu>16</catValu>
+        <catStat type="freq">1</catStat>
+      </catgry>
+      <catgry>
+        <catValu>18</catValu>
+        <catStat type="freq">3</catStat>
+      </catgry>
+      <catgry>
+        <catValu>20</catValu>
+        <catStat type="freq">1</catStat>
+      </catgry>
+      <catgry>
+        <catValu>21</catValu>
+        <catStat type="freq">1</catStat>
+      </catgry>
+      <catgry>
+        <catValu>22</catValu>
+        <catStat type="freq">1</catStat>
+      </catgry>
+      <catgry>
+        <catValu>23</catValu>
+        <catStat type="freq">3</catStat>
+      </catgry>
+      <catgry>
+        <catValu>24</catValu>
+        <catStat type="freq">1</catStat>
+      </catgry>
+      <catgry>
+        <catValu>105</catValu>
+        <catStat type="freq">1</catStat>
+      </catgry>
+      <sumStat type="vald">981</sumStat>
+      <sumStat type="invd">2024</sumStat>
+      <sumStat type="min">0.0</sumStat>
+      <sumStat type="max">105.0</sumStat>
+      <sumStat type="mean">0.4219673801513501</sumStat>
+      <sumStat type="stdev">4.097190936973484</sumStat>
+    </var>
+    <var ID="mmwinner_Prolific2025_ae2" name="ae2" intrvl="contin" files="mmwinner_Prolific2025">
+      <labl>Attention check: What is e2?</labl>
+      <qstn>
+        <litQ>Attention check: What is e2?</litQ>
+      </qstn>
+      <sumStat type="vald">981</sumStat>
+      <sumStat type="invd">2024</sumStat>
+      <sumStat type="min">0.0</sumStat>
+      <sumStat type="max">179.0</sumStat>
+      <sumStat type="mean">2.6737816541870556</sumStat>
+      <sumStat type="stdev">5.7048590480953205</sumStat>
+      <notes type="graphic">charts/ae2_hist.png</notes>
+    </var>
+    <var ID="mmwinner_Prolific2025_motivation" name="motivation" intrvl="discrete" files="mmwinner_Prolific2025">
+      <labl>The main reasons that motivated your decision?</labl>
+      <qstn>
+        <litQ>The main reasons that motivated your decision?</litQ>
+      </qstn>
+      <sumStat type="vald">3005</sumStat>
+      <sumStat type="invd">0</sumStat>
+    </var>
+    <var ID="mmwinner_Prolific2025_education" name="education" intrvl="nominal" files="mmwinner_Prolific2025">
+      <labl>What is the highest level of education that you have completed?</labl>
+      <qstn>
+        <litQ>What is the highest level of education that you have completed?</litQ>
+      </qstn>
+      <catgry>
+        <catValu>1</catValu>
+        <labl>Less than high school</labl>
+        <catStat type="freq">14</catStat>
+      </catgry>
+      <catgry>
+        <catValu>2</catValu>
+        <labl>High school</labl>
+        <catStat type="freq">320</catStat>
+      </catgry>
+      <catgry>
+        <catValu>3</catValu>
+        <labl>Some college</labl>
+        <catStat type="freq">507</catStat>
+      </catgry>
+      <catgry>
+        <catValu>4</catValu>
+        <labl>2-year college degree</labl>
+        <catStat type="freq">269</catStat>
+      </catgry>
+      <catgry>
+        <catValu>5</catValu>
+        <labl>4-year college degree</labl>
+        <catStat type="freq">1063</catStat>
+      </catgry>
+      <catgry>
+        <catValu>6</catValu>
+        <labl>Masters degree</labl>
+        <catStat type="freq">642</catStat>
+      </catgry>
+      <catgry>
+        <catValu>7</catValu>
+        <labl>Doctoral degree</labl>
+        <catStat type="freq">129</catStat>
+      </catgry>
+      <catgry>
+        <catValu>8</catValu>
+        <labl>Professional degree (JD, MD)</labl>
+        <catStat type="freq">61</catStat>
+      </catgry>
+      <sumStat type="vald">3005</sumStat>
+      <sumStat type="invd">0</sumStat>
+      <sumStat type="min">1.0</sumStat>
+      <sumStat type="max">8.0</sumStat>
+      <sumStat type="mean">4.595341098169717</sumStat>
+      <sumStat type="stdev">1.4840401246830335</sumStat>
+    </var>
+    <var ID="mmwinner_Prolific2025_pol1" name="pol1" intrvl="nominal" files="mmwinner_Prolific2025">
+      <labl>Liberal or conservative?</labl>
+      <qstn>
+        <litQ>Liberal or conservative?</litQ>
+      </qstn>
+      <catgry>
+        <catValu>1</catValu>
+        <labl>Very liberal</labl>
+        <catStat type="freq">330</catStat>
+      </catgry>
+      <catgry>
+        <catValu>2</catValu>
+        <labl>Liberal</labl>
+        <catStat type="freq">623</catStat>
+      </catgry>
+      <catgry>
+        <catValu>3</catValu>
+        <labl>Somewhat liberal</labl>
+        <catStat type="freq">366</catStat>
+      </catgry>
+      <catgry>
+        <catValu>4</catValu>
+        <labl>Neither liberal nor conservative</labl>
+        <catStat type="freq">590</catStat>
+      </catgry>
+      <catgry>
+        <catValu>5</catValu>
+        <labl>Somewhat conservative</labl>
+        <catStat type="freq">324</catStat>
+      </catgry>
+      <catgry>
+        <catValu>6</catValu>
+        <labl>Conservative</labl>
+        <catStat type="freq">528</catStat>
+      </catgry>
+      <catgry>
+        <catValu>7</catValu>
+        <labl>Very conservative</labl>
+        <catStat type="freq">244</catStat>
+      </catgry>
+      <sumStat type="vald">3005</sumStat>
+      <sumStat type="invd">0</sumStat>
+      <sumStat type="min">1.0</sumStat>
+      <sumStat type="max">7.0</sumStat>
+      <sumStat type="mean">3.8369384359401</sumStat>
+      <sumStat type="stdev">1.8588776299547052</sumStat>
+    </var>
+    <var ID="mmwinner_Prolific2025_pol2" name="pol2" intrvl="nominal" files="mmwinner_Prolific2025">
+      <labl>Party affiliation</labl>
+      <qstn>
+        <litQ>Party affiliation</litQ>
+      </qstn>
+      <catgry>
+        <catValu>1</catValu>
+        <labl>Republican</labl>
+        <catStat type="freq">923</catStat>
+      </catgry>
+      <catgry>
+        <catValu>2</catValu>
+        <labl>Democrat</labl>
+        <catStat type="freq">948</catStat>
+      </catgry>
+      <catgry>
+        <catValu>3</catValu>
+        <labl>Independent</labl>
+        <catStat type="freq">1134</catStat>
+      </catgry>
+      <sumStat type="vald">3005</sumStat>
+      <sumStat type="invd">0</sumStat>
+      <sumStat type="min">1.0</sumStat>
+      <sumStat type="max">3.0</sumStat>
+      <sumStat type="mean">2.070216306156406</sumStat>
+      <sumStat type="stdev">0.8245130022499103</sumStat>
+    </var>
+    <var ID="mmwinner_Prolific2025_att1" name="att1" intrvl="nominal" files="mmwinner_Prolific2025">
+      <labl>Do you think that a society should equalize incomes?</labl>
+      <qstn>
+        <litQ>Do you think that a society should equalize incomes?</litQ>
+      </qstn>
+      <catgry>
+        <catValu>1</catValu>
+        <labl>Strongly believe that a society  should aim to equalize incomes</labl>
+        <catStat type="freq">515</catStat>
+      </catgry>
+      <catgry>
+        <catValu>2</catValu>
+        <labl>Believe that a society should aim to equalize incomes</labl>
+        <catStat type="freq">884</catStat>
+      </catgry>
+      <catgry>
+        <catValu>3</catValu>
+        <labl>Neutral</labl>
+        <catStat type="freq">630</catStat>
+      </catgry>
+      <catgry>
+        <catValu>4</catValu>
+        <labl>Believe that a society should not aim to equalize incomes</labl>
+        <catStat type="freq">636</catStat>
+      </catgry>
+      <catgry>
+        <catValu>5</catValu>
+        <labl>Strongly believe that a society should not aim to equalize incomes</labl>
+        <catStat type="freq">340</catStat>
+      </catgry>
+      <sumStat type="vald">3005</sumStat>
+      <sumStat type="invd">0</sumStat>
+      <sumStat type="min">1.0</sumStat>
+      <sumStat type="max">5.0</sumStat>
+      <sumStat type="mean">2.800998336106489</sumStat>
+      <sumStat type="stdev">1.2668303712065578</sumStat>
+    </var>
+    <var ID="mmwinner_Prolific2025_att2" name="att2" intrvl="nominal" files="mmwinner_Prolific2025">
+      <labl>Do you think income taxes on the top 1 percent income earners should be increase</labl>
+      <qstn>
+        <litQ>Do you think income taxes on the top 1 percent income earners should be increase</litQ>
+      </qstn>
+      <catgry>
+        <catValu>1</catValu>
+        <labl>Increased</labl>
+        <catStat type="freq">2069</catStat>
+      </catgry>
+      <catgry>
+        <catValu>2</catValu>
+        <labl>Stay the same</labl>
+        <catStat type="freq">699</catStat>
+      </catgry>
+      <catgry>
+        <catValu>3</catValu>
+        <labl>Decreased</labl>
+        <catStat type="freq">237</catStat>
+      </catgry>
+      <sumStat type="vald">3005</sumStat>
+      <sumStat type="invd">0</sumStat>
+      <sumStat type="min">1.0</sumStat>
+      <sumStat type="max">3.0</sumStat>
+      <sumStat type="mean">1.3903494176372713</sumStat>
+      <sumStat type="stdev">0.6291626050492595</sumStat>
+    </var>
+    <var ID="mmwinner_Prolific2025_att3" name="att3" intrvl="nominal" files="mmwinner_Prolific2025">
+      <labl>Olympic gold medalists...</labl>
+      <qstn>
+        <litQ>Olympic gold medalists...</litQ>
+      </qstn>
+      <catgry>
+        <catValu>1</catValu>
+        <labl>Entirely fair</labl>
+        <catStat type="freq">192</catStat>
+      </catgry>
+      <catgry>
+        <catValu>2</catValu>
+        <labl>Fair</labl>
+        <catStat type="freq">336</catStat>
+      </catgry>
+      <catgry>
+        <catValu>3</catValu>
+        <labl>Somewhat fair</labl>
+        <catStat type="freq">334</catStat>
+      </catgry>
+      <catgry>
+        <catValu>4</catValu>
+        <labl>Neither fair nor unfair</labl>
+        <catStat type="freq">411</catStat>
+      </catgry>
+      <catgry>
+        <catValu>5</catValu>
+        <labl>Somewhat unfair</labl>
+        <catStat type="freq">923</catStat>
+      </catgry>
+      <catgry>
+        <catValu>6</catValu>
+        <labl>Unair</labl>
+        <catStat type="freq">557</catStat>
+      </catgry>
+      <catgry>
+        <catValu>7</catValu>
+        <labl>Entirely unfair</labl>
+        <catStat type="freq">252</catStat>
+      </catgry>
+      <sumStat type="vald">3005</sumStat>
+      <sumStat type="invd">0</sumStat>
+      <sumStat type="min">1.0</sumStat>
+      <sumStat type="max">7.0</sumStat>
+      <sumStat type="mean">4.4029950083194676</sumStat>
+      <sumStat type="stdev">1.6659203544802934</sumStat>
+    </var>
+    <var ID="mmwinner_Prolific2025_att4" name="att4" intrvl="nominal" files="mmwinner_Prolific2025">
+      <labl>Steven Spielberg ...</labl>
+      <qstn>
+        <litQ>Steven Spielberg ...</litQ>
+      </qstn>
+      <catgry>
+        <catValu>1</catValu>
+        <labl>Fully agree</labl>
+        <catStat type="freq">522</catStat>
+      </catgry>
+      <catgry>
+        <catValu>2</catValu>
+        <labl>Agree</labl>
+        <catStat type="freq">1000</catStat>
+      </catgry>
+      <catgry>
+        <catValu>3</catValu>
+        <labl>Agree somewhat</labl>
+        <catStat type="freq">662</catStat>
+      </catgry>
+      <catgry>
+        <catValu>4</catValu>
+        <labl>Neither agree nor disagree</labl>
+        <catStat type="freq">407</catStat>
+      </catgry>
+      <catgry>
+        <catValu>5</catValu>
+        <labl>Disagree somewhat</labl>
+        <catStat type="freq">250</catStat>
+      </catgry>
+      <catgry>
+        <catValu>6</catValu>
+        <labl>Disagree</labl>
+        <catStat type="freq">107</catStat>
+      </catgry>
+      <catgry>
+        <catValu>7</catValu>
+        <labl>Fully disagree</labl>
+        <catStat type="freq">57</catStat>
+      </catgry>
+      <sumStat type="vald">3005</sumStat>
+      <sumStat type="invd">0</sumStat>
+      <sumStat type="min">1.0</sumStat>
+      <sumStat type="max">7.0</sumStat>
+      <sumStat type="mean">2.80432612312812</sumStat>
+      <sumStat type="stdev">1.4429847470294221</sumStat>
+    </var>
+    <var ID="mmwinner_Prolific2025_work1" name="work1" intrvl="nominal" files="mmwinner_Prolific2025">
+      <labl>If you could choose freely, would you prefer to work in the private sector or th</labl>
+      <qstn>
+        <litQ>If you could choose freely, would you prefer to work in the private sector or th</litQ>
+      </qstn>
+      <catgry>
+        <catValu>1</catValu>
+        <labl>Strongly prefer public sector</labl>
+        <catStat type="freq">164</catStat>
+      </catgry>
+      <catgry>
+        <catValu>2</catValu>
+        <labl>Prefer public sector</labl>
+        <catStat type="freq">359</catStat>
+      </catgry>
+      <catgry>
+        <catValu>3</catValu>
+        <labl>Somewhat prefer public sector</labl>
+        <catStat type="freq">298</catStat>
+      </catgry>
+      <catgry>
+        <catValu>4</catValu>
+        <labl>No preference</labl>
+        <catStat type="freq">747</catStat>
+      </catgry>
+      <catgry>
+        <catValu>5</catValu>
+        <labl>Somewhat prefer private sector</labl>
+        <catStat type="freq">415</catStat>
+      </catgry>
+      <catgry>
+        <catValu>6</catValu>
+        <labl>Prefer private sector</labl>
+        <catStat type="freq">609</catStat>
+      </catgry>
+      <catgry>
+        <catValu>7</catValu>
+        <labl>Strongly prefer private sector</labl>
+        <catStat type="freq">413</catStat>
+      </catgry>
+      <sumStat type="vald">3005</sumStat>
+      <sumStat type="invd">0</sumStat>
+      <sumStat type="min">1.0</sumStat>
+      <sumStat type="max">7.0</sumStat>
+      <sumStat type="mean">4.453910149750416</sumStat>
+      <sumStat type="stdev">1.7461071935799115</sumStat>
+    </var>
+  </dataDscr>
+</codeBook>
