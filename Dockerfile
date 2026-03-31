@@ -47,6 +47,9 @@ COPY code/ ./code/
 COPY data/ ./data/
 COPY classification/ ./classification/
 
+# Unzip classified motivations needed by the pipeline
+RUN unzip -o classification/TIMESTAMPS_classified_motivations.zip -d classification/
+
 # Create output directories
 RUN mkdir -p html_reports graphs tables
 

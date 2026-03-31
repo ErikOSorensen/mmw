@@ -179,7 +179,9 @@ docker compose run --rm runner
 ```
 
 This builds a container with all dependencies from `renv.lock`, copies the data and code,
-and executes `targets::tar_make()`. Outputs are saved to `html_reports/`, `graphs/`, and `tables/`.
+automatically unzips `classification/TIMESTAMPS_classified_motivations.zip` (which contains
+the classified motivation CSVs needed by the pipeline), and executes `targets::tar_make()`.
+Outputs are saved to `html_reports/`, `graphs/`, and `tables/`.
 
 Note: The initial `docker compose build` downloads the base image and installs all R packages,
 which may take several minutes. Subsequent builds and container starts are fast since Docker
@@ -200,6 +202,8 @@ while outputs (`html_reports/`, `graphs/`, `tables/`) persist after the containe
 ## 3.2 Without Docker
 
 Replicators need to install renv and use the lock file to install other packages.
+Before running the pipeline, unzip `classification/TIMESTAMPS_classified_motivations.zip`
+in place (into the `classification/` directory) so the classified motivation CSVs are available.
 In R, a `tar_make()` command will then calculate all results and output all displays
 listed below. The displays are created as side-effects of creating the Vignettes,
 which also create html pages with narratives surrounding the displays.
