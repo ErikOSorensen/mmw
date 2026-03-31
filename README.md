@@ -1,5 +1,7 @@
 # Analysis for: Fairness in Winner-Take-All Competitions
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.19354246.svg)](https://doi.org/10.5281/zenodo.19354246)
+
 This repository provides data and code to replicate the analysis of the paper.
 
 ## Table of Contents
