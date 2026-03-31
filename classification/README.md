@@ -17,7 +17,7 @@ manage python code for the classification.
 | Role of file | File name | Description |
 |---|---|---|
 | Preparing data | normalize_data.R | Data from experiment to input for LLM |
-| Preparing data | classifications_defs.R | Unified names of categories |
+| Preparing data | classifications_defs.csv | Unified names of categories |
 | Preparing data | B1.csv | Manual classifications I |
 | Preparing data | B2.csv | Manual classifications II |
 | Preparing data | motivations.csv | Full list of motivations from experiment |

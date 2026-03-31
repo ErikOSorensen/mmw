@@ -71,14 +71,24 @@ The main source for the data is Harvard Dataverse at
 | data/mmwinner_Prolific2025.dta | Data from Follow-Up Study | CC0 | 
 | classification/B1.csv | Manual classification data for training LLM | CC0 |
 | classification/B2.csv | Manual classification data for training LLM | CC0 |
+| classification/TIMESTAMPS_classified_motivations.zip | 20 LLM-made classifications | CC0 |
+| classification/motivations.csv | Collected motivations | CC0|
 
+We are providing a zip files with the 20-LLM classifications we
+experimented with. These files are derived, and are provided as a
+single archive because they are intended for reproducibility and audit
+purposes rather than for file-by-file browsing within Dataverse. Users
+who wish to inspect them may download and unpack the archive
+locally. They are automatically unpacked as part of the `runner`
+pipeline described in Section 3.1 below.
 
 # 2. Computational requirements
 
 # 2.1 Software requirements
 
-The analysis is written in R, relying on targets for automation and renv for controlling the version of
-packages. The exact version used of each included package is documented in the `renv.lock` file.
+The analysis is written in R, relying on targets for automation and
+renv for controlling the version of packages. The exact version used
+of each included package is documented in the `renv.lock` file.
 
 **Option A: Docker (recommended)**
 
