@@ -6,14 +6,15 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
+library(targets)
 library(tidyverse)
 library(gt)
 ```
 
 
-I have experimented with two different GPT models from openAI, and have run 6 classifications: 
+I have experimented with two different GPT models from openAI, and have run 6 classifications:
 
-- gpt-3.5-turbo: Most advanced model we can access that allows training ("fine-tuning"). 
+- gpt-3.5-turbo: Most advanced model we can access that allows training ("fine-tuning").
   - With fine-tuning, on the full set of categories that Bertil outlined. 10 runs.
   - Without fine-tuning, on the full set of categories.
 - gpt-4o: More advanced language, larger capacity, but we cannot train it.
@@ -26,16 +27,16 @@ strip_stars_quotes <- function(x) {
   gsub('^[*"*]+|[*"*]+$', '', x)
 }
 
-cdf1 <- read_csv("20250721_125504_classified_motivations.csv") |> mutate(predicted_label = strip_stars_quotes(predicted_label))
-cdf2 <- read_csv("20250721_125532_classified_motivations.csv") |> mutate(predicted_label = strip_stars_quotes(predicted_label))
-cdf3 <- read_csv("20250721_125758_classified_motivations.csv") |> mutate(predicted_label = strip_stars_quotes(predicted_label))
-cdf4 <- read_csv("20250721_125837_classified_motivations.csv") |> mutate(predicted_label = strip_stars_quotes(predicted_label)) |>
+cdf1 <- read_csv(here::here("classification", "20250721_125504_classified_motivations.csv")) |> mutate(predicted_label = strip_stars_quotes(predicted_label))
+cdf2 <- read_csv(here::here("classification", "20250721_125532_classified_motivations.csv")) |> mutate(predicted_label = strip_stars_quotes(predicted_label))
+cdf3 <- read_csv(here::here("classification", "20250721_125758_classified_motivations.csv")) |> mutate(predicted_label = strip_stars_quotes(predicted_label))
+cdf4 <- read_csv(here::here("classification", "20250721_125837_classified_motivations.csv")) |> mutate(predicted_label = strip_stars_quotes(predicted_label)) |>
   mutate(predicted_label=ifelse(predicted_label=="meritocrat - does not mention the margin", "meritocrat - does not mention margin", predicted_label))
-cdf5 <- read_csv("20250721_145256_classified_motivations.csv") |> mutate(predicted_label = strip_stars_quotes(predicted_label)) |>
+cdf5 <- read_csv(here::here("classification", "20250721_145256_classified_motivations.csv")) |> mutate(predicted_label = strip_stars_quotes(predicted_label)) |>
   mutate(predicted_label=ifelse(predicted_label=="meritocrat - does not mention the margin", "meritocrat - does not mention margin", predicted_label))
-cdf6 <- read_csv("20250721_155742_classified_motivations.csv") |> mutate(predicted_label = strip_stars_quotes(predicted_label))
-cdf7 <- read_csv("20250724_111737_classified_motivations.csv") |> mutate(predicted_label = strip_stars_quotes(predicted_label))
-```  
+cdf6 <- read_csv(here::here("classification", "20250721_155742_classified_motivations.csv")) |> mutate(predicted_label = strip_stars_quotes(predicted_label))
+cdf7 <- read_csv(here::here("classification", "20250724_111737_classified_motivations.csv")) |> mutate(predicted_label = strip_stars_quotes(predicted_label))
+```
 
 
 Creating shorter names for easy printing of contingency tables:
@@ -63,9 +64,9 @@ cdf1$predicted_labels <- short_names[cdf1$predicted_label]
 cdf2$predicted_labels <- short_names[cdf2$predicted_label]
 cdf3$predicted_labels <- short_names[cdf3$predicted_label]
 cdf4$predicted_labels <- short_names[cdf4$predicted_label]
-cdf5$predicted_labels <- short_names[cdf5$predicted_label] 
-cdf6$predicted_labels <- short_names[cdf6$predicted_label] 
-cdf7$predicted_labels <- short_names[cdf7$predicted_label] 
+cdf5$predicted_labels <- short_names[cdf5$predicted_label]
+cdf6$predicted_labels <- short_names[cdf6$predicted_label]
+cdf7$predicted_labels <- short_names[cdf7$predicted_label]
 
 ```
 
@@ -73,7 +74,7 @@ cdf7$predicted_labels <- short_names[cdf7$predicted_label]
 
 ```{r echo=FALSE}
 cdf2 |> left_join(cdf6, by="id") |>
-  with(table(predicted_labels.x, predicted_labels.y)) |> 
+  with(table(predicted_labels.x, predicted_labels.y)) |>
   addmargins()
 
 ```
@@ -81,7 +82,7 @@ cdf2 |> left_join(cdf6, by="id") |>
 # Reading all data
 
 ```{r}
-read_and_combine_motivation_csvs <- function(path = ".") {
+read_and_combine_motivation_csvs <- function(path = here::here("classification")) {
   files <- list.files(path, pattern = "_classified_motivations\\.csv$", full.names = TRUE)
   read_with_timestamp <- function(file) {
     filename <- basename(file)
@@ -93,7 +94,7 @@ read_and_combine_motivation_csvs <- function(path = ".") {
   combined_df <- do.call(rbind, lapply(files, read_with_timestamp))
   return(combined_df)
 }
-alld <- read_and_combine_motivation_csvs() 
+alld <- read_and_combine_motivation_csvs()
 alld_finetuned <- alld |> filter(model_name=="ft:gpt-3.5-turbo-0125:fair::BvgCjJLB")
 alld_finetuned |> group_by(predicted_label, timestamp) |>
   summarize(n = n()) |>
@@ -108,21 +109,21 @@ alld_finetuned |> group_by(predicted_label, timestamp) |>
 
 Here I use the full set of categories with the trained older model
 as x and the modern model with large set of categories as columns (y) that
-has been censored in the 
+has been censored in the
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 cdf7s <- cdf7 |>  mutate(predicted_labels = ifelse(predicted_labels %in% c("C","I","LG","MS","NR"),"OTR",predicted_labels))
-cdf3s <- cdf3 |> mutate(predicted_labels = ifelse(predicted_labels %in% c("C","I","LG","MS","NR"),"OTR",predicted_labels)) 
-cdf3s |> 
-  left_join(cdf7s, by="id") |> 
-  with(table(predicted_labels.x, predicted_labels.y)) |> 
+cdf3s <- cdf3 |> mutate(predicted_labels = ifelse(predicted_labels %in% c("C","I","LG","MS","NR"),"OTR",predicted_labels))
+cdf3s |>
+  left_join(cdf7s, by="id") |>
+  with(table(predicted_labels.x, predicted_labels.y)) |>
   addmargins()
 ```
- 
+
 ## How much variation in few-shot example gpt-4o
- 
+
 ```{r}
-alld_fewshot  <- alld |> 
+alld_fewshot  <- alld |>
   filter(str_starts(system_message_hash, "4ba830"))
 alld_fewshot  |> group_by(predicted_label, timestamp) |>
   summarize(n = n()) |>
@@ -130,21 +131,15 @@ alld_fewshot  |> group_by(predicted_label, timestamp) |>
             mean_n = mean(n),
             max_n = max(n))
 ```
-## Summary table of different models 
+## Summary table of different models
 
 ```{r different models, echo=FALSE}
-d3_sum <- cdf3s |> group_by(predicted_labels) |> summarize( `3.5 turbo FT` = n()/nrow(cdf3s))
-d7_sum <- cdf7s |> group_by(predicted_labels) |> summarize( `4o OS` = n()/nrow(cdf7s))
-d5_sum <- cdf5 |> group_by(predicted_labels) |> summarize(`3.5 turbo` = n()/nrow(cdf5))
-d2_sum <- cdf2 |> group_by(predicted_labels) |> summarize(`4o` = n() / nrow(cdf2))
-tbl_df <- list(d3_sum,d7_sum,d5_sum,d2_sum) |> reduce(left_join, by="predicted_labels") |> mutate(`predicted label` = factor(predicted_labels, levels=c("MDNM","MDM","L","F","E","OTR")))
-tvariants <- tbl_df |> dplyr::select(c(`predicted label`, `3.5 turbo FT`, `4o OS`, `3.5 turbo`, `4o`)) |>
-  arrange(`predicted label`) |>
-  gt::gt() |> 
-  tab_spanner(label="With training data", columns=2:3) |> 
-  tab_spanner(label="Without training data", columns=4:5) |> 
+tar_load(tvariants_table)
+tvariants <- tvariants_table |>
+  gt::gt() |>
+  tab_spanner(label="With training data", columns=2:3) |>
+  tab_spanner(label="Without training data", columns=4:5) |>
   fmt_number(decimals = 3)
 tvariants
-gtsave(tvariants, filename="tvariants.tex")
+gtsave(tvariants, filename=here::here("tables", "tvariants.tex"))
 ```
-

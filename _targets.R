@@ -182,6 +182,10 @@ list(
     winning_margin_over_distribution_l,
     winning_margin_over_distribution(mmw2018)
   ),
+  tar_target(
+    tvariants_table,
+    tvariants_l()
+  ),
   tar_render(
     analysis_main_sample,
     path = "code/analysis_main_sample.Rmd",
@@ -204,6 +208,12 @@ list(
     lab_experiment,
     path="code/lab_experiment.Rmd",
     output_file="lab_experiment.html",
+    output_dir  = "html_reports"
+  ),
+  tar_render(
+    explore_classifications,
+    path="code/explore_classifications.Rmd",
+    output_file="explore_classifications.html",
     output_dir  = "html_reports"
   )
 )

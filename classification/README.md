@@ -28,10 +28,6 @@ manage python code for the classification.
 | Running inference | systems.py | Instructions for LLM |
 | Running inference | upload_training_data.py | Uploading training_data.jsonl for finetuning |
 | Running inference | TIMESTAMPS_classified_motivations.zip | Output from inference (20 .csv files) |
-| Analysis | tvariants.tex | Output comparing models |
-| Analysis | explore_classifications.R | Analysing classifications |
-| Analysis | explore_classifications.html | Analysis of classifications (output) |
-| System config | classifications.Rproj | R project file |
 | System config | pyproject.toml | Project definition for Python programs |
 | System config | uv.lock | Specification of Python dependencies |
 | System config | .env.example  | Example for how Open AI API key is entered | 
@@ -110,5 +106,6 @@ specification of the parameters used for running the inference script.
 ## 5. Analysis
 
 First unzip the `TIMESTAMPS_classified_motivations.zip` file.
-Running the `explore_classifications.Rmd` will now do the necessary
-analysis. 
+The analysis of classifications is done by `code/explore_classifications.Rmd`
+as part of the main targets pipeline. The output table `tvariants.tex` is
+saved to the `tables/` directory. 

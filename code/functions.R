@@ -1600,5 +1600,51 @@ winning_margin_over_distribution <- function(mmw2018) {
              "x2:below_median_x2"="Winnner Perf. X Perf. below median",
              "(Intercept)"="Constant")
   list("regs"=regs, "names"=names)
-  
+
+}
+
+tvariants_l <- function() {
+  strip_stars_quotes <- function(x) {
+    gsub('^[*"*]+|[*"*]+$', '', x)
+  }
+  short_names <- c(
+    "compensate" = "C",
+    "egalitarian" = "E",
+    "fairness" = "F",
+    "incentives" = "I",
+    "libertarian" = "L",
+    "logic" = "LG",
+    "meritocrat - does mention the margin" = "MDM",
+    "meritocrat - does not mention margin" = "MDNM",
+    "misunderstand" = "MS",
+    "no reason" = "NR",
+    "other" = "OTR"
+  )
+  collapse_others <- function(x) ifelse(x %in% c("C", "I", "LG", "MS", "NR"), "OTR", x)
+
+  cdf3 <- read_csv("classification/20250721_125758_classified_motivations.csv", show_col_types = FALSE) |>
+    mutate(predicted_label = strip_stars_quotes(predicted_label),
+           predicted_labels = collapse_others(short_names[predicted_label]))
+  cdf7 <- read_csv("classification/20250724_111737_classified_motivations.csv", show_col_types = FALSE) |>
+    mutate(predicted_label = strip_stars_quotes(predicted_label),
+           predicted_labels = collapse_others(short_names[predicted_label]))
+  cdf5 <- read_csv("classification/20250721_145256_classified_motivations.csv", show_col_types = FALSE) |>
+    mutate(predicted_label = strip_stars_quotes(predicted_label),
+           predicted_label = ifelse(predicted_label == "meritocrat - does not mention the margin",
+                                    "meritocrat - does not mention margin", predicted_label),
+           predicted_labels = short_names[predicted_label])
+  cdf2 <- read_csv("classification/20250721_125532_classified_motivations.csv", show_col_types = FALSE) |>
+    mutate(predicted_label = strip_stars_quotes(predicted_label),
+           predicted_labels = short_names[predicted_label])
+
+  d3_sum <- cdf3 |> group_by(predicted_labels) |> summarize(`3.5 turbo FT` = n() / nrow(cdf3))
+  d7_sum <- cdf7 |> group_by(predicted_labels) |> summarize(`4o OS` = n() / nrow(cdf7))
+  d5_sum <- cdf5 |> group_by(predicted_labels) |> summarize(`3.5 turbo` = n() / nrow(cdf5))
+  d2_sum <- cdf2 |> group_by(predicted_labels) |> summarize(`4o` = n() / nrow(cdf2))
+
+  list(d3_sum, d7_sum, d5_sum, d2_sum) |>
+    reduce(left_join, by = "predicted_labels") |>
+    mutate(`predicted label` = factor(predicted_labels, levels = c("MDNM", "MDM", "L", "F", "E", "OTR"))) |>
+    select(c(`predicted label`, `3.5 turbo FT`, `4o OS`, `3.5 turbo`, `4o`)) |>
+    arrange(`predicted label`)
 }
